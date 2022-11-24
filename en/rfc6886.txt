@@ -49,41 +49,41 @@ Copyright Notice
 
 Table of Contents
 
-   1. Introduction ....................................................3
-      1.1. Transition to Port Control Protocol ........................4
-   2. Conventions and Terminology Used in This Document ...............5
-   3. Protocol and Packet Format ......................................5
-      3.1. Requests and Responses .....................................6
-      3.2. Determining the External Address ...........................7
-      3.3. Requesting a Mapping ......................................10
-      3.4. Destroying a Mapping ......................................13
-      3.5. Result Codes ..............................................14
-      3.6. Seconds Since Start of Epoch ..............................16
-      3.7. Recreating Mappings on NAT Gateway Reboot .................17
-      3.8. NAT Gateways with NAT Function Disabled ...................18
-      3.9. All Mappings Are Bidirectional ............................19
-   4. UNSAF Considerations ...........................................20
-      4.1. Scope .....................................................20
-      4.2. Transition Plan ...........................................20
-      4.3. Failure Cases .............................................21
-      4.4. Long-Term Solution ........................................23
-      4.5. Existing Deployed NATs ....................................23
-   5. Security Considerations ........................................23
-   6. IANA Considerations ............................................24
-   7. Acknowledgments ................................................24
-   8. Deployment History .............................................25
-   9. Noteworthy Features of NAT Port Mapping Protocol and PCP .......26
-      9.1. Simplicity ................................................27
-      9.2. Focused Scope .............................................27
-      9.3. Efficiency ................................................27
-      9.4. Atomic Allocation Operations ..............................29
-      9.5. Garbage Collection ........................................29
-      9.6. State Change Announcements ................................30
-      9.7. Soft State Recovery .......................................31
-      9.8. On-Path NAT Discovery .....................................31
-   10. References ....................................................32
-      10.1. Normative References .....................................32
-      10.2. Informative References ...................................32
+   1. Introduction
+      1.1. Transition to Port Control Protocol
+   2. Conventions and Terminology Used in This Document
+   3. Protocol and Packet Format
+      3.1. Requests and Responses
+      3.2. Determining the External Address
+      3.3. Requesting a Mapping
+      3.4. Destroying a Mapping
+      3.5. Result Codes
+      3.6. Seconds Since Start of Epoch
+      3.7. Recreating Mappings on NAT Gateway Reboot
+      3.8. NAT Gateways with NAT Function Disabled
+      3.9. All Mappings Are Bidirectional
+   4. UNSAF Considerations
+      4.1. Scope
+      4.2. Transition Plan
+      4.3. Failure Cases
+      4.4. Long-Term Solution
+      4.5. Existing Deployed NATs
+   5. Security Considerations
+   6. IANA Considerations
+   7. Acknowledgments
+   8. Deployment History
+   9. Noteworthy Features of NAT Port Mapping Protocol and PCP
+      9.1. Simplicity
+      9.2. Focused Scope
+      9.3. Efficiency
+      9.4. Atomic Allocation Operations
+      9.5. Garbage Collection
+      9.6. State Change Announcements
+      9.7. Soft State Recovery
+      9.8. On-Path NAT Discovery
+   10. References
+      10.1. Normative References
+      10.2. Informative References
 
 1.  Introduction
 
