@@ -3,23 +3,9 @@ Request for Comments: 6886                                   M. Krochmal
 Category: Informational                                       Apple Inc.
 ISSN: 2070-1721                                               April 2013
 
-                  NAT Port Mapping Protocol (NAT-PMP)
                   NAT-PMP(NAT 포트 매핑 프로토콜)
 
-Abstract
 개요
-
-   This document describes a protocol for automating the process of
-   creating Network Address Translation (NAT) port mappings.  Included
-   in the protocol is a method for retrieving the external IPv4 address
-   of a NAT gateway, thus allowing a client to make its external IPv4
-   address and port known to peers that may wish to communicate with it.
-   From 2005 onwards, this protocol was implemented in Apple products
-   including Mac OS X, Bonjour for Windows, and AirPort wireless base
-   stations.  In 2013, NAT Port Mapping Protocol (NAT-PMP) was
-   superseded by the IETF Standards Track RFC "Port Control Protocol
-   (PCP)", which builds on NAT-PMP and uses a compatible packet format,
-   but adds a number of significant enhancements.
 
    이 문서는 네트워크 주소 변환(NAT) 포트 매핑 생성 프로세스를 자동화하기 위한 프로토콜을 
    설명합니다. 프로토콜에는 NAT 게이트웨이의 외부 IPv4 주소를 검색하는 방법이 포함되어 있어
@@ -32,26 +18,12 @@ Abstract
 
 Status of This Memo
 
-   This document is not an Internet Standards Track specification; it is
-   published for informational purposes.
-
    이 문서는 인터넷 표준 추적 사양이 아닙니다. 정보 제공의 목적으로 게시됩니다.
-
-   This is a contribution to the RFC Series, independently of any other
-   RFC stream.  The RFC Editor has chosen to publish this document at
-   its discretion and makes no statement about its value for
-   implementation or deployment.  Documents approved for publication by
-   the RFC Editor are not a candidate for any level of Internet
-   Standard; see Section 2 of RFC 5741.
 
    이것은 다른 RFC 스트림과 독립적으로 RFC 시리즈에 대한 기여입니다. RFC 편집자는 재량에
    따라 이 문서를 게시하도록 선택했으며 구현 또는 배포의 가치에 대해 언급하지 않습니다.
    RFC 편집자가 게시하도록 승인한 문서는 인터넷 표준 수준의 후보가 아닙니다. RFC 5741의
    섹션 2를 참조하십시오.
-
-   Information about the current status of this document, any errata,
-   and how to provide feedback on it may be obtained at
-   http://www.rfc-editor.org/info/rfc6886.
 
    이 문서의 현재 상태, 오류 및 피드백 제공 방법에 대한 정보는 다음에서 얻을 수 있습니다.
    http://www.rfc-editor.org/info/rfc6886.
@@ -61,18 +33,10 @@ Copyright Notice
    Copyright (c) 2013 IETF Trust and the persons identified as the
    document authors.  All rights reserved.
 
-   This document is subject to BCP 78 and the IETF Trust's Legal
-   Provisions Relating to IETF Documents
-   (http://trustee.ietf.org/license-info) in effect on the date of
-   publication of this document.  Please review these documents
-   carefully, as they describe your rights and restrictions with respect
-   to this document.
-
    이 문서는 이 문서의 발행일에 유효한 BCP 78 및 IETF 문서에 관한 IETF 트러스트의 법적
    조항(http://trustee.ietf.org/license-info)의 적용을 받습니다. 이 문서와 관련된
    귀하의 권리 및 제한 사항을 설명하므로 이 문서를 주의 깊게 검토하십시오.
 
-Table of Contents
 목차
 
    1. Introduction ....................................................3
@@ -95,7 +59,7 @@ Table of Contents
            (결과 코드)
       3.6. Seconds Since Start of Epoch ..............................16
            (에포크 시작 이후의 초단위)
-      3.7. Recreating Mappings on NAT Gateway Reboot .................16
+      3.7. Recreating Mappings on NAT Gateway Reboot .................17
            (NAT 게이트웨이 재부팅 시 매핑 재생성)
       3.8. NAT Gateways with NAT Function Disabled ...................18
            (NAT 기능이 비활성화된 NAT 게이트웨이)
@@ -143,17 +107,7 @@ Table of Contents
       10.1. Normative References .....................................32
       10.2. Informative References ...................................32
 
-1.  Introduction
-    소개
-
-   Network Address Translation (NAT) is a method of sharing one public
-   Internet address with a number of devices.  This document is focused
-   on devices that are formally classified as "NAPTs" (Network
-   Address/Port Translators) [RFC2663].  A full description of NAT is
-   beyond the scope of this document.  The following brief overview will
-   cover the aspects relevant to this port mapping protocol.  For more
-   information on NAT, see "Traditional IP Network Address Translator
-   (Traditional NAT)" [RFC3022].
+1.  Introduction (소개)
 
    NAT(Network Address Translation)는 하나의 공용 인터넷 주소를 여러 장치와 공유하는 
    방법입니다. 이 문서는 공식적으로 "NAPT"(네트워크 주소/포트 변환기)[RFC2663]로 분류되는
@@ -161,46 +115,17 @@ Table of Contents
    개요에서는 이 포트 매핑 프로토콜과 관련된 측면을 다룹니다. NAT에 대한 자세한 내용은 
    "전통적인 IP 네트워크 주소 변환기(전통적인 NAT)" [RFC3022]를 참조하십시오.
 
-   NATs have one or more external IP addresses.  A private network is
-   set up behind the NAT.  Client devices on that private network behind
-   the NAT are assigned private addresses, and those client devices use
-   the private address of the NAT device as their default gateway.
-
    NAT에는 하나 이상의 외부 IP 주소가 있습니다. 개인 네트워크는 NAT 뒤에 설정됩니다. 
    NAT 뒤의 사설 네트워크에 있는 클라이언트 장치에는 사설 주소가 할당되며 이러한 클라이언트
    장치는 NAT 장치의 사설 주소를 기본 게이트웨이로 사용합니다.
-
-   When a packet from any device behind the NAT is sent to an address on
-   the public Internet, the packet first passes through the NAT box.
-   The NAT box looks at the source port and address.  In some cases, a
-   NAT will also keep track of the destination port and address.  The
-   NAT then creates a mapping from the internal address and internal
-   port to an external address and external port if a mapping does not
-   already exist.
 
    NAT 뒤에 있는 장치의 패킷이 공용 인터넷의 주소로 전송되면 패킷은 먼저 NAT 상자를 통과합니다.
    NAT는 수신 포트와 주소를 확인합니다. 경우에 따라 NAT는 대상 포트와 주소도 추적합니다. 그런
    다음 NAT는 매핑이 아직 존재하지 않는 경우 내부 주소 및 내부 포트에서 외부 주소 및 외부 포트
    로의 매핑을 생성합니다.
 
-   The NAT box replaces the internal address and port in the packet with
-   the external entries from the mapping and sends the packet on to the
-   next gateway.
-
    NAT 상자는 패킷의 내부 주소와 포트를 매핑의 외부 항목으로 바꾸고 패킷을 다음 게이트웨이로
    보냅니다.
-
-   When a packet from any address on the Internet is received on the
-   NAT's external side, the NAT will look up the destination address and
-   port (external address and port) in the list of mappings.  If an
-   entry is found, it will contain the internal address and port to
-   which the packet should be sent.  The NAT gateway will then rewrite
-   the destination address and port with those from the mapping.  The
-   packet will then be forwarded to the new destination addresses.  If
-   the packet did not match any mapping, the packet will most likely be
-   dropped.  Various NATs implement different strategies to handle this.
-   The important thing to note is that if there is no mapping, the NAT
-   does not know to which internal address the packet should be sent.
 
    인터넷의 어떤 주소에서건 패킷이 NAT의 외부에서 수신되면 NAT는 매핑 목록에서 대상 주소와
    포트(외부 주소 및 포트)를 조회합니다. 항목이 발견되면 패킷을 보내야 하는 내부 주소와 포트가
@@ -209,38 +134,12 @@ Table of Contents
    큽니다. 다양한 NAT는 이를 처리하기 위해 다양한 전략을 구현합니다. 주목해야 할 중요한 점은
    매핑이 없으면 NAT가 패킷을 보내야 하는 내부 주소를 알 수 없다는 것입니다.
 
-   Mappings are usually created automatically as a result of observing
-   outbound packets.  There are a few exceptions.  Some NATs may allow
-   manually created permanent mappings that map an external port to a
-   specific internal IP address and port.  Such a mapping allows
-   incoming connections to the device with that internal address.  Some
-   NATs also implement a default mapping where any inbound packet that
-   does not match any other more specific mapping will be forwarded to a
-   specified internal address.  Both types of mappings are usually set
-   up manually through some configuration tool.  Such manual
-   configuration of port mappings is unreasonably onerous for most
-   residential NAT users.
-
    매핑은 일반적으로 아웃바운드 패킷을 관찰한 결과 자동으로 생성됩니다. 몇 가지 예외가 있습니다.
    일부 NAT는 외부 포트를 특정 내부 IP 주소 및 포트에 매핑하는 수동 생성 영구 매핑을 허용할
    수 있습니다. 이러한 매핑은 해당 내부 주소를 사용하여 장치에 대한 수신 연결을 허용합니다.
    또한 NAT는 다른 특정 매핑과 일치하지 않는 인바운드 패킷이 지정된 내부 주소로 전달되는 기본
    매핑을 구현합니다. 두 유형의 매핑은 일반적으로 일부 구성 도구를 통해 수동으로 설정됩니다.
    이러한 포트 매핑의 수동 구성은 대부분의 주거용 NAT 사용자에게 부당하게 번거롭습니다.
-
-   Without these manually created inbound port mappings, clients behind
-   the NAT would be unable to receive inbound connections, which
-   represents a loss of connectivity when compared to the original
-   Internet architecture [ETEAISD].  For those who view this loss of
-   connectivity as a bad thing, NAT-PMP allows clients to operate more
-   like a host directly connected to the unrestricted public Internet,
-   with an unrestricted public IPv4 address.  NAT-PMP allows client
-   hosts to communicate with the NAT gateway to request the creation of
-   inbound mappings on demand.  Having created a NAT mapping to allow
-   inbound connections, the client can then record its external IPv4
-   address and external port in a public registry (e.g., the worldwide
-   Domain Name System) or otherwise make it accessible to peers that
-   wish to communicate with it.
 
    수동으로 생성된 인바운드 포트 매핑이 없으면 NAT 뒤의 클라이언트는 인바운드 연결을 수신할 수
    없으며 이는 원래 인터넷 아키텍처[ETEAISD]와 비교할 때 연결 손실을 나타냅니다. 이러한 연결
