@@ -39,73 +39,73 @@ Copyright Notice
 
 목차
 
-   1. Introduction ....................................................3
+   1. Introduction
       (소개)
-      1.1. Transition to Port Control Protocol ........................4
+      1.1. Transition to Port Control Protocol
            (Port Control Protocol로의 전환)
-   2. Conventions and Terminology Used in This Document ...............5
+   2. Conventions and Terminology Used in This Document
       (이 문서에서 사용되는 규약 및 용어)
-   3. Protocol and Packet Format ......................................5
+   3. Protocol and Packet Format
       (프로토콜 및 패킷 형식)
-      3.1. Requests and Responses .....................................6
+      3.1. Requests and Responses
            (요청 및 응답)
-      3.2. Determining the External Address ...........................7
+      3.2. Determining the External Address
            (외부 주소 결정)
-      3.3. Requesting a Mapping ......................................10
+      3.3. Requesting a Mapping
            (매핑 요청)
-      3.4. Destroying a Mapping ......................................13
+      3.4. Destroying a Mapping
            (매핑 제거)
-      3.5. Result Codes ..............................................14
+      3.5. Result Codes
            (결과 코드)
-      3.6. Seconds Since Start of Epoch ..............................16
+      3.6. Seconds Since Start of Epoch
            (에포크 시작 이후의 초단위)
-      3.7. Recreating Mappings on NAT Gateway Reboot .................17
+      3.7. Recreating Mappings on NAT Gateway Reboot
            (NAT 게이트웨이 재부팅 시 매핑 재생성)
-      3.8. NAT Gateways with NAT Function Disabled ...................18
+      3.8. NAT Gateways with NAT Function Disabled
            (NAT 기능이 비활성화된 NAT 게이트웨이)
-      3.9. All Mappings Are Bidirectional ............................19
+      3.9. All Mappings Are Bidirectional
            (모든 매핑은 양방향)
-   4. UNSAF Considerations ...........................................20
+   4. UNSAF Considerations
       (UNSAF 고려 사항)
-      4.1. Scope .....................................................20
+      4.1. Scope
            (범위)
-      4.2. Transition Plan ...........................................20
+      4.2. Transition Plan
            (전환 계획)
-      4.3. Failure Cases .............................................21
+      4.3. Failure Cases
            (실패사례)
-      4.4. Long-Term Solution ........................................23
+      4.4. Long-Term Solution
            (장기적 해결책)
-      4.5. Existing Deployed NATs ....................................23
+      4.5. Existing Deployed NATs
            (기존 배포된 NAT들)
-   5. Security Considerations ........................................23
+   5. Security Considerations
       (보안 고려 사항)
-   6. IANA Considerations ............................................24
+   6. IANA Considerations
       (IANA 고려 사항)
-   7. Acknowledgments ................................................24
+   7. Acknowledgments
       (감사의 말)
-   8. Deployment History .............................................25
+   8. Deployment History
       (배포 내역)
-   9. Noteworthy Features of NAT Port Mapping Protocol and PCP .......26
+   9. Noteworthy Features of NAT Port Mapping Protocol and PCP
       (NAT 포트 매핑 프로토콜 및 PCP의 주목할만한 기능)
-      9.1. Simplicity ................................................27
+      9.1. Simplicity
            (간단함)
-      9.2. Focused Scope .............................................27
+      9.2. Focused Scope
            (집중 범위)
-      9.3. Efficiency ................................................27
+      9.3. Efficiency
            (능률)
-      9.4. Atomic Allocation Operations ..............................29
+      9.4. Atomic Allocation Operations
            (원자 할당 작업)
-      9.5. Garbage Collection ........................................29
+      9.5. Garbage Collection
            (가비지 컬렉션)
-      9.6. State Change Announcements ................................30
+      9.6. State Change Announcements
            (상태 변경 알림)
-      9.7. Soft State Recovery .......................................31
+      9.7. Soft State Recovery
            (비규율 복구)
-      9.8. On-Path NAT Discovery .....................................31
+      9.8. On-Path NAT Discovery
            (On-Path NAT 검색)
-   10. References ....................................................32
-      10.1. Normative References .....................................32
-      10.2. Informative References ...................................32
+   10. References
+      10.1. Normative References
+      10.2. Informative References
 
 1.  Introduction (소개)
 
