@@ -1,7 +1,7 @@
 Network Working Group                                     Charles Hornig
 Request for Comments: 894            Symbolics Cambridge Research Center
                                                               April 1984
- 이더넷 네트워크를 통한 IP 데이터그램 전송 표준
+                이더넷 네트워크를 통한 IP 데이터그램 전송 표준
 
 
 Status of this Memo
