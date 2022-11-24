@@ -150,68 +150,42 @@ Copyright Notice
    레지스트리(예: 전 세계 도메인 이름 시스템)에 기록하거나 통신하려는 피어가 액세스할 수 있도록
    할 수 있습니다.
 
-1.1.  Transition to Port Control Protocol
+1.1.  Transition to Port Control Protocol (Port Control Protocol로의 전환)
 
-   NAT-PMP enjoyed almost a decade of useful service, and operational
-   experience with NAT-PMP informed the design of its IETF Standards
-   Track successor, Port Control Protocol (PCP) [RFC6887].  PCP builds
-   on NAT-PMP, using the same UDP ports 5350 and 5351, and a compatible
-   packet format.  PCP also adds significant enhancements, including
-   IPv6 support, management of outbound mappings, management of firewall
-   rules, full compatibility with large-scale NATs with a pool of
-   external addresses, error lifetimes, and an extension mechanism to
-   enable future enhancements.
+   NAT-PMP는 거의 10년 동안 유용한 서비스를 누렸고 NAT-PMP를 사용한 운영 경험은 IETF
+   표준 트랙 후속 제품인 포트 제어 프로토콜(PCP) [RFC6887]의 설계에 영향을 미쳤습니다.
+   PCP는 동일한 UDP 포트 5350 및 5351과 호환되는 패킷 형식을 사용하여 NAT-PMP를
+   기반으로 합니다. PCP는 또한 IPv6 지원, 아웃바운드 매핑 관리, 방화벽 규칙 관리, 외부
+   주소 풀이 있는 대규모 NAT와의 완전한 호환성, 오류 수명 및 향후 개선을 가능하게 하는 확장
+   메커니즘을 포함하여 상당한 개선 사항을 추가합니다.
 
-   Because of the significant enhancements in PCP, all existing NAT-PMP
-   implementations are encouraged to migrate to PCP.  The version number
-   in the packet header is 0 for NAT-PMP and 2 for PCP, so the packets
-   are easily distinguished.  (Version number 1 was used by a vendor
-   that shipped products that use a protocol that is incompatible with
-   the IETF Standard.  PCP implementations MUST NOT use version
-   number 1.)
+   PCP의 상당한 향상으로 인해 기존의 모든 NAT-PMP 구현은 PCP로 마이그레이션하는 것이
+   좋습니다. 패킷 헤더의 버전 번호는 NAT-PMP의 경우 0, PCP의 경우 2이므로 패킷을 쉽게
+   구분할 수 있습니다. (버전 번호 1은 IETF 표준과 호환되지 않는 프로토콜을 사용하는 제품을
+   배송하는 공급업체에서 사용했습니다. PCP 구현은 버전 번호 1을 사용하면 안 됩니다.)
 
-   For NAT-PMP servers, adding PCP support is simple.  When packets are
-   received, if the version number is 2, then the packet is interpreted
-   as a PCP request, the request is handled, and replies and updates
-   pertaining to that mapping are sent using PCP format.  If the version
-   number is 0, then the existing code handles the request exactly as it
-   already does, and replies and updates pertaining to that mapping are
+   NAT-PMP 서버의 경우 PCP 지원을 추가하는 것은 간단합니다. 패킷이 수신될 때 버전 번호가
+   2이면 패킷이 PCP 요청으로 해석되고 요청이 처리되며 해당 매핑과 관련된 응답 및 업데이트가
+   PCP 형식을 사용하여 전송됩니다. 버전 번호가 0이면 기존 코드가 요청을 정확히 처리하고 해당
+   매핑과 관련된 응답 및 업데이트가 NAT-PMP 형식을 사용하여 전송됩니다. 버전 번호가 1이거나
+   기타 지원되지 않는 버전인 경우 결과 코드 1(지원되지 않는 버전)이 반환됩니다.
 
+   NAT-PMP 클라이언트는 PCP 지원을 추가해야 하며 기본적으로 PCP 형식을 사용하여 요청을
+   보내야 합니다. 이렇게 하면 클라이언트가 가능한 경우 최신 형식을 선호하게 됩니다. PCP
+   요청이 새로운 PCP 형식을 이해하지 못하는 기존 NAT-PMP 서버로 전송되면 결과 코드 1
+   (지원되지 않는 버전)을 반환하고 클라이언트는 NAT-PMP 형식을 사용하여 동일한 요청을 즉시
+   재시도해야 합니다. 지원되지 않는 버전 응답이 있으면 시간 초과, 재전송 또는 기타 임의
+   지연을 기다리지 않고 NAT-PMP 형식으로 빠르게 장애 조치할 수 있습니다. 클라이언트는 항상
+   모든 새로운 요청, 재전송 및 갱신에 대해 PCP를 먼저 시도하고 "지원되지 않는 버전" 오류에
+   대한 응답으로 NAT-PMP만 시도하는 것이 좋습니다. NAT 펌웨어가 업데이트되고 현재
+   NAT-PMP만 말하는 NAT 게이트웨이가 내일이라도 PCP 기능이 업데이트될 수 있습니다.
 
+2.  Conventions and Terminology Used in This Document (이 문서에서 사용되는 규약 및 용어)
 
-
-
-Cheshire & Krochmal           Informational                     [Page 4]
-
-RFC 6886                         NAT-PMP                      April 2013
-
-
-   sent using NAT-PMP format.  If the version number is 1 or any other
-   unsupported version, then result code 1 (Unsupported Version) is
-   returned.
-
-   NAT-PMP clients should add PCP support, and should default to sending
-   requests using PCP format, which will cause clients to prefer the
-   newer format when possible.  If a PCP request is sent to an old
-   NAT-PMP server that doesn't understand the new PCP format, then it
-   will return result code 1 (Unsupported Version), and the client
-   should then immediately retry the same request using NAT-PMP format.
-   The presence of the Unsupported Version reply allows fast fail-over
-   to NAT-PMP format, without waiting for timeouts, retransmissions, or
-   other arbitrary delays.  It is recommended that clients always try
-   PCP first for every new request, retransmission, and renewal, and
-   only try NAT-PMP in response to an "Unsupported Version" error.
-   Clients SHOULD NOT record that a given server only speaks NAT-PMP and
-   subsequently default to NAT-PMP for that server, since NAT firmware
-   gets updated, and even a NAT gateway that speaks only NAT-PMP today,
-   may be updated to speak PCP tomorrow.
-
-2.  Conventions and Terminology Used in This Document
-
-   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
-   "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this
-   document are to be interpreted as described in "Key words for use in
-   RFCs to Indicate Requirement Levels" [RFC2119].
+   이 문서에서 키워드 "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY" 및 "OPTIONAL"은 
+   "요구 수준을 나타내기 위해 RFC에서 사용하기 위한 키워드"[RFC2119]에 설명된 대로
+   해석됩니다.
 
 3.  Protocol and Packet Format
 
@@ -232,16 +206,6 @@ RFC 6886                         NAT-PMP                      April 2013
    request with a version number other than 0, MUST return result code 1
    (Unsupported Version), indicating the highest version number it does
    support (i.e., 0) in the version field of the response.
-
-
-
-
-
-Cheshire & Krochmal           Informational                     [Page 5]
-
-RFC 6886                         NAT-PMP                      April 2013
-
-
    Opcodes between 0 and 127 are client requests.  Opcodes from 128 to
    255 are corresponding server responses.  Responses always contain a
    16-bit result code in network byte order.  A result code of zero
@@ -288,16 +252,6 @@ RFC 6886                         NAT-PMP                      April 2013
    conclude that this gateway does not support NAT Port Mapping Protocol
    and MAY log an error message indicating this fact.  In addition, if
    the NAT-PMP client receives an "ICMP Port Unreachable" message from
-
-
-
-
-
-Cheshire & Krochmal           Informational                     [Page 6]
-
-RFC 6886                         NAT-PMP                      April 2013
-
-
    the gateway for port 5351, then it can skip any remaining
    retransmissions and conclude immediately that the gateway does not
    support NAT-PMP.
@@ -341,18 +295,6 @@ RFC 6886                         NAT-PMP                      April 2013
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
    | Vers = 0      | OP = 0        |
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-
-
-
-
-
-
-
-
-Cheshire & Krochmal           Informational                     [Page 7]
-
-RFC 6886                         NAT-PMP                      April 2013
-
 
    A compatible NAT gateway MUST generate a response with the following
    format:
@@ -401,15 +343,6 @@ RFC 6886                         NAT-PMP                      April 2013
    additional mapping renewals (see Section 3.7, "Recreating Mappings on
    NAT Gateway Reboot").
 
-
-
-
-
-Cheshire & Krochmal           Informational                     [Page 8]
-
-RFC 6886                         NAT-PMP                      April 2013
-
-
    Upon receiving a gratuitous address announcement packet, the client
    MUST check the source IP address, and silently discard the packet if
    the address is not the address of the client's current configured
@@ -447,24 +380,6 @@ RFC 6886                         NAT-PMP                      April 2013
    have encountered issues when one or more processes on the same device
    listen to port 5350 on *all* addresses.  Clients should therefore
    bind specifically to 224.0.0.1:5350, not to 0.0.0.0:5350.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Cheshire & Krochmal           Informational                     [Page 9]
-
-RFC 6886                         NAT-PMP                      April 2013
-
 
 3.3.  Requesting a Mapping
 
@@ -514,14 +429,7 @@ RFC 6886                         NAT-PMP                      April 2013
    initial mapping request packet, except that for renewals the client
    sets the Suggested External Port field to the port the gateway
    actually assigned, rather than the port the client originally wanted.
-
-
-
-Cheshire & Krochmal           Informational                    [Page 10]
-
-RFC 6886                         NAT-PMP                      April 2013
-
-
+   
    When a freshly rebooted NAT gateway receives a renewal packet from a
    client, it appears to the gateway just like an ordinary initial
    request for a port mapping, except that in this case the Suggested
@@ -569,15 +477,6 @@ RFC 6886                         NAT-PMP                      April 2013
    when the client requests UDP, and vice versa, the NAT gateway MUST
    reserve the companion port so the same client can choose to map it in
    the future.  For example, if a client requests to map TCP port 80,
-
-
-
-
-Cheshire & Krochmal           Informational                    [Page 11]
-
-RFC 6886                         NAT-PMP                      April 2013
-
-
    as long as the client maintains the lease for that TCP port mapping,
    another client with a different internal IP address MUST NOT be able
    to successfully acquire the mapping for UDP port 80.
@@ -626,14 +525,6 @@ RFC 6886                         NAT-PMP                      April 2013
    Upon receiving the response packet, the client MUST check the source
    IP address, and silently discard the packet if the address is not the
    address of the gateway to which the request was sent.
-
-
-
-Cheshire & Krochmal           Informational                    [Page 12]
-
-RFC 6886                         NAT-PMP                      April 2013
-
-
    The client SHOULD begin trying to renew the mapping halfway to expiry
    time, like DHCP.  The renewal packet should look exactly the same as
    a request packet, except that the client SHOULD set the Suggested
@@ -679,17 +570,6 @@ RFC 6886                         NAT-PMP                      April 2013
    on reception).  If the client attempts to delete a port mapping that
    was manually assigned by some kind of configuration tool, the NAT
    gateway MUST respond with a "Not Authorized" error, result code 2.
-
-
-
-
-
-
-Cheshire & Krochmal           Informational                    [Page 13]
-
-RFC 6886                         NAT-PMP                      April 2013
-
-
    When a mapping is destroyed as a result of its lifetime expiring or
    for any other reason, if the NAT gateway's internal state indicates
    that there are still active TCP connections traversing that now-
@@ -727,24 +607,6 @@ RFC 6886                         NAT-PMP                      April 2013
    4 - Out of resources
        (NAT box cannot create any more mappings at this time)
    5 - Unsupported opcode
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Cheshire & Krochmal           Informational                    [Page 14]
-
-RFC 6886                         NAT-PMP                      April 2013
-
 
    If the version in the request is not zero, then the NAT-PMP server
    MUST return the following "Unsupported Version" error response to the
@@ -793,15 +655,6 @@ RFC 6886                         NAT-PMP                      April 2013
    idempotent and self-describing; therefore, the specifications of
    future NAT-PMP messages need to include enough information for their
    responses to be self-describing.
-
-
-
-
-Cheshire & Krochmal           Informational                    [Page 15]
-
-RFC 6886                         NAT-PMP                      April 2013
-
-
    Clients MUST be able to properly handle result codes not defined in
    this document.  Undefined results codes MUST be treated as fatal
    errors of the request.
@@ -844,20 +697,6 @@ RFC 6886                         NAT-PMP                      April 2013
    still renew their mappings at the originally scheduled time and cause
    their mappings to be recreated; it will just take a little longer for
    these clients.
-
-
-
-
-
-
-
-
-
-Cheshire & Krochmal           Informational                    [Page 16]
-
-RFC 6886                         NAT-PMP                      April 2013
-
-
    A mapping renewal packet is formatted identically to an original
    mapping request; from the point of view of the client, it is a
    renewal of an existing mapping, but from the point of view of the
@@ -906,14 +745,6 @@ RFC 6886                         NAT-PMP                      April 2013
    gateway will lose its port mappings, but when, and how often.  If the
    network camera and devices like it on the network can detect when the
    NAT gateway has lost its port mappings, and recreate them
-
-
-
-Cheshire & Krochmal           Informational                    [Page 17]
-
-RFC 6886                         NAT-PMP                      April 2013
-
-
    automatically, then these disruptions are self-correcting and largely
    invisible to the end user.  If, on the other hand, the disruptions
    are not self-correcting, and after a NAT gateway reboot the user has
@@ -962,14 +793,6 @@ RFC 6886                         NAT-PMP                      April 2013
    Note that only devices that are *currently* acting in the role of NAT
    gateway should participate in NAT-PMP protocol exchanges with
    clients.  A network device that is capable of NAT (and NAT-PMP) but
-
-
-
-Cheshire & Krochmal           Informational                    [Page 18]
-
-RFC 6886                         NAT-PMP                      April 2013
-
-
    is currently configured not to perform that function (e.g., it is
    acting as a traditional IP router, forwarding packets without
    modifying them) MUST NOT respond to NAT-PMP requests from clients nor
@@ -1017,15 +840,6 @@ RFC 6886                         NAT-PMP                      April 2013
    created explicitly using NAT-PMP, or configured statically, are
    bidirectional.  This means that when an outbound packet from a
    particular internal address and port is translated to an external
-
-
-
-
-Cheshire & Krochmal           Informational                    [Page 19]
-
-RFC 6886                         NAT-PMP                      April 2013
-
-
    address and port, replies addressed to that external address and port
    need to be translated back to the corresponding internal address and
    port.
