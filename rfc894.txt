@@ -1,5 +1,3 @@
-
-
 Network Working Group                                     Charles Hornig
 Request for Comments: 894            Symbolics Cambridge Research Center
                                                               April 1984
