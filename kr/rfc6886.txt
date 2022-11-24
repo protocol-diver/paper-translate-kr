@@ -3,7 +3,7 @@ Request for Comments: 6886                                   M. Krochmal
 Category: Informational                                       Apple Inc.
 ISSN: 2070-1721                                               April 2013
 
-                  NAT-PMP(NAT 포트 매핑 프로토콜)
+                        NAT-PMP(NAT 포트 매핑 프로토콜)
 
 개요
 
@@ -429,7 +429,7 @@ Copyright Notice
    initial mapping request packet, except that for renewals the client
    sets the Suggested External Port field to the port the gateway
    actually assigned, rather than the port the client originally wanted.
-   
+
    When a freshly rebooted NAT gateway receives a renewal packet from a
    client, it appears to the gateway just like an ordinary initial
    request for a port mapping, except that in this case the Suggested
