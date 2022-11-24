@@ -11,8 +11,8 @@ Status of this Memo
    Protocol (IP) [1] datagrams on an Ethernet [2].  This RFC specifies a
    standard protocol for the ARPA-Internet community.
 
-   이 RFC는 이더넷에서 [2] 인터넷 프로토콜 (IP) [1] 데이터그램을 캡슐화하는 표준 방법을 명시하며,
-   ARPA-인터넷 커뮤니티에 대한 표준 프로토콜을 지정합니다.
+   이 RFC는 이더넷에서 [2] 인터넷 프로토콜 (IP) [1] 데이터그램을 캡슐화하는 표준 방법을
+   명시하며, ARPA-인터넷 커뮤니티에 대한 표준 프로토콜을 지정합니다.
 
 Introduction
 소개
