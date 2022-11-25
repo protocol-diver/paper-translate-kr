@@ -1,0 +1,363 @@
+Network Working Group                                         Y. Rekhter
+Request for Comments: 1918                                 Cisco Systems
+Obsoletes: 1627, 1597                                       B. Moskowitz
+BCP: 5                                                    Chrysler Corp.
+Category: Best Current Practice                            D. Karrenberg
+                                                                RIPE NCC
+                                                          G. J. de Groot
+                                                                RIPE NCC
+                                                                 E. Lear
+                                                  Silicon Graphics, Inc.
+                                                           February 1996
+
+
+                        사설 네트워크를 위한 주소 할당
+
+Status of this Memo
+
+   이 문서는 인터넷 커뮤니티를 위한 인터넷 모범 사례를 지정하고 개선을 위한 토론과 제안을
+   요청합니다. 해당 메모 배포에 대한 제한은 없습니다.
+
+1. 소개
+
+   문서의 목적상 기업이 TCP/IP를 사용하여 네트워크를 자율적으로 운영하고 특히 해당
+   네트워크 내에서 주소 지정 계획 및 주소 할당을 결정하는 엔티티입니다.
+
+   이 문서는 사설 인터넷을 위한 주소 할당에 대해 설명합니다. 이 할당은 기업 내부의 모든
+   호스트와 다른 기업의 모든 공용 호스트 간에 완전한 네트워크 계층 연결을 허용합니다. 사설
+   인터넷 주소 공간을 사용하는 비용은 공용과 사설 사이에서 호스트와 네트워크의 번호를 다시
+   지정하는 잠재적으로 비용이 많이 드는 작업입니다.
+
+2. 동기
+
+   인터넷 외부를 포함하여 전 세계적으로 TCP/IP 기술이 확산됨에 따라 점점 더 많은 비연결
+   기업이 다른 기업이나 인터넷 자체에 직접 연결하려는 의도 없이 단독 기업 내 통신을 위해 이
+   기술과 주소 지정 기능을 사용하고 있습니다.
+
+   인터넷은 누구의 기대보다도 더 성장했습니다. 지속적인 기하급수적 성장은 계속해서 새로운
+   과제를 제시합니다. 한 가지 문제는 전역적으로 고유한 주소 공간이 고갈될 것이라는 커뮤니티
+   내의 우려입니다. 별개의 훨씬 더 시급한 문제는 라우팅 오버헤드의 양이 인터넷 서비스 공급자의
+   능력 이상으로 증가할 것이라는 점입니다. 이 두 가지 문제에 대한 장기적인 해결책을 찾기 위해
+   커뮤니티 내에서 노력이 진행 중입니다. 한편 주소 할당 절차와 이것이 인터넷 라우팅 시스템에
+   미치는 영향을 재검토할 필요가 있습니다.
+
+   라우팅 오버헤드의 증가를 억제하기 위해 인터넷 공급자는 주소 레지스트리에서 주소 공간 블록을
+   얻은 다음 각 고객 요구 사항에 따라 해당 블록 내에서 고객 주소를 할당합니다. 이 프로세스의
+   결과로 많은 고객에 대한 경로가 함께 집계되고 다른 공급자에게는 단일 경로로 표시됩니다
+   ([RFC1518], [RFC1519]). 경로 집합이 효과적이려면 인터넷 공급자는 네트워크에 가입하는
+   고객이 공급자의 블록을 사용하여 컴퓨터 번호를 다시 지정하도록 권장합니다. 그러한 장려는
+   미래에 요구 사항이 될 수 있습니다.
+
+   인터넷의 현재 크기와 성장률을 고려할 때 인터넷 레지스트리에서 전역적으로 고유한 IP 주소를
+   획득함으로써 그러한 주소를 획득하면 조직이 인터넷 전반에 걸친 IP 연결을 갖게 될 것이라고
+   가정하는 것은 더 이상 현실적이지 않습니다. 반대로 조직이 인터넷 전체 IP 연결을 달성하기
+   위해 인터넷에 연결할 때 조직이 초기에 사용하는 주소가 전역인지 여부에 관계없이 모든 공개
+   호스트(인터넷 전반에 IP 연결이 필요한 호스트)의 IP주소(재지정)를 변경해야 할 가능성이
+   높습니다.
+
+   TCP/IP를 사용하는 모든 호스트에 전역적으로 고유한 주소를 할당하는 것이 일반적이었습니다.
+   IPv4 주소 공간의 수명을 연장하기 위해 주소 레지스트리는 그 어느 때보다 더 많은 정당성을
+   요구하므로 조직이 추가 주소 공간을 확보하기가 더 어려워집니다[RFC1466].
+
+   IP를 사용하는 기업 내의 호스트는 세 가지 범주로 나눌 수 있습니다:
+
+      Category 1: 다른 기업의 호스트나 인터넷 전체에 액세스할 필요가 없는 호스트; 이 범주
+                  내의 호스트는 기업 내에서는 모호하지 않지만 기업 간에는 모호한 IP 주소를
+                  사용할 수 있습니다.
+
+      Category 2: 중재 게이트웨이(예: 애플리케이션 계층 게이트웨이)에서 처리할 수 있는
+                  제한된 외부 서비스 세트(예: 이메일, FTP, 넷뉴스, 원격 로그인)에
+                  액세스해야 하는 호스트. 이 범주에 속하는 많은 호스트의 경우 제한이 
+                  없는 외부 액세스(IP 연결을 통해 제공)가 불필요할 수 있으며 개인 정보
+                  보호/보안상의 이유로 바람직하지 않을 수도 있습니다. 첫 번째 범주 내의
+                  호스트와 마찬가지로 이러한 호스트는 기업 내에서는 모호하지 않지만 기업
+                  간에는 모호한 IP 주소를 사용할 수 있습니다.
+
+      Category 3: 기업 외부의 네트워크 계층 액세스가 필요한 호스트(IP 연결을 통해 제공)
+                  마지막 범주의 호스트에는 전역적으로 명확한 IP 주소가 필요합니다.
+
+   첫 번째 및 두 번째 범주의 호스트를 "private / 사설" 이라고 하며, 세 번째 범주의
+   호스트를 "public / 공용" 이라고 하겠습니다.
+
+   많은 응용 프로그램은 한 기업 내에서만 연결이 필요하며 대부분의 내부 호스트에 대한 
+   외부(기업 외부) 연결은 필요하지 않습니다. 대기업에서는 기업 외부의 네트워크 계층 연결이
+   필요하지 않은 TCP/IP를 사용하는 상당한 수의 호스트를 쉽게 식별할 수 있습니다.
+
+   외부 연결이 필요하지 않을 수 있는 몇 가지 예는 다음과 같습니다:
+
+         - 도착/출발 디스플레이가 있는 대형 공항은 TCP/IP를 통해 개별적으로 주소를
+           지정할 수 있습니다. 이러한 디스플레이가 다른 네트워크에서 직접 액세스할 필요는
+           거의 없습니다.
+
+         - 은행 및 소매 체인과 같은 대규모 조직은 내부 통신을 위해 TCP/IP로 전환하고
+           있습니다. 금전 등록기, 현금 인출기 및 사무직 장비와 같은 많은 수의 로컬
+           워크스테이션은 이러한 연결이 거의 필요하지 않습니다.
+
+         - 보안상의 이유로 많은 기업에서는 응용 프로그램 계층 게이트웨이를 사용하여 내부
+           네트워크를 인터넷에 연결합니다. 내부 네트워크는 일반적으로 인터넷에 직접 액세스할
+           수 없으므로 인터넷에서 하나 이상의 게이트웨이만 볼 수 있습니다. 이 경우 내부
+           네트워크는 고유하지 않은 IP 네트워크 번호를 사용할 수 있습니다.
+
+         - 일반적으로 내부 네트워크에 있는 라우터의 인터페이스는 기업 외부에서 직접 액세스할
+           필요가 없습니다.
+
+3. 사설 주소 공간
+
+   IANA(Internet Assigned Numbers Authority)는 사설 인터넷을 위해 다음 세 블록의
+   IP 주소 공간을 예약했습니다:
+
+     10.0.0.0        -   10.255.255.255  (10/8 prefix)
+     172.16.0.0      -   172.31.255.255  (172.16/12 prefix)
+     192.168.0.0     -   192.168.255.255 (192.168/16 prefix)
+
+   첫 번째 블록을 "24비트 블록", 두 번째 블록을 "20비트 블록", 세 번째 블록을 "16비트"
+   블록이라고 합니다(pre-CIDR 표기법). 첫 번째 블록은 단일 클래스 A 네트워크 번호일 뿐이고,
+   두 번째 블록은 16개의 연속적인 클래스 B 네트워크 번호 집합이고, 세 번째 블록은 256개의
+   연속적인 클래스 C 네트워크 번호 집합입니다.
+
+   이 문서에 정의된 주소 공간 밖의 IP 주소를 사용하기로 결정한 기업은 IANA 또는 인터넷
+   레지스트리와의 조정 없이 그렇게 할 수 있습니다. 따라서 주소 공간은 많은 기업에서 사용할 수
+   있습니다. 이 사설 주소 공간 내의 주소는 기업 또는 이 공간에서 협력하기로 선택한 기업 집합
+   내에서만 고유하여 자체 사설 인터넷에서 서로 통신할 수 있습니다.
+
+   이전과 마찬가지로 전역적으로 고유한 주소 공간이 필요한 모든 기업은 인터넷 레지스트리에서 해당
+   주소를 얻어야 합니다. 외부 연결을 위해 IP 주소를 요청하는 기업에는 위에 정의된 블록의 주소가
+   할당되지 않습니다.
+
+   사설 주소 공간을 사용하기 위해 기업은 가까운 미래에 기업 외부의 네트워크 계층 연결이 필요하지
+   않아 사설로 분류될 수 있는 호스트를 결정해야 합니다. 이러한 호스트는 위에 정의된 사설 주소
+   공간을 사용합니다. 사설 호스트는 엔터프라이즈 내부의 다른 모든 공용 및 사설 호스트와 통신할
+   수 있습니다. 그러나 기업 외부의 호스트에 IP로 연결할 수 없습니다. 외부(기업 외부) IP 연결이
+   없는 동안 사설 호스트는 중재 게이트웨이(예: 응용 프로그램 계층 게이트웨이)를 통해 외부
+   서비스에 계속 액세스할 수 있습니다.
+
+   다른 모든 호스트들은 공용이며 인터넷 레지스트리에서 할당한 전역적으로 고유한 주소 공간을
+   사용합니다. 공용 호스트는 공용 및 사설용 기업 내부의 다른 호스트와 통신할 수 있으며 기업
+   외부의 공용 호스트에 대한 IP 연결을 가질 수 있습니다. 공용 호스트는 다른 엔터프라이즈의 사설
+   호스트에 연결할 수 없습니다.
+
+   호스트를 사설에서 공용으로 또는 그 반대로 이동하려면 IP 주소 변경, 적절한 DNS 항목 변경,
+   IP 주소로 호스트를 참조하는 다른 호스트의 구성 파일 변경이 필요합니다.
+
+   사설 주소는 전역적 의미가 없기 때문에 사설 네트워크에 대한 라우팅 정보는 기업 간 링크에서
+   전파되지 않으며 사설 소스 또는 대상 주소가 있는 패킷은 이러한 링크를 통해 전달되어서는
+   안 됩니다. 사설 주소 공간을 사용하지 않는 네트워크의 라우터, 특히 인터넷 서비스 공급자의
+   라우터는 사설 네트워크에 대한 라우팅 정보를 거부(필터링)하도록 구성될 것으로 예상됩니다.
+   이러한 라우터가 그러한 정보를 수신하는 경우에 대한 거부는 라우팅 프로토콜 오류로 취급되지
+   않습니다.
+
+   이러한 주소에 대한 간접 참조는 기업 내에 포함되어야 합니다. 이러한 참조의 대표적인 예로는
+   DNS 리소스 레코드 및 내부 개인 주소를 참조하는 기타 정보가 있습니다. 특히 인터넷 서비스
+   제공자는 이러한 유출을 방지하기 위한 조치를 취해야 합니다.
+
+4. Advantages and Disadvantages of Using Private Address Space
+
+   The obvious advantage of using private address space for the Internet
+   at large is to conserve the globally unique address space by not
+   using it where global uniqueness is not required.
+
+   Enterprises themselves also enjoy a number of benefits from their
+   usage of private address space: They gain a lot of flexibility in
+   network design by having more address space at their disposal than
+   they could obtain from the globally unique pool. This enables
+   operationally and administratively convenient addressing schemes as
+   well as easier growth paths.
+
+   For a variety of reasons the Internet has already encountered
+   situations where an enterprise that has not been connected to the
+   Internet had used IP address space for its hosts without getting this
+   space assigned from the IANA. In some cases this address space had
+   been already assigned to other enterprises. If such an enterprise
+   would later connects to the Internet, this could potentially create
+   very serious problems, as IP routing cannot provide correct
+   operations in presence of ambiguous addressing. Although in principle
+   Internet Service Providers should guard against such mistakes through
+   the use of route filters, this does not always happen in practice.
+   Using private address space provides a safe choice for such
+   enterprises, avoiding clashes once outside connectivity is needed.
+
+   A major drawback to the use of private address space is that it may
+   actually reduce an enterprise's flexibility to access the Internet.
+   Once one commits to using a private address, one is committing to
+   renumber part or all of an enterprise, should one decide to provide
+   IP connectivity between that part (or all of the enterprise) and the
+   Internet.  Usually the cost of renumbering can be measured by
+   counting the number of hosts that have to transition from private to
+   public. As was discussed earlier, however, even if a network uses
+   globally unique addresses, it may still have to renumber in order to
+   acquire Internet-wide IP connectivity.
+
+   Another drawback to the use of private address space is that it may
+   require renumbering when merging several private internets into a
+   single private internet. If we review the examples we list in Section
+   2, we note that companies tend to merge. If such companies prior to
+   the merge maintained their uncoordinated internets using private
+   address space, then if after the merge these private internets would
+   be combined into a single private internet, some addresses within the
+   combined private internet may not be unique. As a result, hosts with
+   these addresses would need to be renumbered.
+
+   The cost of renumbering may well be mitigated by development and
+   deployment of tools that facilitate renumbering (e.g.  Dynamic Host
+   Configuration Protocol (DHCP)). When deciding whether to use private
+   addresses, we recommend to inquire computer and software vendors
+   about availability of such tools.  A separate IETF effort (PIER
+   Working Group) is pursuing full documentation of the requirements and
+   procedures for renumbering.
+
+5. Operational Considerations
+
+   One possible strategy is to design the private part of the network
+   first and use private address space for all internal links. Then plan
+   public subnets at the locations needed and design the external
+   connectivity.
+
+   This design does not need to be fixed permanently. If a group of one
+   or more hosts requires to change their status (from private to public
+   or vice versa) later, this can be accomplished by renumbering only
+   the hosts involved, and changing physical connectivity, if needed. In
+   locations where such changes can be foreseen (machine rooms, etc.),
+   it is advisable to configure separate physical media for public and
+   private subnets to facilitate such changes.  In order to avoid major
+   network disruptions, it is advisable to group hosts with similar
+   connectivity needs on their own subnets.
+
+   If a suitable subnetting scheme can be designed and is supported by
+   the equipment concerned, it is advisable to use the 24-bit block
+   (class A network) of private address space and make an addressing
+   plan with a good growth path. If subnetting is a problem, the 16-bit
+   block (class C networks), or the 20-bit block (class B networks) of
+   private address space can be used.
+
+   One might be tempted to have both public and private addresses on the
+   same physical medium. While this is possible, there are pitfalls to
+   such a design (note that the pitfalls have nothing to do with the use
+   of private addresses, but are due to the presence of multiple IP
+   subnets on a common Data Link subnetwork).  We advise caution when
+   proceeding in this area.
+
+   It is strongly recommended that routers which connect enterprises to
+   external networks are set up with appropriate packet and routing
+   filters at both ends of the link in order to prevent packet and
+   routing information leakage. An enterprise should also filter any
+   private networks from inbound routing information in order to protect
+   itself from ambiguous routing situations which can occur if routes to
+   the private address space point outside the enterprise.
+
+   It is possible for two sites, who both coordinate their private
+   address space, to communicate with each other over a public network.
+   To do so they must use some method of encapsulation at their borders
+   to a public network, thus keeping their private addresses private.
+
+   If two (or more) organizations follow the address allocation
+   specified in this document and then later wish to establish IP
+   connectivity with each other, then there is a risk that address
+   uniqueness would be violated.  To minimize the risk it is strongly
+   recommended that an organization using private IP addresses choose
+   randomly from the reserved pool of private addresses, when allocating
+   sub-blocks for its internal allocation.
+
+   If an enterprise uses the private address space, or a mix of private
+   and public address spaces, then DNS clients outside of the enterprise
+   should not see addresses in the private address space used by the
+   enterprise, since these addresses would be ambiguous.  One way to
+   ensure this is to run two authority servers for each DNS zone
+   containing both publically and privately addressed hosts.  One server
+   would be visible from the public address space and would contain only
+   the subset of the enterprise's addresses which were reachable using
+   public addresses.  The other server would be reachable only from the
+   private network and would contain the full set of data, including the
+   private addresses and whatever public addresses are reachable the
+   private network.  In order to ensure consistency, both servers should
+   be configured from the same data of which the publically visible zone
+   only contains a filtered version. There is certain degree of
+   additional complexity associated with providing these capabilities.
+
+6. Security Considerations
+
+   Security issues are not addressed in this memo.
+
+7. Conclusion
+
+   With the described scheme many large enterprises will need only a
+   relatively small block of addresses from the globally unique IP
+   address space. The Internet at large benefits through conservation of
+   globally unique address space which will effectively lengthen the
+   lifetime of the IP address space. The enterprises benefit from the
+   increased flexibility provided by a relatively large private address
+   space. However, use of private addressing requires that an
+   organization renumber part or all of its enterprise network, as its
+   connectivity requirements change over time.
+
+8. Acknowledgments
+
+   We would like to thank Tony Bates (MCI), Jordan Becker (ANS), Hans-
+   Werner Braun (SDSC), Ross Callon (BayNetworks), John Curran (BBN
+   Planet), Vince Fuller (BBN Planet), Tony Li (cisco Systems), Anne
+   Lord (RIPE NCC), Milo Medin (NSI), Marten Terpstra (BayNetworks),
+   Geza Turchanyi (RIPE NCC), Christophe Wolfhugel (Pasteur Institute),
+   Andy Linton (connect.com.au), Brian Carpenter (CERN), Randy Bush
+   (PSG), Erik Fair (Apple Computer), Dave Crocker (Brandenburg
+   Consulting), Tom Kessler (SGI), Dave Piscitello (Core Competence),
+   Matt Crawford (FNAL), Michael Patton (BBN), and Paul Vixie (Internet
+   Software Consortium) for their review and constructive comments.
+
+9. References
+
+   [RFC1466] Gerich, E., "Guidelines for Management of IP Address
+       Space", RFC 1466, Merit Network, Inc., May 1993.
+
+   [RFC1518] Rekhter, Y., and T. Li, "An Architecture for IP Address
+       Allocation with CIDR", RFC 1518, September 1993.
+
+   [RFC1519] Fuller, V., Li, T., Yu, J., and K. Varadhan, "Classless
+       Inter-Domain Routing (CIDR): an Address Assignment and
+       Aggregation Strategy", RFC 1519, September 1993.
+
+10. Authors' Addresses
+
+   Yakov Rekhter
+   Cisco systems
+   170 West Tasman Drive
+   San Jose, CA, USA
+   Phone: +1 914 528 0090
+   Fax: +1 408 526-4952
+   EMail: yakov@cisco.com
+
+
+   Robert G Moskowitz
+   Chrysler Corporation
+   CIMS: 424-73-00
+   25999 Lawrence Ave
+   Center Line, MI 48015
+   Phone: +1 810 758 8212
+   Fax: +1 810 758 8173
+   EMail: rgm3@is.chrysler.com
+
+
+   Daniel Karrenberg
+   RIPE Network Coordination Centre
+   Kruislaan 409
+   1098 SJ Amsterdam, the Netherlands
+   Phone: +31 20 592 5065
+   Fax: +31 20 592 5090
+   EMail: Daniel.Karrenberg@ripe.net
+
+
+   Geert Jan de Groot
+   RIPE Network Coordination Centre
+   Kruislaan 409
+   1098 SJ Amsterdam, the Netherlands
+   Phone: +31 20 592 5065
+   Fax: +31 20 592 5090
+   EMail: GeertJan.deGroot@ripe.net
+
+
+   Eliot Lear
+   Mail Stop 15-730
+   Silicon Graphics, Inc.
+   2011 N. Shoreline Blvd.
+   Mountain View, CA 94043-1389
+   Phone: +1 415 960 1980
+   Fax:   +1 415 961 9584
+   EMail: lear@sgi.com
