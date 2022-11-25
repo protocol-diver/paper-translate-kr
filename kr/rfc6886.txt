@@ -178,9 +178,8 @@ Copyright Notice
    재시도해야 합니다. 지원되지 않는 버전 응답이 있으면 시간 초과, 재전송 또는 기타 임의
    지연을 기다리지 않고 NAT-PMP 형식으로 빠르게 장애 조치할 수 있습니다.
    현재 NAT-PMP만 지원하는 NAT 게이트웨이라도 NAT 펌웨어가 업데이트되며 내일이라도
-   PCP를 지원하도록 업데이트될 수 있으므로 SHOULD NOT:{클라이언트는 주어진 서버가
-   NAT-PMP만 지원하더라도 해당 서버에 대해 기본적으로 NAT-PMP만 지원한다고 기록하면
-   안 됩니다}.
+   PCP를 지원할 수 있으므로 SHOULD NOT:{클라이언트는 주어진 서버가 NAT-PMP만
+   지원하더라도 해당 서버에 대해 기본적으로 NAT-PMP만 지원한다고 기록하면 안 됩니다}.
 
 2.  Conventions and Terminology Used in This Document (이 문서에서 사용되는 규약 및 용어)
 
