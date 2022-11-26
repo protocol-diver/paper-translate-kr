@@ -259,7 +259,7 @@ Status of this Memo
    Brian Carpenter (CERN), Randy Bush (PSG), Erik Fair (Apple Computer),
    Dave Crocker (Brandenburg Consulting), Tom Kessler (SGI), Dave
    Piscitello (Core Competence), Matt Crawford (FNAL), Michael Patton
-   (BBN), and Paul Vixie (Internet Software Consortium) 에게, 검토 및 건설적인
+   (BBN), and Paul Vixie (Internet Software Consortium) 에게 검토 및 건설적인
    의견에 대한 감사를 드립니다.
 
 9. 참조
