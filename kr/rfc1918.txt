@@ -24,8 +24,8 @@ Status of this Memo
    네트워크 내에서 주소 지정 계획 및 주소 할당을 결정하는 엔티티입니다.
 
    이 문서는 사설 인터넷을 위한 주소 할당에 대해 설명합니다. 이 할당은 기업 내부의 모든
-   호스트와 다른 기업의 모든 공용 호스트 간에 완전한 네트워크 계층 연결을 허용합니다. 사설
-   인터넷 주소 공간을 사용하는 비용은 공용과 사설 사이에서 호스트와 네트워크의 번호를 다시
+   호스트와 다른 기업의 모든 공인 호스트 간에 완전한 네트워크 계층 연결을 허용합니다. 사설
+   인터넷 주소 공간을 사용하는 비용은 공인과 사설 사이에서 호스트와 네트워크의 번호를 다시
    지정하는 잠재적으로 비용이 많이 드는 작업입니다.
 
 2. 동기
@@ -51,7 +51,7 @@ Status of this Memo
    인터넷의 현재 크기와 성장률을 고려할 때 인터넷 레지스트리에서 전역적으로 고유한 IP 주소를
    획득함으로써 그러한 주소를 획득하면 조직이 인터넷 전반에 걸친 IP 연결을 갖게 될 것이라고
    가정하는 것은 더 이상 현실적이지 않습니다. 반대로 조직이 인터넷 전체 IP 연결을 달성하기
-   위해 인터넷에 연결할 때 조직이 초기에 사용하는 주소가 전역인지 여부에 관계없이 모든 공개
+   위해 인터넷에 연결할 때 조직이 초기에 사용하는 주소가 전역인지 여부에 관계없이 모든 공인
    호스트(인터넷 전반에 IP 연결이 필요한 호스트)의 IP주소(재지정)를 변경해야 할 가능성이
    높습니다.
 
@@ -62,8 +62,8 @@ Status of this Memo
    IP를 사용하는 기업 내의 호스트는 세 가지 범주로 나눌 수 있습니다:
 
       Category 1: 다른 기업의 호스트나 인터넷 전체에 액세스할 필요가 없는 호스트; 이 범주
-                  내의 호스트는 기업 내에서는 모호하지 않지만 기업 간에는 모호한 IP 주소를
-                  사용할 수 있습니다.
+                  내의 호스트는 기업 내에서는 모호하지 않지만 기업 간에는 모호한 IP
+                  주소를 사용할 수 있습니다.
 
       Category 2: 중재 게이트웨이(예: 애플리케이션 계층 게이트웨이)에서 처리할 수 있는
                   제한된 외부 서비스 세트(예: 이메일, FTP, 넷뉴스, 원격 로그인)에
@@ -77,7 +77,7 @@ Status of this Memo
                   마지막 범주의 호스트에는 전역적으로 명확한 IP 주소가 필요합니다.
 
    첫 번째 및 두 번째 범주의 호스트를 "private / 사설" 이라고 하며, 세 번째 범주의
-   호스트를 "public / 공용" 이라고 하겠습니다.
+   호스트를 "public / 공인" 이라고 하겠습니다.
 
    많은 응용 프로그램은 한 기업 내에서만 연결이 필요하며 대부분의 내부 호스트에 대한 
    외부(기업 외부) 연결은 필요하지 않습니다. 대기업에서는 기업 외부의 네트워크 계층 연결이
@@ -111,9 +111,9 @@ Status of this Memo
      192.168.0.0     -   192.168.255.255 (192.168/16 prefix)
 
    첫 번째 블록을 "24비트 블록", 두 번째 블록을 "20비트 블록", 세 번째 블록을 "16비트"
-   블록이라고 합니다(pre-CIDR 표기법). 첫 번째 블록은 단일 클래스 A 네트워크 번호일 뿐이고,
-   두 번째 블록은 16개의 연속적인 클래스 B 네트워크 번호 집합이고, 세 번째 블록은 256개의
-   연속적인 클래스 C 네트워크 번호 집합입니다.
+   블록이라고 합니다(pre-CIDR 표기법). 첫 번째 블록은 단일 클래스 A 네트워크 번호일
+   뿐이고, 두 번째 블록은 16개의 연속적인 클래스 B 네트워크 번호 집합이고, 세 번째 블록은
+   256개의 연속적인 클래스 C 네트워크 번호 집합입니다.
 
    이 문서에 정의된 주소 공간 밖의 IP 주소를 사용하기로 결정한 기업은 IANA 또는 인터넷
    레지스트리와의 조정 없이 그렇게 할 수 있습니다. 따라서 주소 공간은 많은 기업에서 사용할 수
@@ -121,22 +121,22 @@ Status of this Memo
    내에서만 고유하여 자체 사설 인터넷에서 서로 통신할 수 있습니다.
 
    이전과 마찬가지로 전역적으로 고유한 주소 공간이 필요한 모든 기업은 인터넷 레지스트리에서 해당
-   주소를 얻어야 합니다. 외부 연결을 위해 IP 주소를 요청하는 기업에는 위에 정의된 블록의 주소가
-   할당되지 않습니다.
+   주소를 얻어야 합니다. 외부 연결을 위해 IP 주소를 요청하는 기업에는 위에 정의된 블록의
+   주소가 할당되지 않습니다.
 
-   사설 주소 공간을 사용하기 위해 기업은 가까운 미래에 기업 외부의 네트워크 계층 연결이 필요하지
-   않아 사설로 분류될 수 있는 호스트를 결정해야 합니다. 이러한 호스트는 위에 정의된 사설 주소
-   공간을 사용합니다. 사설 호스트는 엔터프라이즈 내부의 다른 모든 공용 및 사설 호스트와 통신할
-   수 있습니다. 그러나 기업 외부의 호스트에 IP로 연결할 수 없습니다. 외부(기업 외부) IP 연결이
-   없는 동안 사설 호스트는 중재 게이트웨이(예: 응용 프로그램 계층 게이트웨이)를 통해 외부
-   서비스에 계속 액세스할 수 있습니다.
+   사설 주소 공간을 사용하기 위해 기업은 가까운 미래에 기업 외부의 네트워크 계층 연결이
+   필요하지 않아 사설로 분류될 수 있는 호스트를 결정해야 합니다. 이러한 호스트는 위에 정의된
+   사설 주소 공간을 사용합니다. 사설 호스트는 엔터프라이즈 내부의 다른 모든 공인 및 사설
+   호스트와 통신할 수 있습니다. 그러나 기업 외부의 호스트에 IP로 연결할 수 없습니다.
+   외부(기업 외부) IP 연결이 없는 동안 사설 호스트는 중재 게이트웨이(예: 응용 프로그램 계층
+   게이트웨이)를 통해 외부 서비스에 계속 액세스할 수 있습니다.
 
-   다른 모든 호스트들은 공용이며 인터넷 레지스트리에서 할당한 전역적으로 고유한 주소 공간을
-   사용합니다. 공용 호스트는 공용 및 사설용 기업 내부의 다른 호스트와 통신할 수 있으며 기업
-   외부의 공용 호스트에 대한 IP 연결을 가질 수 있습니다. 공용 호스트는 다른 엔터프라이즈의 사설
-   호스트에 연결할 수 없습니다.
+   다른 모든 호스트들은 공인이며 인터넷 레지스트리에서 할당한 전역적으로 고유한 주소 공간을
+   사용합니다. 공인 호스트는 공인 및 사설용 기업 내부의 다른 호스트와 통신할 수 있으며 기업
+   외부의 공인 호스트에 대한 IP 연결을 가질 수 있습니다. 공인 호스트는 다른 엔터프라이즈의
+   사설 호스트에 연결할 수 없습니다.
 
-   호스트를 사설에서 공용으로 또는 그 반대로 이동하려면 IP 주소 변경, 적절한 DNS 항목 변경,
+   호스트를 사설에서 공인으로 또는 그 반대로 이동하려면 IP 주소 변경, 적절한 DNS 항목 변경,
    IP 주소로 호스트를 참조하는 다른 호스트의 구성 파일 변경이 필요합니다.
 
    사설 주소는 전역적 의미가 없기 때문에 사설 네트워크에 대한 라우팅 정보는 기업 간 링크에서
@@ -147,162 +147,122 @@ Status of this Memo
    않습니다.
 
    이러한 주소에 대한 간접 참조는 기업 내에 포함되어야 합니다. 이러한 참조의 대표적인 예로는
-   DNS 리소스 레코드 및 내부 개인 주소를 참조하는 기타 정보가 있습니다. 특히 인터넷 서비스
+   DNS 리소스 레코드 및 내부 사설 주소를 참조하는 기타 정보가 있습니다. 특히 인터넷 서비스
    제공자는 이러한 유출을 방지하기 위한 조치를 취해야 합니다.
 
-4. Advantages and Disadvantages of Using Private Address Space
+4. 사설 주소 공간 사용의 장단점
 
-   The obvious advantage of using private address space for the Internet
-   at large is to conserve the globally unique address space by not
-   using it where global uniqueness is not required.
+   일반적으로 인터넷에 사설 주소 공간을 사용하는 명백한 이점은 전역 고유성이 필요하지 않은
+   곳에서는 사용하지 않음으로써 전역 고유 주소 공간을 보존한다는 것입니다.
 
-   Enterprises themselves also enjoy a number of benefits from their
-   usage of private address space: They gain a lot of flexibility in
-   network design by having more address space at their disposal than
-   they could obtain from the globally unique pool. This enables
-   operationally and administratively convenient addressing schemes as
-   well as easier growth paths.
+   기업은 또한 사설 주소 공간을 사용함으로써 많은 이점을 누릴 수 있습니다: 기업은 전역적으로
+   고유한 풀에서 얻을 수 있는 것보다 더 많은 주소 공간을 마음대로 사용할 수 있으므로 네트워크
+   설계에서 많은 유연성을 얻습니다. 이를 통해 운영 및 관리적으로 편리한 주소 지정 체계와 더
+   쉽게 경로 증대가 가능합니다.
 
-   For a variety of reasons the Internet has already encountered
-   situations where an enterprise that has not been connected to the
-   Internet had used IP address space for its hosts without getting this
-   space assigned from the IANA. In some cases this address space had
-   been already assigned to other enterprises. If such an enterprise
-   would later connects to the Internet, this could potentially create
-   very serious problems, as IP routing cannot provide correct
-   operations in presence of ambiguous addressing. Although in principle
-   Internet Service Providers should guard against such mistakes through
-   the use of route filters, this does not always happen in practice.
-   Using private address space provides a safe choice for such
-   enterprises, avoiding clashes once outside connectivity is needed.
+   다양한 이유로 인터넷은 이미 인터넷에 연결되지 않은 기업이 IANA에서 이 공간을 할당받지 않고
+   호스트에 대한 IP 주소 공간을 사용한 상황에 직면했습니다. 어떤 경우에는 이 주소 공간이 이미
+   다른 기업에 할당되었습니다. 이러한 기업이 나중에 인터넷에 연결되면 IP 라우팅이 모호한 주소
+   지정이 있는 경우 올바른 작업을 제공할 수 없기 때문에 잠재적으로 매우 심각한 문제가 발생할 수
+   있습니다. 원칙적으로 인터넷 서비스 공급자는 경로 필터를 사용하여 이러한 실수를 방지해야
+   하지만 실제로 항상 그런 것은 아닙니다. 사설 주소 공간을 사용하면 이러한 기업에 안전한 선택을
+   제공하여 외부 연결이 필요할 때 충돌을 피할 수 있습니다.
 
-   A major drawback to the use of private address space is that it may
-   actually reduce an enterprise's flexibility to access the Internet.
-   Once one commits to using a private address, one is committing to
-   renumber part or all of an enterprise, should one decide to provide
-   IP connectivity between that part (or all of the enterprise) and the
-   Internet.  Usually the cost of renumbering can be measured by
-   counting the number of hosts that have to transition from private to
-   public. As was discussed earlier, however, even if a network uses
-   globally unique addresses, it may still have to renumber in order to
-   acquire Internet-wide IP connectivity.
+   사설 주소 공간 사용의 주요 단점은 실제로 인터넷 액세스에 대한 기업의 유연성을 감소시킬 수
+   있다는 것입니다. 일단 사설 주소를 사용하겠다고 약속하면 기업의 일부(또는 기업 전체)와 인터넷
+   사이에 IP 연결을 제공하기로 결정한 경우 기업의 일부 또는 전체에 번호를 다시 매기겠다고
+   약속하는 것입니다. 일반적으로 번호를 다시 매기는 비용은 사설에서 공인으로 전환해야 하는
+   호스트 수를 세어 측정할 수 있습니다. 그러나 앞에서 설명한 것처럼 네트워크가 전역적으로 고유한
+   주소를 사용하더라도 인터넷 전반의 IP 연결을 확보하려면 여전히 번호를 다시 지정해야 할 수
+   있습니다.
 
-   Another drawback to the use of private address space is that it may
-   require renumbering when merging several private internets into a
-   single private internet. If we review the examples we list in Section
-   2, we note that companies tend to merge. If such companies prior to
-   the merge maintained their uncoordinated internets using private
-   address space, then if after the merge these private internets would
-   be combined into a single private internet, some addresses within the
-   combined private internet may not be unique. As a result, hosts with
-   these addresses would need to be renumbered.
+   사설 주소 공간 사용의 또 다른 단점은 여러 사설 인터넷을 단일 사설 인터넷으로 병합할 때
+   번호를 다시 지정해야 할 수 있다는 것입니다. 섹션 2에 나열된 예를 검토하면 회사가 합병하는
+   경향이 있음을 알 수 있습니다. 합병 이전에 이러한 회사가 사설 주소 공간을 사용하여 조정되지
+   않은 인터넷을 유지했다면 합병 후 이러한 사설 인터넷이 단일 사설 인터넷으로 결합되면 결합된
+   사설 인터넷 내의 일부 주소는 고유하지 않을 수 있습니다. 결과적으로 이러한 주소가 있는
+   호스트의 번호를 다시 매겨야 합니다.
 
-   The cost of renumbering may well be mitigated by development and
-   deployment of tools that facilitate renumbering (e.g.  Dynamic Host
-   Configuration Protocol (DHCP)). When deciding whether to use private
-   addresses, we recommend to inquire computer and software vendors
-   about availability of such tools.  A separate IETF effort (PIER
-   Working Group) is pursuing full documentation of the requirements and
-   procedures for renumbering.
+   번호 재지정 비용은 재지정을 용이하게 하는 도구(예: DHCP(Dynamic Host Configuration
+   Protocol))의 개발 및 배포를 통해 완화될 수 있습니다. 사설 주소 사용 여부를 결정할 때
+   이러한 도구의 가용성에 대해 컴퓨터 및 소프트웨어 공급업체에 문의하는 것이 좋습니다. 별도의
+   IETF 노력(PIER Working Group)은 번호 재지정을 위한 요구 사항 및 절차에 대한 전체
+   문서화를 추구하고 있습니다.
 
-5. Operational Considerations
+5. 운영 고려 사항
 
-   One possible strategy is to design the private part of the network
-   first and use private address space for all internal links. Then plan
-   public subnets at the locations needed and design the external
-   connectivity.
+   한 가지 가능한 전략은 먼저 네트워크의 사설 부분을 설계하고 모든 내부 링크에 사설 주소 공간을
+   사용하는 것입니다. 그런 다음 필요한 위치에서 공인 서브넷을 계획하고 외부 연결을 설계합니다.
 
-   This design does not need to be fixed permanently. If a group of one
-   or more hosts requires to change their status (from private to public
-   or vice versa) later, this can be accomplished by renumbering only
-   the hosts involved, and changing physical connectivity, if needed. In
-   locations where such changes can be foreseen (machine rooms, etc.),
-   it is advisable to configure separate physical media for public and
-   private subnets to facilitate such changes.  In order to avoid major
-   network disruptions, it is advisable to group hosts with similar
-   connectivity needs on their own subnets.
+   이 디자인은 영구적으로 고정할 필요가 없습니다. 하나 이상의 호스트 그룹이 나중에 상태를
+   변경해야 하는 경우(사설에서 공인으로 또는 그 반대로) 관련된 호스트의 번호만 다시 지정하고
+   필요한 경우 물리적 연결을 변경하여 수행할 수 있습니다. 이러한 변경을 예측할 수 있는
+   위치(기계실 등)에서는 그러한 변경을 용이하게 하기 위해 공인 및 사설 서브넷에 대해
+   별도의 물리적 미디어를 구성하는 것이 좋습니다. 주요 네트워크 중단을 방지하려면 자체
+   서브넷에서 유사한 연결 요구 사항을 가진 호스트를 그룹화하는 것이 좋습니다.
 
-   If a suitable subnetting scheme can be designed and is supported by
-   the equipment concerned, it is advisable to use the 24-bit block
-   (class A network) of private address space and make an addressing
-   plan with a good growth path. If subnetting is a problem, the 16-bit
-   block (class C networks), or the 20-bit block (class B networks) of
-   private address space can be used.
+   적절한 서브네팅 방식을 설계할 수 있고 해당 장비에서 지원하는 경우 사설 주소 공간의 24비트
+   블록(클래스 A 네트워크)을 사용하고 성장 경로가 좋은 주소 지정 계획을 세우는 것이 좋습니다.
+   서브네팅이 문제인 경우 사설 주소 공간의 16비트 블록(클래스 C 네트워크) 또는 20비트
+   블록(클래스 B 네트워크)을 사용할 수 있습니다.
 
-   One might be tempted to have both public and private addresses on the
-   same physical medium. While this is possible, there are pitfalls to
-   such a design (note that the pitfalls have nothing to do with the use
-   of private addresses, but are due to the presence of multiple IP
-   subnets on a common Data Link subnetwork).  We advise caution when
-   proceeding in this area.
+   동일한 물리적 매체에 공인 주소와 사설 주소를 모두 갖고 싶은 유혹을 느낄 수 있습니다. 이것이
+   가능하기는 하지만 그러한 설계에는 위험이 있습니다(위험은 사설 주소 사용과 관련이 없지만 공통
+   데이터 링크 서브네트워크에 여러 IP 서브넷이 있기 때문입니다). 이 영역에서 진행할 때 주의를
+   기울이십시오.
 
-   It is strongly recommended that routers which connect enterprises to
-   external networks are set up with appropriate packet and routing
-   filters at both ends of the link in order to prevent packet and
-   routing information leakage. An enterprise should also filter any
-   private networks from inbound routing information in order to protect
-   itself from ambiguous routing situations which can occur if routes to
-   the private address space point outside the enterprise.
+   기업을 외부 네트워크에 연결하는 라우터는 패킷 및 라우팅 정보 유출을 방지하기 위해 링크 양단에
+   적절한 패킷 및 라우팅 필터를 설정하는 것이 좋습니다. 또한 기업은 사설 주소 공간에 대한
+   경로가 기업 외부를 가리키는 경우 발생할 수 있는 모호한 라우팅 상황으로부터 자신을 보호하기
+   위해 인바운드 라우팅 정보에서 사설 네트워크를 필터링해야 합니다.
 
-   It is possible for two sites, who both coordinate their private
-   address space, to communicate with each other over a public network.
-   To do so they must use some method of encapsulation at their borders
-   to a public network, thus keeping their private addresses private.
+   사설 주소 공간을 조정하는 두 사이트가 공인 네트워크를 통해 서로 통신할 수 있습니다. 그렇게
+   하기 위해서는 경계에서 공인 네트워크에 대한 캡슐화 방법을 사용해야 하므로 사설 주소를
+   비공개로 유지해야 합니다.
 
-   If two (or more) organizations follow the address allocation
-   specified in this document and then later wish to establish IP
-   connectivity with each other, then there is a risk that address
-   uniqueness would be violated.  To minimize the risk it is strongly
-   recommended that an organization using private IP addresses choose
-   randomly from the reserved pool of private addresses, when allocating
-   sub-blocks for its internal allocation.
+   두 개(또는 그 이상)의 조직이 이 문서에 지정된 주소 할당을 따르고 나중에 서로 IP 연결을
+   설정하려는 경우 주소 고유성이 위반될 위험이 있습니다. 위험을 최소화하기 위해 사설 IP 주소를
+   사용하는 조직은 내부 할당을 위해 하위 블록을 할당할 때 예약된 사설 주소 풀에서 무작위로
+   선택하는 것이 좋습니다.
 
-   If an enterprise uses the private address space, or a mix of private
-   and public address spaces, then DNS clients outside of the enterprise
-   should not see addresses in the private address space used by the
-   enterprise, since these addresses would be ambiguous.  One way to
-   ensure this is to run two authority servers for each DNS zone
-   containing both publically and privately addressed hosts.  One server
-   would be visible from the public address space and would contain only
-   the subset of the enterprise's addresses which were reachable using
-   public addresses.  The other server would be reachable only from the
-   private network and would contain the full set of data, including the
-   private addresses and whatever public addresses are reachable the
-   private network.  In order to ensure consistency, both servers should
-   be configured from the same data of which the publically visible zone
-   only contains a filtered version. There is certain degree of
-   additional complexity associated with providing these capabilities.
+   기업이 사설 주소 공간 또는 사설 주소 공간과 공인 주소 공간을 혼합하여 사용하는 경우 기업
+   외부의 DNS 클라이언트는 기업에서 사용하는 사설 주소 공간의 주소를 볼 수 없습니다. 이러한
+   주소는 모호하기 때문입니다. 이를 보장하는 한 가지 방법은 공개적으로 주소가 지정된 호스트와
+   비공개로 주소가 지정된 호스트를 모두 포함하는 각 DNS 영역에 대해 두 개의 기관 서버를
+   실행하는 것입니다. 하나의 서버는 공인 주소 공간에서 볼 수 있으며 공인 주소를 사용하여
+   도달할 수 있는 엔터프라이즈 주소의 하위 집합만 포함합니다. 다른 서버는 사설 네트워크에서만
+   접근할 수 있으며 사설 주소 및 사설 네트워크에서 접근할 수 있는 공인 주소를 포함하여 전체
+   데이터 세트를 포함합니다. 일관성을 유지하려면 공개적으로 볼 수 있는 영역에 필터링된 버전만
+   포함된 동일한 데이터에서 두 서버를 구성해야 합니다. 이러한 기능을 제공하는 것과 관련하여
+   어느 정도의 추가적인 복잡성이 있습니다.
 
-6. Security Considerations
+6. 보안 고려 사항
 
-   Security issues are not addressed in this memo.
+   보안 문제는 이 메모에서 다루지 않습니다.
 
-7. Conclusion
+7. 결론
 
-   With the described scheme many large enterprises will need only a
-   relatively small block of addresses from the globally unique IP
-   address space. The Internet at large benefits through conservation of
-   globally unique address space which will effectively lengthen the
-   lifetime of the IP address space. The enterprises benefit from the
-   increased flexibility provided by a relatively large private address
-   space. However, use of private addressing requires that an
-   organization renumber part or all of its enterprise network, as its
-   connectivity requirements change over time.
+   설명된 체계를 사용하면 많은 대기업이 전역적으로 고유한 IP 주소 공간에서 상대적으로 작은
+   주소 블록만 필요로 할 것입니다. 인터넷은 IP 주소 공간의 수명을 효과적으로 연장하는
+   전역적으로 고유한 주소 공간을 보존함으로써 큰 이점을 얻습니다. 기업은 상대적으로 큰 사설
+   주소 공간이 제공하는 향상된 유연성의 이점을 누릴 수 있습니다. 그러나 사설 주소 지정을
+   사용하려면 연결 요구 사항이 시간이 지남에 따라 변경되므로 조직에서 엔터프라이즈 네트워크의
+   일부 또는 전체 번호를 다시 지정해야 합니다.
 
-8. Acknowledgments
+8. 감사의 말
 
-   We would like to thank Tony Bates (MCI), Jordan Becker (ANS), Hans-
-   Werner Braun (SDSC), Ross Callon (BayNetworks), John Curran (BBN
-   Planet), Vince Fuller (BBN Planet), Tony Li (cisco Systems), Anne
-   Lord (RIPE NCC), Milo Medin (NSI), Marten Terpstra (BayNetworks),
-   Geza Turchanyi (RIPE NCC), Christophe Wolfhugel (Pasteur Institute),
-   Andy Linton (connect.com.au), Brian Carpenter (CERN), Randy Bush
-   (PSG), Erik Fair (Apple Computer), Dave Crocker (Brandenburg
-   Consulting), Tom Kessler (SGI), Dave Piscitello (Core Competence),
-   Matt Crawford (FNAL), Michael Patton (BBN), and Paul Vixie (Internet
-   Software Consortium) for their review and constructive comments.
+   Tony Bates (MCI), Jordan Becker (ANS), Hans-Werner Braun (SDSC), Ross
+   Callon (BayNetworks), John Curran (BBN Planet), Vince Fuller (BBN
+   Planet), Tony Li (cisco Systems), Anne Lord (RIPE NCC), Milo Medin
+   (NSI), Marten Terpstra (BayNetworks), Geza Turchanyi (RIPE NCC),
+   Christophe Wolfhugel (Pasteur Institute), Andy Linton (connect.com.au),
+   Brian Carpenter (CERN), Randy Bush (PSG), Erik Fair (Apple Computer),
+   Dave Crocker (Brandenburg Consulting), Tom Kessler (SGI), Dave
+   Piscitello (Core Competence), Matt Crawford (FNAL), Michael Patton
+   (BBN), and Paul Vixie (Internet Software Consortium) 에게, 검토 및 건설적인
+   의견에 대한 감사를 드립니다.
 
-9. References
+9. 참조
 
    [RFC1466] Gerich, E., "Guidelines for Management of IP Address
        Space", RFC 1466, Merit Network, Inc., May 1993.
@@ -314,7 +274,7 @@ Status of this Memo
        Inter-Domain Routing (CIDR): an Address Assignment and
        Aggregation Strategy", RFC 1519, September 1993.
 
-10. Authors' Addresses
+10. 저자 주소
 
    Yakov Rekhter
    Cisco systems
