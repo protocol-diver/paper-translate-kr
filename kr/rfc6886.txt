@@ -115,24 +115,24 @@ Copyright Notice
    개요에서는 이 포트 매핑 프로토콜과 관련된 측면을 다룹니다. NAT에 대한 자세한 내용은 
    "전통적인 IP 네트워크 주소 변환기(전통적인 NAT)" [RFC3022]를 참조하십시오.
 
-   NAT에는 하나 이상의 외부 IP 주소가 있습니다. 개인 네트워크는 NAT 뒤에 설정됩니다. 
+   NAT에는 하나 이상의 외부 IP 주소가 있습니다. 사설 네트워크는 NAT 뒤에 설정됩니다. 
    NAT 뒤의 사설 네트워크에 있는 클라이언트 장치에는 사설 주소가 할당되며 이러한 클라이언트
    장치는 NAT 장치의 사설 주소를 기본 게이트웨이로 사용합니다.
 
-   NAT 뒤에 있는 장치의 패킷이 공용 인터넷의 주소로 전송되면 패킷은 먼저 NAT를 통과합니다.
-   NAT는 수신 포트와 주소를 확인합니다. 경우에 따라 NAT는 대상 포트와 주소도 추적합니다. 그런
-   다음 NAT는 매핑이 아직 존재하지 않는 경우 내부 주소 및 내부 포트에서 외부 주소 및 외부 포트
-   로의 매핑을 생성합니다.
+   NAT 뒤에 있는 장치의 패킷이 공인 인터넷의 주소로 전송되면 패킷은 먼저 NAT를 통과합니다.
+   NAT는 수신 포트와 주소를 확인합니다. 경우에 따라 NAT는 target 포트와 주소도 추적합니다.
+   그런 다음 NAT는 매핑이 아직 존재하지 않는 경우 내부 주소 및 내부 포트에서 외부 주소 및
+   외부 포트로의 매핑을 생성합니다.
 
    NAT는 패킷의 내부 주소와 포트를 매핑의 외부 항목으로 바꾸고 패킷을 다음 게이트웨이로
    보냅니다.
 
-   인터넷의 어떤 주소에서건 패킷이 NAT의 외부에서 수신되면 NAT는 매핑 목록에서 대상 주소와
+   인터넷의 어떤 주소에서건 패킷이 NAT의 외부에서 수신되면 NAT는 매핑 목록에서 도착지 주소와
    포트(외부 주소 및 포트)를 조회합니다. 항목이 발견되면 패킷을 보내야 하는 내부 주소와 포트가
-   포함됩니다. 그런 다음 NAT 게이트웨이는 대상 주소와 포트를 매핑의 주소와 포트로 다시 씁니다.
-   그러면 패킷이 새 대상 주소로 전달됩니다. 패킷이 매핑과 일치하지 않으면 패킷이 삭제될 가능성이
-   큽니다. 다양한 NAT는 이를 처리하기 위해 다양한 전략을 구현합니다. 주목해야 할 중요한 점은
-   매핑이 없으면 NAT가 패킷을 보내야 하는 내부 주소를 알 수 없다는 것입니다.
+   포함됩니다. 그런 다음 NAT 게이트웨이는 도착지 주소와 포트를 매핑의 주소와 포트로 다시
+   씁니다. 그러면 패킷이 새 도착지 주소로 전달됩니다. 패킷이 매핑과 일치하지 않으면 패킷이
+   삭제될 가능성이 큽니다. 다양한 NAT는 이를 처리하기 위해 다양한 전략을 구현합니다. 주목해야
+   할 중요한 점은 매핑이 없으면 NAT가 패킷을 보내야 하는 내부 주소를 알 수 없다는 것입니다.
 
    매핑은 일반적으로 아웃바운드 패킷을 관찰한 결과 자동으로 생성됩니다. 몇 가지 예외가 있습니다.
    일부 NAT는 외부 포트를 특정 내부 IP 주소 및 포트에 매핑하는 수동 생성 영구 매핑을 허용할
@@ -143,12 +143,12 @@ Copyright Notice
 
    수동으로 생성된 인바운드 포트 매핑이 없으면 NAT 뒤의 클라이언트는 인바운드 연결을 수신할 수
    없으며 이는 원래 인터넷 아키텍처[ETEAISD]와 비교할 때 연결 손실을 나타냅니다. 이러한 연결
-   손실을 나쁜 것으로 보는 사람들에는 NAT-PMP가 클라이언트가 공용 IPv4 주소를 사용하여 공용
+   손실을 나쁜 것으로 보는 사람들에는 NAT-PMP가 클라이언트가 공용 IPv4 주소를 사용하여 공인
    인터넷에 직접 연결된 호스트처럼 작동할 수 있도록 합니다. NAT-PMP를 사용하면 클라이언트
-   호스트가 NAT 게이트웨이와 통신하여 요청 시 인바운드 매핑 생성을 요청할 수 있습니다. 인바운드
-   연결을 허용하는 NAT 매핑을 생성한 클라이언트는 외부 IPv4 주소와 외부 포트를 공용 
-   레지스트리(예: 전 세계 도메인 이름 시스템)에 기록하거나 통신하려는 피어가 액세스할 수 있도록
-   할 수 있습니다.
+   호스트가 NAT 게이트웨이와 통신하여 요청 시 인바운드 매핑 생성을 요청할 수 있습니다.
+   인바운드 연결을 허용하는 NAT 매핑을 생성한 클라이언트는 외부 IPv4 주소와 외부 포트를 공인
+   레지스트리(예: 전 세계 도메인 이름 시스템)에 기록하거나 통신하려는 피어가 액세스할 수
+   있도록 할 수 있습니다.
 
 1.1.  Transition to Port Control Protocol (Port Control Protocol로의 전환)
 
@@ -208,9 +208,9 @@ Copyright Notice
    상태가 재설정된 이후 경과된 시간(초)에 해당하는 32비트 부호 없는 정수가 포함됩니다.
 
    SHOULD:{이 프로토콜은 클라이언트가 기본 IPv4 주소가 "Address Allocation for
-   Private Internets"[RFC1918]에 정의된 개인 IPv4 주소 범위 중 하나에 있다고 판단하는
-   경우에만 사용}해야 합니다. 여기에는 주소 범위 10/8, 172.16/12 및 192.168/16이
-   포함됩니다.
+   Private Internets"[RFC1918]에 정의된 개인 IPv4 주소 범위 중 하나에 있다고
+   판단하는 경우에만 사용}해야 합니다. 여기에는 주소 범위 10/8, 172.16/12 및
+   192.168/16이 포함됩니다.
    
    클라이언트는 DHCP[RFC2131] 또는 유사한 수단을 통해 학습한 대로 항상 NAT-PMP 요청을
    기본 게이트웨이로 보냅니다. 이 프로토콜은 클라이언트의 기본 게이트웨이가 해당 네트워크의
@@ -221,12 +221,12 @@ Copyright Notice
 3.1.  Requests and Responses (요청 및 응답)
 
    NAT 게이트웨이는 메모리와 CPU 속도가 제한된 저비용 장치인 경우가 많습니다. 이러한 이유로
-   NAT 게이트웨이에 대한 과도한 요구를 피하기 위해 [SHOULD NOT]클라이언트는 여러 동시
-   요청을 발행해서는 안 됩니다. 클라이언트가 여러 요청을 수행해야 하는 경우(예: 부팅 시, 절전
-   모드 해제, 네트워크 연결 등) 요청을 대기열에 넣고 한 번에 하나씩 직렬로 발행해야 합니다.
-   NAT 게이트웨이가 하나의 요청에 응답하면 클라이언트 시스템이 다음 요청을 발행할 수 있습니다.
-   빠른 NAT 게이트웨이의 경우 클라이언트는 초당 수백 속도로 요청을 완료할 수 있습니다.
-   NAT-PMP 요청에 응답하는데 0.5초 정도 걸리는 느린 NAT 게이트웨이의 경우
+   NAT 게이트웨이에 대한 과도한 요구를 피하기 위해 SHOULD NOT:{클라이언트는 여러 동시
+   요청을 발행해서는 안 됩니다}. 클라이언트가 여러 요청을 수행해야 하는 경우(예: 부팅 시,
+   절전 모드 해제, 네트워크 연결 등) 요청을 대기열에 넣고 한 번에 하나씩 직렬로 발행해야
+   합니다. NAT 게이트웨이가 하나의 요청에 응답하면 클라이언트 시스템이 다음 요청을 발행할 수
+   있습니다. 빠른 NAT 게이트웨이의 경우 클라이언트는 초당 수백 속도로 요청을 완료할 수
+   있습니다. NAT-PMP 요청에 응답하는데 0.5초 정도 걸리는 느린 NAT 게이트웨이의 경우
    SHOULD:{클라이언트는 NAT 게이트웨이가 관리할 수 있는 속도로 작동하도록 허용한 것을
    존중}해야 합니다. 또한, 요청에 응답하는 속도보다 빠르게 요청을 발행하여 과부하를 일으키지
    않아야 합니다.
@@ -237,27 +237,27 @@ Copyright Notice
    500ms를 기다립니다. SHOULD:{클라이언트는 시도 간격을 매번 두 배로 늘리면서 이 프로세스를
    반복}해야 합니다. SHOULD:{9번째 시도를 보낸 후(64초 동안 기다린 후) 클라이언트가 여전히
    응답을 받지 못한 경우 이 게이트웨이가 NAT 포트 매핑 프로토콜을 지원하지 않는다고 결론}을
-   내리고 이 MAY:{사실을 나타내는 오류 메시지를 기록}할 수 있습니다. 또한 NAT-PMP 클라이언트가
-   게이트웨이에서 포트 5351에 대해 "ICMP 포트에 연결할 수 없음(ICMP Port Unreachable)"
-   메시지를 수신하면 나머지 재전송을 건너뛰고 게이트웨이가 NAT-PMP를 지원하지 않는다고 즉시
-   결론을 내릴 수 있습니다.
+   내리고 이 MAY:{사실을 나타내는 오류 메시지를 기록}할 수 있습니다. 또한 NAT-PMP
+   클라이언트가 게이트웨이에서 포트 5351에 대해 "ICMP 포트에 연결할 수 없음(ICMP Port
+   Unreachable)" 메시지를 수신하면 나머지 재전송을 건너뛰고 게이트웨이가 NAT-PMP를
+   지원하지 않는다고 즉시 결론을 내릴 수 있습니다.
 
-   성능 최적화로서 MAY:{클라이언트는 이 정보를 기록하고 이를 사용하여 NAT-PMP를 사용하려는 추가
-   시도를 억제}할 수 있지만 클라이언트는 이 정보를 너무 오래 유지해서는 안 됩니다. 특히,
+   성능 최적화로서 MAY:{클라이언트는 이 정보를 기록하고 이를 사용하여 NAT-PMP를 사용하려는
+   추가 시도를 억제}할 수 있지만 클라이언트는 이 정보를 너무 오래 유지해서는 안 됩니다. 특히,
    게이트웨이의 잠재적인 변경 또는 게이트웨이 구성의 변경을 나타낼 수 있는 모든 이벤트(하드웨어
    링크 변경 표시, 게이트웨이 MAC 주소 변경, 새로운 DHCP 임대 취득, 게이트웨이로부터
-   NAT-PMP 알림 패킷 수신 등) 에서 클라이언트가 게이트웨이의 NAT-PMP 지원 부족에 대한 이전
-   정보를 버리고 다음 NAT-PMP 요청 패킷을 정상적으로 보내도록 해야 합니다.
+   NAT-PMP 알림 패킷 수신 등) 에서 클라이언트가 게이트웨이의 NAT-PMP 지원 부족에 대한
+   이전 정보를 버리고 다음 NAT-PMP 요청 패킷을 정상적으로 보내도록 해야 합니다.
 
-   포트 매핑을 삭제할 때 클라이언트는 포기하기 전에 전체 9번을 시도하지 않도록 선택할 수 있다는
-   점을 제외하고 각 연속 간격에서 두 배로 증가하는 동일한 초기 250ms 시간 제한을 사용합니다.
-   이는 매핑 삭제 요청이 어떤 의미에서는 권고이기 때문입니다. 효율성에는 유용하지만 정확성에는
-   필요하지 않습니다. 매핑 삭제 요청을 보내기 전에 클라이언트 소프트웨어가 충돌하거나 전원이
-   꺼지거나 클라이언트 장치가 네트워크에서 물리적으로 분리되는 것은 항상 가능하므로 NAT
-   게이트웨이는 이에 대해 대처할 수 있어야 합니다. 이 때문에 클라이언트가 포트 매핑 삭제를
-   포기하기 전에 한두 번만 재시도하는 것이 허용될 수 있지만 SHOULD:{클라이언트는 NAT
-   게이트웨이에 누적되는 오래된 값의 양을 줄이기 위해 가능할 때마다 항상 적어도 하나의 삭제 요청}
-   을 보내야 합니다.
+   포트 매핑을 삭제할 때 클라이언트는 포기하기 전에 전체 9번을 시도하지 않도록 선택할 수
+   있다는 점을 제외하고 각 연속 간격에서 두 배로 증가하는 동일한 초기 250ms 시간 제한을
+   사용합니다. 이는 매핑 삭제 요청이 어떤 의미에서는 권고이기 때문입니다. 효율성에는 유용하지만
+   정확성에는 필요하지 않습니다. 매핑 삭제 요청을 보내기 전에 클라이언트 소프트웨어가
+   충돌하거나 전원이 꺼지거나 클라이언트 장치가 네트워크에서 물리적으로 분리되는 것은 항상
+   가능하므로 NAT 게이트웨이는 이에 대해 대처할 수 있어야 합니다. 이 때문에 클라이언트가 포트
+   매핑 삭제를 포기하기 전에 한두 번만 재시도하는 것이 허용될 수 있지만 SHOULD:{클라이언트는
+   NAT 게이트웨이에 누적되는 오래된 값의 양을 줄이기 위해 가능할 때마다 항상 적어도 하나의
+   삭제 요청} 을 보내야 합니다.
 
    어쨌든 해당 매핑이 자연적으로 만료된 시간 이후에 클라이언트는 포트 매핑을 삭제하려고 계속
    시도할 필요가 없습니다.
@@ -285,23 +285,23 @@ Copyright Notice
    | External IPv4 Address (a.b.c.d)                               |
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
-   이 응답은 NAT 게이트웨이가 이 버전의 프로토콜을 구현하고 NAT 게이트웨이의 외부 IPv4 주소를
-   반환함을 나타냅니다. 결과 코드가 0이 아닌 경우 외부 IPv4 주소 필드의 값은 정의되지 않습니다
-   (MUST:{전송 시 0으로 설정해야 하며 수신 시 무시해야 함}).
+   이 응답은 NAT 게이트웨이가 이 버전의 프로토콜을 구현하고 NAT 게이트웨이의 외부 IPv4
+   주소를 반환함을 나타냅니다. 결과 코드가 0이 아닌 경우 외부 IPv4 주소 필드의 값은 정의되지
+   않습니다(MUST:{전송 시 0으로 설정해야 하며 수신 시 무시해야 함}).
 
    NAT 게이트웨이는 MUST:{시작 시 포트 매핑 테이블이 초기화되거나 다른 이유로 재설정된 이후
    경과된 시간으로 Seconds Since Start of Epoch 필드를 채워야 합니다}(섹션 3.6,
    "Seconds Since Start of Epoch" 참조).
 
-   응답 패킷을 수신한 클라이언트는 MUST:{소스 IP 주소를 확인하고 요청을 보낸 게이트웨이의 주소가
-   아닌 경우 자동으로 패킷을 폐기}해야 합니다.
+   응답 패킷을 수신한 클라이언트는 MUST:{출발지 IP 주소를 확인하고 요청을 보낸 게이트웨이의
+   주소가 아닌 경우 자동으로 패킷을 폐기}해야 합니다.
 
 3.2.1.  Announcing Address Changes (주소 변경 알림)
 
    부팅 시, 외부 IPv4 주소 획득, 외부 IPv4 주소의 후속 변경, 재부팅 또는 NAT 매핑 상태의
-   손실 또는 변경 가능성을 나타낼 수 있는 기타 이벤트 시 NAT 게이트웨이는 MUST:{클라이언트에게
-   외부 IPv4 주소 및 Epoch 시작 이후 초를 알리기 위해 위의 패킷 형식을 사용하여 링크 로컬
-   멀티캐스트 주소 224.0.0.1, 포트 5350에 gratuitous 응답을 보내야 합니다}.
+   손실 또는 변경 가능성을 나타낼 수 있는 기타 이벤트 시 NAT 게이트웨이는 MUST:{클라이언트
+   에게 외부 IPv4 주소 및 Epoch 시작 이후 초를 알리기 위해 위의 패킷 형식을 사용하여 링크
+   로컬 멀티캐스트 주소 224.0.0.1, 포트 5350에 gratuitous 응답을 보내야 합니다}.
 
    패킷 손실을 수용하기 위해 NAT 게이트웨이는 10개의 주소 알림을 멀티캐스트해야 합니다. 
    SHOULD:{처음 두 알림 사이의 간격은 250ms여야 하며 각 후속 알림 사이의 간격은 두 배가
@@ -309,37 +309,38 @@ Copyright Notice
    Start of Epoch 필드는 시간 경과를 반영하도록 적절하게 업데이트되어야 합니다(섹션 3.7,
    "Recreating Mappings on NAT Gateway Reboot" 참조).
 
-   불필요한 주소 알림 패킷을 수신하면 클라이언트는 MUST:{소스 IP 주소를 확인하고 주소가
+   불필요한 주소 알림 패킷을 수신하면 클라이언트는 MUST:{출발지 IP 주소를 확인하고 주소가
    클라이언트의 현재 구성된 게이트웨이 주소가 아닌 경우 자동으로 패킷을 폐기}해야 합니다.
    이는 네트워크에서 활성화된 NAT 게이트웨이가 두 개 이상일 수 있는 부주의한 구성 오류를
    방지하기 위한 것입니다.
 
-   소스 IP 주소가 정확하면 3.6절에 설명된 대로 Seconds Since Start of Epoch 필드를
+   출발지 IP 주소가 정확하면 3.6절에 설명된 대로 Seconds Since Start of Epoch 필드를
    확인하고 값이 예상 가능한 범위를 벗어나 NAT 게이트웨이 상태 손실이 발생했음을 나타내는 경우
    NAT-PMP 클라이언트는 3.7절 "Recreating Mappings on NAT Gateway Reboot"에
    설명된 대로 모든 활성 포트 매핑 임대를 즉시 다시 만듭니다.
 
    구현 참고 사항: NAT-PMP의 이전 구현에서는 UDP 포트 5351을 클라이언트 요청(주소 및 포트
    매핑)과 주소 알림 모두의 대상으로 사용했습니다. NAT-PMP 서버는 UDP 5351에서 클라이언트
-   요청을 수신하고 NAT-PMP 클라이언트는 UDP 5351에서 서버 알림을 수신합니다. 그러나 구현자는,
-   예를 들어 인터넷 공유가 활성화된 가정용 컴퓨터와 같이 단일 장치가 두 역할 모두에서 작동할 때
-   어려움에 직면했습니다. 이 컴퓨터는 DHCP 클라이언트에 대해 NAT-PMP 서버 역할을 하지만 동시에
-   다른 NAT 게이트웨이 뒤에 있는지 확인하기 위해 NAT-PMP 클라이언트 역할을 해야 합니다.
-   원칙적으로 일부 운영 체제에서는 두 프로세스가 단일 UDP 포트의 공유를 조정하는 것이 가능할 수
-   있지만 많은 플랫폼에서는 이것이 어렵거나 불가능하기 때문에 실용적인 엔지니어링 이유로 클라이언트가
-   UDP 5350에서 수신하도록 하는 것이 편리합니다. 서버는 UDP 5351에서 수신 대기합니다.
+   요청을 수신하고 NAT-PMP 클라이언트는 UDP 5351에서 서버 알림을 수신합니다. 그러나
+   구현자는, 예를 들어 인터넷 공유가 활성화된 가정용 컴퓨터와 같이 단일 장치가 두 역할
+   모두에서 작동할 때 어려움에 직면했습니다. 이 컴퓨터는 DHCP 클라이언트에 대해 NAT-PMP
+   서버 역할을 하지만 동시에 다른 NAT 게이트웨이 뒤에 있는지 확인하기 위해 NAT-PMP
+   클라이언트 역할을 해야 합니다. 원칙적으로 일부 운영 체제에서는 두 프로세스가 단일 UDP
+   포트의 공유를 조정하는 것이 가능할 수 있지만 많은 플랫폼에서는 이것이 어렵거나 불가능하기
+   때문에 실용적인 엔지니어링 이유로 클라이언트가 UDP 5350에서 수신하도록 하는 것이
+   편리합니다. 서버는 UDP 5351에서 수신 대기합니다.
 
-   구현 참고 사항: 지정된 호스트에는 동시에 실행 중인 독립 NAT-PMP 클라이언트가 두 개 이상 있을
-   수 있으며 주소 알림은 모든 클라이언트에서 사용할 수 있어야 합니다. 따라서 클라이언트는 다른
-   프로세스가 포트 5350에서도 수신할 수 있도록 SO_REUSEPORT 옵션 또는 이와 동등한 옵션을
-   설정해야 합니다. 또한 구현자는 동일한 장치에 있는 하나 이상의 프로세스가 *모든* 주소에서 포트
-   5350을 수신할 때 문제가 발생했습니다. 따라서 클라이언트는 0.0.0.0:5350이 아닌
-   224.0.0.1:5350에 구체적으로 바인딩해야 합니다.
+   구현 참고 사항: 지정된 호스트에는 동시에 실행 중인 독립 NAT-PMP 클라이언트가 두 개 이상
+   있을 수 있으며 주소 알림은 모든 클라이언트에서 사용할 수 있어야 합니다. 따라서 클라이언트는
+   다른 프로세스가 포트 5350에서도 수신할 수 있도록 SO_REUSEPORT 옵션 또는 이와 동등한
+   옵션을 설정해야 합니다. 또한 구현자는 동일한 장치에 있는 하나 이상의 프로세스가 *모든*
+   주소에서 포트 5350을 수신할 때 문제가 발생했습니다. 따라서 클라이언트는 0.0.0.0:5350이
+   아닌 224.0.0.1:5350에 구체적으로 바인딩해야 합니다.
 
-3.3.  Requesting a Mapping
+3.3.  Requesting a Mapping (매핑 요청)
 
-   To create a mapping, the client sends a UDP packet to port 5351 of
-   the gateway's internal IP address with the following format:
+   매핑을 생성하기 위해 클라이언트는 UDP 패킷을 다음 형식으로 게이트웨이 내부 IP 주소의 포트
+   5351로 보냅니다:
 
     0                   1                   2                   3
     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
@@ -351,56 +352,43 @@ Copyright Notice
    | Requested Port Mapping Lifetime in Seconds                    |
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
-   Opcodes supported:
-   1 - Map UDP
-   2 - Map TCP
+   지원되는 opcode:
+   1 - UDP 매핑
+   2 - TCP 매핑
 
-   The Reserved field MUST be set to zero on transmission and MUST be
-   ignored on reception.
+   MUST:{Reserved 필드는 전송 시 0으로 설정되어야 하며 수신 시 무시되어야 합니다.
 
-   The Ports and Lifetime are transmitted in the traditional network
-   byte order (i.e., most significant byte first).
+   Ports와 Lifetime은 기존 네트워크 바이트 순서(즉, 최상위 바이트 먼저)로 전송됩니다.
 
-   The Internal Port is set to the local port on which the client is
-   listening.
+   Internal Port는 클라이언트가 수신하는 로컬 포트로 설정됩니다.
 
-   If the client would prefer to have a high-numbered "anonymous"
-   external port assigned, then it should set the Suggested External
-   Port to zero, which indicates to the gateway that it should allocate
-   a high-numbered port of its choosing.  If the client would prefer
-   instead to have the mapped external port be the same as its local
-   internal port if possible (e.g., a web server listening on port 80
-   that would ideally like to have external port 80), then it should set
-   the Suggested External Port to the desired value.  However, the
-   gateway is not obliged to assign the port suggested, and may choose
-   not to, either for policy reasons (e.g., port 80 is reserved and
-   clients may not request it) or because that port has already been
-   assigned to some other client.  Because of this, some product
-   developers have questioned the value of having the Suggested External
-   Port field at all.  The reason is for failure recovery.  Most low-
-   cost home NAT gateways do not record temporary port mappings in
-   persistent storage, so if the gateway crashes or is rebooted, all the
-   mappings are lost.  A renewal packet is formatted identically to an
-   initial mapping request packet, except that for renewals the client
-   sets the Suggested External Port field to the port the gateway
-   actually assigned, rather than the port the client originally wanted.
+   클라이언트가 높은 번호의 "익명" 외부 포트를 할당받는 것을 선호하는 경우 Suggested
+   External Port를 0으로 설정해야 합니다. 이는 선택한 높은 번호의 포트를 게이트웨이에
+   할당해야 함을 나타냅니다. 클라이언트가 가능한 경우 매핑된 외부 포트를 로컬 내부 포트와
+   동일하게 하는 것을 선호하는 경우 (예: 이상적으로는 외부 포트 80을 갖고 싶어하는 포트
+   80에서 수신하는 웹 서버) Suggested External Port를 원하는 값으로 설정해야 합니다.
+   그러나 게이트웨이는 제안된 포트를 할당할 의무가 없으며 정책상의 이유(예: 포트 80이 예약되어
+   클라이언트가 요청하지 않을 수 있음) 또는 해당 포트가 이미 다른 클라이언트에 할당되었기
+   때문에 할당하지 않을 수 있습니다. 이 때문에 일부 제품 개발자는 Suggested External
+   Port 필드를 갖는 것의 가치에 의문을 제기했습니다. 그 이유는 장애 복구 때문입니다. 대부분의
+   저렴한 홈 NAT 게이트웨이는 영구 저장소에 임시 포트 매핑을 기록하지 않으므로 게이트웨이가
+   충돌하거나 재부팅되면 모든 매핑이 손실됩니다. 갱신 패킷은 갱신의 경우 클라이언트가
+   Suggested External Port 필드를 클라이언트가 원래 원했던 포트가 아니라 게이트웨이가
+   실제로 할당한 포트로 설정한다는 점을 제외하면 초기 매핑 요청 패킷과 동일하게 형식이
+   지정됩니다.
 
-   When a freshly rebooted NAT gateway receives a renewal packet from a
-   client, it appears to the gateway just like an ordinary initial
-   request for a port mapping, except that in this case the Suggested
-   External Port is likely to be one that the NAT gateway *is* willing
-   to allocate (it allocated it to this client right before the reboot,
-   so it should presumably be willing to allocate it again).  This
-   improves the stability of external ports across NAT gateway restarts.
+   새로 재부팅된 NAT 게이트웨이가 클라이언트로부터 갱신 패킷을 수신하면 포트 매핑에 대한 일반
+   초기 요청처럼 게이트웨이에 표시됩니다. 단, 이 경우 Suggested External Port는 NAT
+   게이트웨이가 *할당할 의향*이 있을 가능성이 높습니다(재부팅 직전에 이 클라이언트에
+   할당했으므로 다시 할당할 의향이 있을 수 있습니다).
 
-   The RECOMMENDED Port Mapping Lifetime is 7200 seconds (two hours).
+   RECOMMENDED:{권장 Port Mapping Lifetime은 7200초 (2시간)}입니다.
 
-   After sending the port mapping request, the client then waits for the
-   NAT gateway to respond.  If after 250 ms the client hasn't received a
-   response from the gateway, the client SHOULD reissue its request as
-   described above in Section 3.1, "Requests and Responses".
+   포트 매핑 요청을 보낸 후 클라이언트는 NAT 게이트웨이가 응답할 때까지 기다립니다. 250ms
+   후에 클라이언트가 게이트웨이로부터 응답을 받지 못한 경우 SHOULD:{클라이언트는 위의 섹션
+   3.1, "요청 및 응답"에 설명된 대로 요청을 재발행}해야 합니다.
 
-   The NAT gateway responds with the following packet format:
+   NAT 게이트웨이는 다음 패킷 형식으로 응답합니다:
 
     0                   1                   2                   3
     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
@@ -414,79 +402,62 @@ Copyright Notice
    | Port Mapping Lifetime in Seconds                              |
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
-   The epoch time, ports, and lifetime are transmitted in the
-   traditional network byte order (i.e., most significant byte first).
+   Epoch 시간, 포트 및 수명은 기존 네트워크 바이트 순서(즉, 최상위 바이트 먼저)로
+   전송됩니다.
 
-   The 'x' in the OP field MUST match what the client requested.  Some
-   NAT gateways are incapable of creating a UDP port mapping without
-   also creating a corresponding TCP port mapping, and vice versa, and
-   these gateways MUST NOT implement NAT Port Mapping Protocol until
-   this deficiency is fixed.  A NAT gateway that implements this
-   protocol MUST be able to create TCP-only and UDP-only port mappings.
-   If a NAT gateway silently creates a pair of mappings for a client
-   that only requested one mapping, then it may expose that client to
-   receiving inbound UDP packets or inbound TCP connection requests that
-   it did not ask for and does not want.
+   MUST:{OP 필드의 'x'는 클라이언트가 요청한 것과 일치}해야 합니다.
+   일부 NAT 게이트웨이는 해당 TCP 포트 매핑을 생성하지 않고 UDP 포트 매핑을 생성할 수
+   없으며 그 반대의 경우도 마찬가지이고 이러한 게이트웨이는 MUST NOT:{이 결함이 수정될
+   때까지 NAT 포트 매핑 프로토콜을 구현하면 안 됩니다}. 이 프로토콜을 구현하는 NAT
+   게이트웨이는 MUST:{TCP 전용 및 UDP 전용 포트 매핑을 생성할 수 있어야 합니다}. NAT
+   게이트웨이가 하나의 매핑만 요청한 클라이언트에 대한 매핑 쌍을 자동으로 생성하는 경우
+   요청하지 않았거나 원하지 않는 인바운드 UDP 패킷 또는 인바운드 TCP 연결 요청을 수신하도록
+   해당 클라이언트를 노출할 수 있습니다.
 
-   While a NAT gateway MUST NOT automatically create mappings for TCP
-   when the client requests UDP, and vice versa, the NAT gateway MUST
-   reserve the companion port so the same client can choose to map it in
-   the future.  For example, if a client requests to map TCP port 80,
-   as long as the client maintains the lease for that TCP port mapping,
-   another client with a different internal IP address MUST NOT be able
-   to successfully acquire the mapping for UDP port 80.
+   NAT 게이트웨이는 MUST NOT:{클라이언트가 UDP를 요청할 때 TCP, 그 반대의 경우에 대한
+   매핑 자동으로 생성해서는 안 되며}, NAT 게이트웨이는 MUST:{동일한 클라이언트가 나중에
+   매핑하도록 선택할 수 있게 컴패니언 포트를 예약}해야 합니다.
+   예를 들어 클라이언트가 TCP 포트 80 매핑을 요청하는 경우 클라이언트가 해당 TCP 포트 매핑에
+   대한 임대를 유지하는 한 다른 내부 IP 주소를 가진 다른 클라이언트는 UDP 포트 80에 대한
+   MUST NOT:{매핑을 성공적으로 획득할 수 없어야 합니다}.
 
-   The client normally requests the external port matching the internal
-   port.  If that external port is not available, the NAT gateway MUST
-   return an available external port if possible, or return an error
-   code if no external ports are available.
+   클라이언트는 일반적으로 내부 포트와 일치하는 외부 포트를 요청합니다. 해당 외부 포트를 사용할
+   수 없는 경우 NAT 게이트웨이는 MUST:{가능한 경우 사용 가능한 외부 포트를 반환하거나 외부
+   포트를 사용할 수 없는 경우 오류 코드를 반환}해야 합니다.
 
-   The source address of the packet MUST be used for the internal
-   address in the mapping.  This protocol is not intended to facilitate
-   one device behind a NAT creating mappings for other devices.  If
-   there are legacy devices that require inbound mappings, permanent
-   mappings can be created manually by the user through an
-   administrative interface, just as they are today.
+   패킷의 출발지 주소는 MUST:{매핑의 내부 주소로 사용}해야 합니다. 이 프로토콜은 다른 장치에
+   대한 매핑을 생성하는 NAT 뒤에 있는 하나의 장치를 용이하게 하기 위한 것이 아닙니다. 인바운드
+   매핑이 필요한 레거시 장치가 있는 경우 현재와 마찬가지로 관리 인터페이스를 통해 사용자가
+   수동으로 영구 매핑을 생성할 수 있습니다.
 
-   If a mapping already exists for a given internal address and port
-   (whether that mapping was created explicitly using NAT-PMP,
-   implicitly as a result of an outgoing TCP SYN packet, or manually by
-   a human administrator) and that client requests another mapping for
-   the same internal port (possibly requesting a different external
-   port), then the mapping request should succeed, returning the
-   already-assigned external port.  This is necessary to handle the case
-   where a client requests a mapping with suggested external port X, and
-   is granted a mapping with actual external port Y, but the
-   acknowledgment packet gets lost.  When the client retransmits its
-   mapping request, it should get back the same positive acknowledgment
-   as was sent (and lost) the first time.
+   지정된 내부 주소 및 포트에 대한 매핑이 이미 존재하고(해당 매핑이 NAT-PMP를 사용하여
+   명시적으로 생성되었는지, 나가는 TCP SYN 패킷의 결과로 암시적으로 생성되었는지 또는 인간
+   관리자가 수동으로 생성했는지 여부) 해당 클라이언트가 해당 매핑에 대한 다른 매핑을 요청하는
+   경우 동일한 내부 포트(다른 외부 포트를 요청할 수 있음)이면 매핑 요청이 성공하여 이미 할당된
+   외부 포트를 반환해야 합니다. 이는 클라이언트가 제안된 외부 포트 X와의 매핑을 요청하고 실제
+   외부 포트 Y와의 매핑이 승인되었지만 승인 패킷이 손실되는 경우를 처리하는 데 필요합니다.
+   클라이언트가 매핑 요청을 재전송할 때 처음 전송된(및 손실된) 것과 동일한 긍정적 승인을 다시
+   받아야 합니다.
 
-   The NAT gateway MUST NOT accept mapping requests destined to the NAT
-   gateway's external IP address or received on its external network
-   interface.  Only packets received on the internal interface(s) with a
-   destination address matching the internal address(es) of the NAT
-   gateway should be allowed.
+   NAT 게이트웨이는 MUST NOT:{NAT 게이트웨이 외부 IP 주소로 향하거나 외부 네트워크
+   인터페이스에서 수신된 매핑 요청을 수락해서는 안 됩니다}. NAT 게이트웨이의 내부 주소와
+   일치하는 대상 주소가 있는 내부 인터페이스에서 수신된 패킷만 허용되어야 합니다.
 
-   The NAT gateway MUST fill in the Seconds Since Start of Epoch field
-   with the time elapsed since its port mapping table was initialized on
-   startup or reset for any other reason (see Section 3.6, "Seconds
-   Since Start of Epoch").
+   NAT 게이트웨이는 시작 시 포트 매핑 테이블이 초기화되거나 다른 이유로 재설정된 이후 
+   MUST:{Seconds Since Start of Epoch 필드를 채워야 합니다}(섹션 3.6, "Seconds
+   Since Start of Epoch" 참조).
 
-   The Port Mapping Lifetime is an unsigned integer in seconds.  The NAT
-   gateway MAY reduce the lifetime from what the client requested.  The
-   NAT gateway SHOULD NOT offer a lease lifetime greater than that
-   requested by the client.
+   Port Mapping Lifetime은 부호 없는 정수(초)입니다. NAT 게이트웨이는
+   MAY:{클라이언트가 요청한 수명을 줄일 수 있습니다}.
+   NAT 게이트웨이는 SHOULD NOT:{클라이언트가 요청한 것보다 더 긴 임대 수명을 제공하면 안
+   됩니다}.
 
-   Upon receiving the response packet, the client MUST check the source
-   IP address, and silently discard the packet if the address is not the
-   address of the gateway to which the request was sent.
-   The client SHOULD begin trying to renew the mapping halfway to expiry
-   time, like DHCP.  The renewal packet should look exactly the same as
-   a request packet, except that the client SHOULD set the Suggested
-   External Port to what the NAT gateway previously mapped, not what the
-   client originally suggested.  As described above, this enables the
-   gateway to automatically recover its mapping state after a crash or
-   reboot.
+   응답 패킷을 수신한 클라이언트는 MUST:{출발지 IP 주소를 확인하고 요청을 보낸 게이트웨이의
+   주소가 아닌 경우 자동으로 패킷을 폐기}해야 합니다. 클라이언트는 SHOULD:{DHCP와 같이 만료
+   시간 중간에 매핑 갱신을 시도}해야 합니다. 갱신 패킷은 클라이언트가 Suggested External
+   Port를 클라이언트가 원래 제안한 것이 아니라 NAT 게이트웨이가 이전에 매핑한 것으로 설정해야
+   한다는 점을 제외하면 요청 패킷과 정확히 동일하게 보여야 합니다. 위에 설명된 대로 이렇게 하면
+   충돌 또는 재부팅 후 게이트웨이가 매핑 상태를 자동으로 복구할 수 있습니다.
 
 3.4.  Destroying a Mapping
 
@@ -843,14 +814,6 @@ Copyright Notice
    IPv6 address, that IPv6 address SHOULD be preferred to the IPv4
    external address learned via this NAT mapping protocol.  In case
    other clients do not have IPv6 connectivity, both the IPv4 and IPv6
-
-
-
-Cheshire & Krochmal           Informational                    [Page 20]
-
-RFC 6886                         NAT-PMP                      April 2013
-
-
    addresses SHOULD be registered with whatever form of directory server
    is used.  Preference SHOULD be given to IPv6 addresses when
    available.  By implementing support for IPv6 and using this protocol
@@ -899,14 +862,6 @@ RFC 6886                         NAT-PMP                      April 2013
    NAT-PMP.  In addition, an ISP that is motivated to provide their
    customers with unhindered access to the Internet by allowing incoming
    as well as outgoing connections has better ways to offer this
-
-
-
-Cheshire & Krochmal           Informational                    [Page 21]
-
-RFC 6886                         NAT-PMP                      April 2013
-
-
    service.  Such an ISP could offer its customers real public IPv4
    addresses instead of NAT addresses, or could choose to offer its
    customers full IPv6 connectivity, where no mapping or translation is
@@ -955,14 +910,6 @@ RFC 6886                         NAT-PMP                      April 2013
    device B, behind the same NAT gateway as device A, but unknowing or
    uncaring of this fact, retrieves device A's DNS SRV record and
    attempts to open a TCP connection to x.x.x.x:80.  The outgoing
-
-
-
-Cheshire & Krochmal           Informational                    [Page 22]
-
-RFC 6886                         NAT-PMP                      April 2013
-
-
    packets addressed to this public Internet address will be sent to the
    NAT gateway for translation and forwarding.  Having translated the
    source address and port number on the outgoing packet, the NAT
@@ -1011,14 +958,6 @@ RFC 6886                         NAT-PMP                      April 2013
    create port mappings for unsuspecting hosts, thereby rendering them
    vulnerable to external attack.  However, it's not clear how realistic
    this threat model is, since rogue software on a local host could
-
-
-
-Cheshire & Krochmal           Informational                    [Page 23]
-
-RFC 6886                         NAT-PMP                      April 2013
-
-
    attack such unsuspecting hosts directly itself, without resorting to
    such a convoluted indirect technique.  This concern is also a little
    misguided because it is based on the assumption that a NAT gateway
@@ -1064,16 +1003,6 @@ RFC 6886                         NAT-PMP                      April 2013
    recognized the need for a clean, elegant, reliable Port Mapping
    Protocol, and made the decision early on that Apple's AirPort base
    stations would support NAT-PMP.
-
-
-
-
-
-
-Cheshire & Krochmal           Informational                    [Page 24]
-
-RFC 6886                         NAT-PMP                      April 2013
-
 
 8.  Deployment History
 
@@ -1121,16 +1050,6 @@ RFC 6886                         NAT-PMP                      April 2013
    later.  Some third-party NAT vendors, such as Peplink, also offer
    NAT-PMP in their products.
 
-
-
-
-
-
-Cheshire & Krochmal           Informational                    [Page 25]
-
-RFC 6886                         NAT-PMP                      April 2013
-
-
    In Mac OS X 10.4 Tiger, the NAT-PMP client was invoked automatically
    as a side effect of clients requesting Wide Area Bonjour service
    registrations.  Using NAT-PMP without an associated Wide Area Bonjour
@@ -1177,16 +1096,6 @@ RFC 6886                         NAT-PMP                      April 2013
    spread over 13 separate documents, not counting supporting protocol
    specifications like Simple Service Discovery Protocol (SSDP) and
    Extensible Markup Language (XML)).  While it may be a fine way for
-
-
-
-
-
-Cheshire & Krochmal           Informational                    [Page 26]
-
-RFC 6886                         NAT-PMP                      April 2013
-
-
    human users to configure their home gateways, it is not especially
    suited to the task of programmatically creating dynamic port
    mappings.
@@ -1233,16 +1142,6 @@ RFC 6886                         NAT-PMP                      April 2013
    beneficial to have well-defined bounds on RAM requirements that are
    fixed and known in advance.  For example, when requesting the
    gateway's external IPv4 address, a NAT-PMP client on Ethernet knows
-
-
-
-
-
-Cheshire & Krochmal           Informational                    [Page 27]
-
-RFC 6886                         NAT-PMP                      April 2013
-
-
    that to receive the reply it will require 14 bytes for the Ethernet
    header, 20 bytes for the IPv4 header, 8 bytes for the UDP header, and
    12 bytes for the NAT-PMP payload, making a total of 54 bytes.
@@ -1286,18 +1185,6 @@ RFC 6886                         NAT-PMP                      April 2013
    Similarly, UPnP IGD's HTTP "POST" request for a port mapping is
    typically a 14-packet exchange, compared with NAT-PMP's 2-packet UDP
    exchange.
-
-
-
-
-
-
-
-
-Cheshire & Krochmal           Informational                    [Page 28]
-
-RFC 6886                         NAT-PMP                      April 2013
-
 
 9.4.  Atomic Allocation Operations
 
@@ -1347,14 +1234,6 @@ RFC 6886                         NAT-PMP                      April 2013
    finite length of time.  The NAT-PMP client must renew the port
    mapping before it expires, or, like an unrenewed DHCP address, it
    will be reclaimed.  If a laptop computer is abruptly disconnected
-
-
-
-Cheshire & Krochmal           Informational                    [Page 29]
-
-RFC 6886                         NAT-PMP                      April 2013
-
-
    from the network without the opportunity to delete its port mappings,
    the NAT gateway will reclaim those mappings when they are not
    renewed.
@@ -1404,13 +1283,6 @@ RFC 6886                         NAT-PMP                      April 2013
    When a NAT-PMP gateway's external IPv4 address changes, it broadcasts
    announcement packets to inform clients of this.  UPnP IGD does not.
 
-
-
-Cheshire & Krochmal           Informational                    [Page 30]
-
-RFC 6886                         NAT-PMP                      April 2013
-
-
 9.7.  Soft State Recovery
 
    When run for a long enough period of time, any network will have
@@ -1459,14 +1331,6 @@ RFC 6886                         NAT-PMP                      April 2013
    turned out that: (i) these people had NAT gateways that either didn't
    support port mapping requests, or had that capability disabled, and
    (ii) for some reason they also had some other old NAT device still
-
-
-
-Cheshire & Krochmal           Informational                    [Page 31]
-
-RFC 6886                         NAT-PMP                      April 2013
-
-
    connected to their network, and those other NAT devices were
    advertising UPnP IGD capability, even though they were not the active
    NAT gateway for the network.  This led to UPnP IGD clients falsely
@@ -1516,13 +1380,6 @@ RFC 6886                         NAT-PMP                      April 2013
    [RFC3007]  Wellington, B., "Secure Domain Name System (DNS) Dynamic
               Update", RFC 3007, November 2000.
 
-
-
-Cheshire & Krochmal           Informational                    [Page 32]
-
-RFC 6886                         NAT-PMP                      April 2013
-
-
    [RFC3022]  Srisuresh, P. and K. Egevang, "Traditional IP Network
               Address Translator (Traditional NAT)", RFC 3022, January
               2001.
@@ -1568,11 +1425,3 @@ Authors' Addresses
    USA
 
    EMail: marc@apple.com
-
-
-
-
-
-
-Cheshire & Krochmal           Informational                    [Page 33]
-
