@@ -907,14 +907,6 @@ Table of Contents
    IPv6 address, that IPv6 address SHOULD be preferred to the IPv4
    external address learned via this NAT mapping protocol.  In case
    other clients do not have IPv6 connectivity, both the IPv4 and IPv6
-
-
-
-Cheshire & Krochmal           Informational                    [Page 20]
-
-RFC 6886                         NAT-PMP                      April 2013
-
-
    addresses SHOULD be registered with whatever form of directory server
    is used.  Preference SHOULD be given to IPv6 addresses when
    available.  By implementing support for IPv6 and using this protocol
@@ -963,14 +955,6 @@ RFC 6886                         NAT-PMP                      April 2013
    NAT-PMP.  In addition, an ISP that is motivated to provide their
    customers with unhindered access to the Internet by allowing incoming
    as well as outgoing connections has better ways to offer this
-
-
-
-Cheshire & Krochmal           Informational                    [Page 21]
-
-RFC 6886                         NAT-PMP                      April 2013
-
-
    service.  Such an ISP could offer its customers real public IPv4
    addresses instead of NAT addresses, or could choose to offer its
    customers full IPv6 connectivity, where no mapping or translation is
@@ -1019,14 +1003,6 @@ RFC 6886                         NAT-PMP                      April 2013
    device B, behind the same NAT gateway as device A, but unknowing or
    uncaring of this fact, retrieves device A's DNS SRV record and
    attempts to open a TCP connection to x.x.x.x:80.  The outgoing
-
-
-
-Cheshire & Krochmal           Informational                    [Page 22]
-
-RFC 6886                         NAT-PMP                      April 2013
-
-
    packets addressed to this public Internet address will be sent to the
    NAT gateway for translation and forwarding.  Having translated the
    source address and port number on the outgoing packet, the NAT
@@ -1075,14 +1051,6 @@ RFC 6886                         NAT-PMP                      April 2013
    create port mappings for unsuspecting hosts, thereby rendering them
    vulnerable to external attack.  However, it's not clear how realistic
    this threat model is, since rogue software on a local host could
-
-
-
-Cheshire & Krochmal           Informational                    [Page 23]
-
-RFC 6886                         NAT-PMP                      April 2013
-
-
    attack such unsuspecting hosts directly itself, without resorting to
    such a convoluted indirect technique.  This concern is also a little
    misguided because it is based on the assumption that a NAT gateway
@@ -1128,16 +1096,6 @@ RFC 6886                         NAT-PMP                      April 2013
    recognized the need for a clean, elegant, reliable Port Mapping
    Protocol, and made the decision early on that Apple's AirPort base
    stations would support NAT-PMP.
-
-
-
-
-
-
-Cheshire & Krochmal           Informational                    [Page 24]
-
-RFC 6886                         NAT-PMP                      April 2013
-
 
 8.  Deployment History
 
@@ -1185,16 +1143,6 @@ RFC 6886                         NAT-PMP                      April 2013
    later.  Some third-party NAT vendors, such as Peplink, also offer
    NAT-PMP in their products.
 
-
-
-
-
-
-Cheshire & Krochmal           Informational                    [Page 25]
-
-RFC 6886                         NAT-PMP                      April 2013
-
-
    In Mac OS X 10.4 Tiger, the NAT-PMP client was invoked automatically
    as a side effect of clients requesting Wide Area Bonjour service
    registrations.  Using NAT-PMP without an associated Wide Area Bonjour
@@ -1241,16 +1189,6 @@ RFC 6886                         NAT-PMP                      April 2013
    spread over 13 separate documents, not counting supporting protocol
    specifications like Simple Service Discovery Protocol (SSDP) and
    Extensible Markup Language (XML)).  While it may be a fine way for
-
-
-
-
-
-Cheshire & Krochmal           Informational                    [Page 26]
-
-RFC 6886                         NAT-PMP                      April 2013
-
-
    human users to configure their home gateways, it is not especially
    suited to the task of programmatically creating dynamic port
    mappings.
@@ -1297,16 +1235,6 @@ RFC 6886                         NAT-PMP                      April 2013
    beneficial to have well-defined bounds on RAM requirements that are
    fixed and known in advance.  For example, when requesting the
    gateway's external IPv4 address, a NAT-PMP client on Ethernet knows
-
-
-
-
-
-Cheshire & Krochmal           Informational                    [Page 27]
-
-RFC 6886                         NAT-PMP                      April 2013
-
-
    that to receive the reply it will require 14 bytes for the Ethernet
    header, 20 bytes for the IPv4 header, 8 bytes for the UDP header, and
    12 bytes for the NAT-PMP payload, making a total of 54 bytes.
@@ -1350,18 +1278,6 @@ RFC 6886                         NAT-PMP                      April 2013
    Similarly, UPnP IGD's HTTP "POST" request for a port mapping is
    typically a 14-packet exchange, compared with NAT-PMP's 2-packet UDP
    exchange.
-
-
-
-
-
-
-
-
-Cheshire & Krochmal           Informational                    [Page 28]
-
-RFC 6886                         NAT-PMP                      April 2013
-
 
 9.4.  Atomic Allocation Operations
 
@@ -1411,14 +1327,6 @@ RFC 6886                         NAT-PMP                      April 2013
    finite length of time.  The NAT-PMP client must renew the port
    mapping before it expires, or, like an unrenewed DHCP address, it
    will be reclaimed.  If a laptop computer is abruptly disconnected
-
-
-
-Cheshire & Krochmal           Informational                    [Page 29]
-
-RFC 6886                         NAT-PMP                      April 2013
-
-
    from the network without the opportunity to delete its port mappings,
    the NAT gateway will reclaim those mappings when they are not
    renewed.
@@ -1468,13 +1376,6 @@ RFC 6886                         NAT-PMP                      April 2013
    When a NAT-PMP gateway's external IPv4 address changes, it broadcasts
    announcement packets to inform clients of this.  UPnP IGD does not.
 
-
-
-Cheshire & Krochmal           Informational                    [Page 30]
-
-RFC 6886                         NAT-PMP                      April 2013
-
-
 9.7.  Soft State Recovery
 
    When run for a long enough period of time, any network will have
@@ -1523,14 +1424,6 @@ RFC 6886                         NAT-PMP                      April 2013
    turned out that: (i) these people had NAT gateways that either didn't
    support port mapping requests, or had that capability disabled, and
    (ii) for some reason they also had some other old NAT device still
-
-
-
-Cheshire & Krochmal           Informational                    [Page 31]
-
-RFC 6886                         NAT-PMP                      April 2013
-
-
    connected to their network, and those other NAT devices were
    advertising UPnP IGD capability, even though they were not the active
    NAT gateway for the network.  This led to UPnP IGD clients falsely
@@ -1580,13 +1473,6 @@ RFC 6886                         NAT-PMP                      April 2013
    [RFC3007]  Wellington, B., "Secure Domain Name System (DNS) Dynamic
               Update", RFC 3007, November 2000.
 
-
-
-Cheshire & Krochmal           Informational                    [Page 32]
-
-RFC 6886                         NAT-PMP                      April 2013
-
-
    [RFC3022]  Srisuresh, P. and K. Egevang, "Traditional IP Network
               Address Translator (Traditional NAT)", RFC 3022, January
               2001.
@@ -1632,11 +1518,3 @@ Authors' Addresses
    USA
 
    EMail: marc@apple.com
-
-
-
-
-
-
-Cheshire & Krochmal           Informational                    [Page 33]
-
