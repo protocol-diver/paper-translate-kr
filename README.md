@@ -1,10 +1,10 @@
 # paper-translate-kr
 분산시스템, 통신 및 프로토콜에 관련된 RFC, 논문의 번역본을 보관하는 저장소입니다. <br>
-[문서 규격](https://github.com/protocol-diver/paper-translate-kr/edit/main/README.md#%EA%B7%9C%EA%B2%A9)을 참조하세요.
+[문서 규격](https://github.com/protocol-diver/paper-translate-kr#spec)을 참조하세요.
 
 # Index
-1. [Network](https://github.com/protocol-diver/paper-translate-kr/edit/main/README.md#1-network)
-2. [Protocol](https://github.com/protocol-diver/paper-translate-kr/edit/main/README.md#2-protocol)
+1. [Network](https://github.com/protocol-diver/paper-translate-kr#network)
+2. [Protocol](https://github.com/protocol-diver/paper-translate-kr#protocol)
 
 
 ### Network
@@ -16,7 +16,7 @@
 ### Protocol
    - [ ] [RFC6886](https://github.com/protocol-diver/rfc-translate-kr/blob/main/kr/rfc6886.txt) - NAT Port Mapping Protocol (NAT-PMP)
 
-# 규격
+# Spec
 한/영 변환 Github Page 운영에 대비하여 원본과 번역본 둘 다 저장합니다.
 
 ### 페이지 관련 내용은 삭제하여 커밋합니다(번역하는 과정에서 원본의 페이징이 틀어질 것 같아 미리 제거).
