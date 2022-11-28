@@ -459,84 +459,66 @@ Copyright Notice
    한다는 점을 제외하면 요청 패킷과 정확히 동일하게 보여야 합니다. 위에 설명된 대로 이렇게 하면
    충돌 또는 재부팅 후 게이트웨이가 매핑 상태를 자동으로 복구할 수 있습니다.
 
-3.4.  Destroying a Mapping
+3.4.  Destroying a Mapping (매핑 제거)
 
-   A mapping may be destroyed in a variety of ways.  If a client fails
-   to renew a mapping, then at the time its lifetime expires, the
-   mapping MUST be automatically deleted.  In the common case where the
-   gateway device is a combined DHCP server and NAT gateway, when a
-   client's DHCP address lease expires, the gateway device MAY
-   automatically delete any mappings belonging to that client.
-   Otherwise, a new client being assigned the same IP address could
-   receive unexpected inbound UDP packets or inbound TCP connection
-   requests that it did not ask for and does not want.
+   매핑은 다양한 방법으로 파괴될 수 있습니다. 클라이언트가 매핑 갱신에 실패하면 수명이 만료될
+   때 매핑이 MUST:{자동으로 삭제}되어야 합니다. 게이트웨이 장치가 DHCP 서버와 NAT
+   게이트웨이가 결합된 일반적인 경우 클라이언트의 DHCP 주소 임대가 만료되면 게이트웨이 장치는
+   해당 클라이언트에 속한 모든 매핑을 자동으로 삭제할 수 있습니다. 그렇지 않으면 동일한 IP
+   주소가 할당된 새 클라이언트가 예기치 않은 인바운드 UDP 패킷 또는 요청하지 않았거나 원하지
+   않는 인바운드 TCP 연결 요청을 받을 수 있습니다.
 
-   A client MAY also send an explicit packet to request deletion of a
-   mapping that is no longer needed.  A client requests explicit
-   deletion of a mapping by sending a message to the NAT gateway
-   requesting the mapping, with the Requested Lifetime in Seconds set to
-   zero.  The Suggested External Port MUST be set to zero by the client
-   on sending, and MUST be ignored by the gateway on reception.
+   클라이언트는 MAY:{또한 더 이상 필요하지 않은 매핑 삭제를 요청하기 위해 명시적 패킷을 보낼
+   수도 있습니다}. 클라이언트는 Requested Lifetime in Seconds을 0으로 설정하고 매핑을
+   요청하는 NAT 게이트웨이에 메시지를 전송하여 매핑의 명시적 삭제를 요청합니다. Suggested
+   External Port는 MUST:{송신 시 클라이언트에 의해 0으로 설정되어야 하며 수신 시
+   게이트웨이에 의해 무시}되어야 합니다.
 
-   When a mapping is destroyed successfully as a result of the client
-   explicitly requesting the deletion, the NAT gateway MUST send a
-   response packet that is formatted as defined in Section 3.3,
-   "Requesting a Mapping".  The response MUST contain a result code of
-   0, the internal port as indicated in the deletion request, an
-   external port of 0, and a lifetime of 0.  The NAT gateway MUST
-   respond to a request to destroy a mapping that does not exist as if
-   the request were successful.  This is because of the case where the
-   acknowledgment is lost, and the client retransmits its request to
-   delete the mapping.  In this case, the second request to delete the
-   mapping MUST return the same response packet as the first request.
+   클라이언트가 명시적으로 삭제를 요청한 결과로 매핑이 성공적으로 파괴되면 NAT 게이트웨이는
+   MUST:{섹션 3.3, "Requesting a Mapping"에 정의된 형식의 응답 패킷을 보내야
+   합니다}. 응답에는 MUST:{결과 코드 0, 삭제 요청에 표시된 내부 포트, 외부 포트 0 및
+   수명 0이 포함}되어야 합니다. NAT 게이트웨이는 MUST:{존재하지 않는 매핑을 파괴하라는
+   요청에 대해 요청이 성공한 것처럼 응답}해야 합니다. 이는 승인이 유실되어 클라이언트가 맵핑
+   삭제 요청을 재전송하는 경우 때문입니다. 이 경우 두 번째 매핑 삭제 요청은 MUST:{첫 번째
+   요청과 동일한 응답 패킷을 반환}해야 합니다.
 
-   If the deletion request was unsuccessful, the response MUST contain a
-   non-zero result code and the requested mapping; the lifetime is
-   undefined (MUST be set to zero on transmission, and MUST be ignored
-   on reception).  If the client attempts to delete a port mapping that
-   was manually assigned by some kind of configuration tool, the NAT
-   gateway MUST respond with a "Not Authorized" error, result code 2.
-   When a mapping is destroyed as a result of its lifetime expiring or
-   for any other reason, if the NAT gateway's internal state indicates
-   that there are still active TCP connections traversing that now-
-   defunct mapping, then the NAT gateway SHOULD send appropriately
-   constructed TCP RST (reset) packets both to the local client and to
-   the remote peer on the Internet to terminate that TCP connection.
+   삭제 요청이 실패한 경우 응답에는 MUST:{0이 아닌 결과 코드와 요청된 매핑이 포함}되어야
+   합니다; 수명은 정의되지 않습니다(MUST:{전송 시 0으로 설정해야 하며 수신 시 무시}해야
+   함). 클라이언트가 특정 종류의 구성 도구에 의해 수동으로 할당된 포트 매핑을 삭제하려고
+   시도하는 경우 NAT 게이트웨이는 MUST:{"Not Authorized" 오류, 결과 코드 2로 응답}
+   해야 합니다. 수명 만료로 인해 또는 다른 이유로 매핑이 파괴된 경우 NAT 게이트웨이의 내부
+   상태가 지금은 없어진 매핑을 통과하는 활성 TCP 연결이 여전히 있음을 나타낸다면 NAT
+   게이트웨이는 SHOULD:{적절하게 구성된 TCP RST(재설정)를 보내야 합니다}. TCP 연결을
+   종료하기 위해 로컬 클라이언트와 인터넷의 원격 피어 모두에 패킷을 보냅니다.
 
-   A client can request the explicit deletion of all its UDP or TCP
-   mappings by sending the same deletion request to the NAT gateway with
-   the external port, internal port, and lifetime set to zero.  A client
-   MAY choose to do this when it first acquires a new IP address in
-   order to protect itself from port mappings that were performed by a
-   previous owner of the IP address.  After receiving such a deletion
-   request, the gateway MUST delete all its UDP or TCP port mappings
-   (depending on the opcode).  The gateway responds to such a deletion
-   request with a response as described above, with the internal port
-   set to zero.  If the gateway is unable to delete a port mapping, for
-   example, because the mapping was manually configured by the
-   administrator, the gateway MUST still delete as many port mappings as
-   possible, but respond with a non-zero result code.  The exact result
-   code to return depends on the cause of the failure.  If the gateway
-   is able to successfully delete all port mappings as requested, it
-   MUST respond with a result code of zero.
+   클라이언트는 외부 포트, 내부 포트 및 수명이 0으로 설정된 NAT 게이트웨이에 동일한 삭제
+   요청을 전송하여 모든 UDP 또는 TCP 매핑의 명시적 삭제를 요청할 수 있습니다. 클라이언트는
+   IP 주소의 이전 소유자가 수행한 포트 매핑으로부터 자신을 보호하기 위해 MAY:{처음으로 새
+   IP 주소를 획득할 때 이 작업을 수행하도록 선택}할 수 있습니다.
+   이러한 삭제 요청을 수신한 후 게이트웨이는 MUST:{모든 UDP 또는 TCP 포트 매핑을 삭제}
+   해야 합니다(opcode에 따라 다름). 게이트웨이는 내부 포트가 0으로 설정된 상태에서 위에서
+   설명한 응답으로 이러한 삭제 요청에 응답합니다. 예를 들어 관리자가 매핑을 수동으로 구성했기
+   때문에 게이트웨이가 포트 매핑을 삭제할 수 없는 경우 게이트웨이는 MUST:{여전히 가능한 한
+   많은 포트 매핑을 삭제해야 하지만 0이 아닌 결과 코드로 응답}해야 합니다. 반환할 정확한 결과
+   코드는 실패 원인에 따라 다릅니다. 게이트웨이가 요청에 따라 모든 포트 매핑을 성공적으로
+   삭제할 수 있는 경우 MUST:{결과 코드 0으로 응답}해야 합니다.
 
-3.5.  Result Codes
+3.5.  Result Codes (결과 코드)
 
-   Currently defined result codes:
+   현재 정의된 결과 코드:
 
-   0 - Success
-   1 - Unsupported Version
-   2 - Not Authorized/Refused
-       (e.g., box supports mapping, but user has turned feature off)
-   3 - Network Failure
-       (e.g., NAT box itself has not obtained a DHCP lease)
-   4 - Out of resources
-       (NAT box cannot create any more mappings at this time)
-   5 - Unsupported opcode
+   0 - Success (성공)
+   1 - Unsupported Version (지원하지 않는 버전)
+   2 - Not Authorized/Refused (승인되지 않음/거부됨)
+       (예: 상자가 매핑을 지원하지만 사용자가 기능을 껐음)
+   3 - Network Failure (네트워크 장애))
+       (예를 들어, NAT 자체가 DHCP 임대를 얻지 못함)
+   4 - Out of resources (리소스 부족)
+       (NAT는 현재 더 이상 매핑을 생성할 수 없습니다.)
+   5 - Unsupported opcode (지원되지 않는 opcode)
 
-   If the version in the request is not zero, then the NAT-PMP server
-   MUST return the following "Unsupported Version" error response to the
-   client:
+   요청의 버전이 0이 아닌 경우 NAT-PMP 서버는 MUST:{클라이언트에 다음과 같은
+   "Unsupported Version" 오류 응답을 반환}해야 합니다:
 
     0                   1                   2                   3
     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
