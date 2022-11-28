@@ -91,7 +91,7 @@ RFC 6886                         NAT-PMP                      April 2013
 ```
 요구)
 ```
-   SHOULD:{이 프로토콜은 클라이언트가 기본 IPv4 주소가 "Address Allocation for
+   이 프로토콜은 SHOULD:{클라이언트가 기본 IPv4 주소가 "Address Allocation for
    Private Internets"[RFC1918]에 정의된 개인 IPv4 주소 범위 중 하나에 있다고 판단하는
    경우에만 사용}해야 합니다.
 ```
