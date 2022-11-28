@@ -1,6 +1,6 @@
 # paper-translate-kr
 분산시스템, 통신 및 프로토콜에 관련된 RFC, 논문의 번역본을 보관하는 저장소입니다. <br>
-[문서 규격](https://github.com/protocol-diver/paper-translate-kr#spec)을 참조하세요.
+[문서 규격](https://github.com/protocol-diver/paper-translate-kr#spec)을 참고하세요.
 
 # Index
 1. [Network](https://github.com/protocol-diver/paper-translate-kr#network)
