@@ -1,17 +1,20 @@
 # paper-translate-kr
 분산시스템, 통신 및 프로토콜에 관련된 RFC, 논문의 번역본을 보관하는 저장소입니다. <br>
+[문서 규격](https://github.com/protocol-diver/paper-translate-kr/edit/main/README.md#%EA%B7%9C%EA%B2%A9)을 참조하세요.
 
-# 목차
-1. Network
+# Index
+1. [Network](https://github.com/protocol-diver/paper-translate-kr/edit/main/README.md#1-network)
+2. [Protocol](https://github.com/protocol-diver/paper-translate-kr/edit/main/README.md#2-protocol)
 
 
-## 1. Network
-- [x] [RFC894](https://github.com/protocol-diver/rfc-translate-kr/blob/main/kr/rfc894.txt) - A Standard for the Transmission of IP Datagrams over Ethernet Networks (이더넷 네트워크를 통한 IP 데이터그램 전송 표준)
-- [x] [RFC1918](https://github.com/protocol-diver/rfc-translate-kr/blob/main/kr/rfc1918.txt) - Address Allocation for Private Internets (사설 네트워크를 위한 주소 할당)
-- [ ] [RFC4193](https://github.com/protocol-diver/rfc-translate-kr/blob/main/kr/rfc4193.txt) - Unique Local IPv6 Unicast Addresses
-- [ ] [RFC5128](https://github.com/protocol-diver/rfc-translate-kr/blob/main/kr/rfc5128.txt) - State of Peer-to-Peer (P2P) Communication across Network Address Translators (NATs)
-- [ ] [RFC6886](https://github.com/protocol-diver/rfc-translate-kr/blob/main/kr/rfc6886.txt) - NAT Port Mapping Protocol (NAT-PMP)
+### Network
+   - [x] [RFC894](https://github.com/protocol-diver/rfc-translate-kr/blob/main/kr/rfc894.txt) - A Standard for the Transmission of IP Datagrams over Ethernet Networks (이더넷 네트워크를 통한 IP 데이터그램 전송 표준)
+   - [x] [RFC1918](https://github.com/protocol-diver/rfc-translate-kr/blob/main/kr/rfc1918.txt) - Address Allocation for Private Internets (사설 네트워크를 위한 주소 할당)
+   - [ ] [RFC4193](https://github.com/protocol-diver/rfc-translate-kr/blob/main/kr/rfc4193.txt) - Unique Local IPv6 Unicast Addresses
+   - [ ] [RFC5128](https://github.com/protocol-diver/rfc-translate-kr/blob/main/kr/rfc5128.txt) - State of Peer-to-Peer (P2P) Communication across Network Address Translators (NATs)
 
+### Protocol
+   - [ ] [RFC6886](https://github.com/protocol-diver/rfc-translate-kr/blob/main/kr/rfc6886.txt) - NAT Port Mapping Protocol (NAT-PMP)
 
 # 규격
 한/영 변환 Github Page 운영에 대비하여 원본과 번역본 둘 다 저장합니다.
