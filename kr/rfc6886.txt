@@ -528,173 +528,120 @@ Copyright Notice
    | Seconds Since Start of Epoch (in network byte order)          |
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
-   If the opcode in the request is 128 or greater, then this is not a
-   request; it's a response, and the NAT-PMP server MUST silently ignore
-   it.  Otherwise, if the opcode in the request is less than 128, but is
-   not a supported opcode (currently 0, 1, or 2), then the entire
-   request MUST be returned to the sender, with the top bit of the
-   opcode set (to indicate that this is a response) and the result code
-   set to 5 (Unsupported opcode).
+   요청의 opcode가 128 이상인 경우 요청이 아닙니다; 이는 응답이며 NAT-PMP 서버는
+   MUST:{이를 자동으로 무시해}야 합니다. 그렇지 않고 요청의 opcode가 128 미만이지만
+   지원되는 opcode(현재 0, 1 또는 2)가 아닌 경우 전체 요청은 MUST:{opcode 집합의
+   최상위 비트(이것이 응답임을 나타내기 위해)와 5(Unsupported opcode)로 설정된 결과
+   코드와 함께 발신자에게 반환}되어야 합니다.
 
-   For version 0 and a supported opcode (0, 1, or 2), if the operation
-   fails for some reason (Not Authorized, Network Failure, or Out of
-   resources), then a valid response MUST be sent to the client, with
-   the top bit of the opcode set (to indicate that this is a response)
-   and the result code set appropriately.  Other fields in the response
-   MUST be set appropriately.  Specifically:
+   버전 0 및 지원되는 opcode(0, 1 또는 2)의 경우 어떤 이유로 작업이 실패하면(권한 없음,
+   네트워크 오류 또는 리소스 부족) MUST:{유효한 응답을 opcode 세트의 최상위 비트(이것이
+   응답임을 표시하기 위해)와 결과 코드 세트를 적절하게 사용하여 클라이언트에 전송}해야 합니다.
+   MUST:{응답의 다른 필드는 적절하게 설정}해야 합니다. 구체적으로:
 
-   o Seconds Since Start of Epoch MUST be set correctly
+   o MUST:{Seconds Since Start of Epoch를 올바르게 설정}해야 합니다.
 
-   o The External IPv4 Address should be set to the correct address, or
-     to 0.0.0.0, as appropriate.
+   o 외부 IPv4 주소는 올바른 주소 혹은 0.0.0.0 와 같이 적절하게 설정해야 합니다.
 
-   o The Internal Port MUST be set to the client's requested Internal
-     Port.  This is particularly important, because the client needs
-     this information to identify which request suffered the failure.
+   o 내부 포트는 MUST:{클라이언트가 요청한 내부 포트로 설정}해야 합니다. 이는 클라이언트가
+     어떤 요청에 실패했는지 식별하기 위해 이 정보가 필요하기 때문에 특히 중요합니다.
 
-   o The Mapped External Port and Port Mapping Lifetime MUST be set
-     appropriately -- i.e., zero if no successful port mapping was
-     created.
+   o Mapped External Port 및 Port Mapping Lifetime은 MUST:{적절하게 설정}해야
+   합니다. 즉, 성공적인 포트 매핑이 생성되지 않은 경우 0입니다.
 
-   Should future NAT-PMP opcodes be defined, their error responses MUST
-   similarly be specified to include sufficient information to identify
-   which request suffered the failure.  By design, NAT-PMP messages do
-   not contain any transaction identifiers.  All NAT-PMP messages are
-   idempotent and self-describing; therefore, the specifications of
-   future NAT-PMP messages need to include enough information for their
-   responses to be self-describing.
-   Clients MUST be able to properly handle result codes not defined in
-   this document.  Undefined results codes MUST be treated as fatal
-   errors of the request.
+   미래의 NAT-PMP opcode가 정의되어야 하는 경우 오류 응답은 MUST:{실패를 겪은 요청을
+   식별할 수 있는 충분한 정보를 포함하도록 유사하게 지정}되어야 합니다. 설계상 NAT-PMP
+   메시지에는 트랜잭션 식별자가 포함되어 있지 않습니다. 모든 NAT-PMP 메시지는 멱등적이고
+   자체 설명적입니다. 따라서 향후 NAT-PMP 메시지의 사양에는 응답이 자체 설명이 될 수 있도록
+   충분한 정보가 포함되어야 합니다. 클라이언트는 MUST:{이 문서에 정의되지 않은 결과 코드를
+   적절하게 처리}할 수 있어야 합니다. 정의되지 않은 결과 코드는 요청의 치명적인 오류로
+   처리되어야 합니다.
 
-3.6.  Seconds Since Start of Epoch
+3.6.  Seconds Since Start of Epoch (에포크 시작 이후의 초단위)
 
-   Every packet sent by the NAT gateway includes a Seconds Since Start
-   of Epoch (SSSoE) field.  If the NAT gateway resets or loses the state
-   of its port mapping table, due to reboot, power failure, or any other
-   reason, it MUST reset its epoch time and begin counting SSSoE from
-   zero again.  Whenever a client receives any packet from the NAT
-   gateway, either unsolicited or in response to a client request, the
-   client computes its own conservative estimate of the expected SSSoE
-   value by taking the SSSoE value in the last packet it received from
-   the gateway and adding 7/8 (87.5%) of the time elapsed according to
-   the client's local clock since that packet was received.  If the
-   SSSoE in the newly received packet is less than the client's
-   conservative estimate by more than 2 seconds, then the client
-   concludes that the NAT gateway has undergone a reboot or other loss
-   of port mapping state, and the client MUST immediately renew all its
-   active port mapping leases as described in Section 3.7, "Recreating
-   Mappings on NAT Gateway Reboot".
+   NAT 게이트웨이에서 보낸 모든 패킷에는 Seconds Since Start of Epoch (SSSoE)
+   필드가 포함되어 있습니다. 재부팅, 정전 또는 기타 이유로 인해 NAT 게이트웨이가 포트 매핑
+   테이블의 상태를 재설정하거나 손실하는 경우, epoch 시간을 재설정하고 SSSoE를 다시 0부터
+   계산하기 시작해야 합니다. 클라이언트가 요청하지 않았거나 클라이언트 요청에 대한 응답으로
+   NAT 게이트웨이에서 패킷을 수신할 때마다 클라이언트는 게이트웨이에서 수신한 마지막 패킷의
+   SSSoE 값에 해당 패킷이 수신된 이후 클라이언트의 로컬 시계에 따라 경과된 시간의
+   7/8(87.5%)을 더하여 예상 SSSoE 값의 자체적인 보수적 추정치를 계산합니다. 새로 수신된
+   패킷의 SSSoE가 클라이언트의 보수적인 추정치보다 2초 이상 적으면 클라이언트는 NAT
+   게이트웨이가 재부팅되었거나 포트 매핑 상태의 다른 손실을 겪었다고 결론을 내리고,
+   클라이언트는 MUST:{3.7절 "Recreating Mappings on NAT Gateway Reboot"에
+   설명된 대로 모든 활성 포트 매핑 임대를 즉시 갱신}해야 합니다.
 
-3.7.  Recreating Mappings on NAT Gateway Reboot
+3.7.  Recreating Mappings on NAT Gateway Reboot (NAT 게이트웨이 재부팅 시 매핑 재생성)
 
-   The NAT gateway MAY store mappings in persistent storage so that,
-   when it is powered off or rebooted, it remembers the port mapping
-   state of the network.
+   NAT 게이트웨이는 MAY:{전원이 꺼지거나 재부팅될 때 네트워크의 포트 매핑 상태를 기억할 수
+   있도록 영구 저장소에 매핑을 저장}할 수 있습니다.
 
-   However, maintaining this state is not essential for correct
-   operation.  When the NAT gateway powers on or clears its port mapping
-   state as the result of a configuration change, it MUST reset the
-   epoch time and re-announce its IPv4 address as described in Section
-   3.2.1, "Announcing Address Changes".  Reception of this packet where
-   time has apparently gone backwards serves as a hint to clients on the
-   network that they SHOULD immediately send renewal packets (to
-   immediately recreate their mappings) instead of waiting until the
-   originally scheduled time for those renewals.  Clients who miss
-   receiving those gateway announcement packets for any reason will
-   still renew their mappings at the originally scheduled time and cause
-   their mappings to be recreated; it will just take a little longer for
-   these clients.
-   A mapping renewal packet is formatted identically to an original
-   mapping request; from the point of view of the client, it is a
-   renewal of an existing mapping, but from the point of view of the
-   freshly rebooted NAT gateway, it appears as a new mapping request.
+   그러나 올바른 작동을 위해 이 상태를 유지하는 것이 필수적인 것은 아닙니다. NAT 게이트웨이가
+   전원을 켜거나 구성 변경의 결과로 포트 매핑 상태를 지울 때 MUST:{3.2.1절 "Announcing
+   Address Changes"에 설명된 대로 epoch 시간을 재설정하고 IPv4 주소를 다시 알려야
+   합니다}. 분명히 시간이 거꾸로 된 이 패킷의 수신은 네트워크의 클라이언트에게 MUST:{원래
+   예정된 갱신 시간까지 기다리지 않고 즉시 갱신 패킷(매핑을 즉시 재생성하기 위해)을 보내야
+   한다}는 힌트 역할을 합니다. 어떤 이유로든 해당 게이트웨이 알림 패킷 수신을 놓친 클라이언트는
+   여전히 원래 예약된 시간에 매핑을 갱신하고 해당 매핑이 다시 생성되도록 합니다; 이러한
+   클라이언트에게는 조금 더 오래 걸릴 것입니다.
+   매핑 갱신 패킷은 원래 매핑 요청과 동일하게 포맷됩니다; 클라이언트 입장에서는 기존 매핑의
+   갱신이지만 새로 재부팅된 NAT 게이트웨이 입장에서는 새로운 매핑 요청으로 나타납니다.
 
-   This self-healing property of the protocol is very important.
+   프로토콜의 이러한 자가 복구 속성은 매우 중요합니다.
 
-   The remarkable reliability of the Internet as a whole derives in
-   large part from the fact that important state is held in the
-   endpoints, not in the network itself [ETEAISD].  Power-cycling an
-   Ethernet switch results only in a brief interruption in the flow of
-   packets; established TCP connections through that switch are not
-   broken, merely delayed for a few seconds.  Indeed, a failing Ethernet
-   switch can even be replaced with a new one, and as long as the cables
-   are transferred over reasonably quickly, after the upgrade all the
-   TCP connections that were previously going through the old switch
-   will be unbroken and now going through the new one.  The same is true
-   of IP routers, wireless base stations, etc.  The one exception is NAT
-   gateways.  Because the port mapping state is required for the NAT
-   gateway to know where to forward inbound packets, loss of that state
-   breaks connectivity through the NAT gateway.  By allowing clients to
-   detect when this loss of NAT gateway state has occurred, and recreate
-   it on demand, we turn hard state in the network into soft state, and
-   allow it to be recovered automatically when needed.
+   전체적으로 인터넷의 놀라운 안정성은 중요한 부분이 네트워크 자체가 아니라 엔드포인트에 있다는
+   사실에서 크게 비롯됩니다[ETEAISD]. 이더넷 스위치의 전원을 껐다 켜면 패킷 흐름이 잠시
+   중단됩니다; 해당 스위치를 통해 설정된 TCP 연결은 끊어지지 않고 몇 초 동안만 지연됩니다.
+   실제로 결함이 있는 이더넷 스위치는 새 것으로 교체할 수도 있으며 케이블이 합리적으로 신속하게
+   전송되는 한 업그레이드 후 이전에 이전 스위치를 통과했던 모든 TCP 연결이 끊어지지 않고 이제
+   새 스위치를 통과합니다. IP 라우터, 무선 기지국 등도 마찬가지입니다. 한 가지 예외는 NAT
+   게이트웨이입니다. NAT 게이트웨이가 인바운드 패킷을 전달할 위치를 알기 위해서는 포트 매핑
+   상태가 필요하기 때문에 해당 상태가 손실되면 NAT 게이트웨이를 통한 연결이 끊어집니다.
+   클라이언트가 이러한 NAT 게이트웨이 상태 손실이 발생한 시점을 감지하고 요청 시 다시 생성할
+   수 있도록 하여 네트워크의 하드 상태를 소프트 상태로 전환하고 필요할 때 자동으로 복구할 수
+   있도록 합니다.
 
-   Without this automatic recreation of soft state in the NAT gateway,
-   reliable long-term networking would not be achieved.  As mentioned
-   above, the reliability of the Internet does not come from trying to
-   build a perfect network in which errors never happen, but from
-   accepting that in any sufficiently large system there will always be
-   some component somewhere that's failing, and designing mechanisms
-   that can handle those failures and recover.  To illustrate this point
-   with an example, consider the following scenario: Imagine a network
-   security camera that has a web interface and accepts incoming
-   connections from web browser clients.  Imagine this network security
-   camera uses NAT-PMP or a similar protocol to set up an inbound port
-   mapping in the NAT gateway so that it can receive incoming
-   connections from clients on the other side of the NAT gateway.  Now,
-   this camera may well operate for weeks, months, or even years.
-   During that time, it's possible that the NAT gateway could experience
-   a power failure or be rebooted.  The user could upgrade the NAT
-   gateway's firmware, or even replace the entire NAT gateway device
-   with a newer model.  The general point is that if the camera operates
-   for a long enough period of time, some kind of disruption to the NAT
-   gateway becomes inevitable.  The question is not whether the NAT
-   gateway will lose its port mappings, but when, and how often.  If the
-   network camera and devices like it on the network can detect when the
-   NAT gateway has lost its port mappings, and recreate them
-   automatically, then these disruptions are self-correcting and largely
-   invisible to the end user.  If, on the other hand, the disruptions
-   are not self-correcting, and after a NAT gateway reboot the user has
-   to manually reset or reboot all the other devices on the network too,
-   then these disruptions are *very* visible to the end user.  This
-   aspect of the design is part of what makes the difference between a
-   protocol that keeps on working indefinitely over a time scale of
-   months or years, and a protocol that works in brief testing, but in
-   the real world is continually failing and requiring manual
-   intervention to get it going again.
+   NAT 게이트웨이에서 소프트 상태를 자동으로 재생성하지 않으면 신뢰할 수 있는 장기적 네트워킹을
+   달성할 수 없습니다. 위에서 언급했듯이 인터넷의 신뢰성은 오류가 절대 발생하지 않는 완벽한
+   네트워크를 구축하려는 시도에서 오는 것이 아니어서 충분히 큰 시스템에는 항상 어딘가에 오류가
+   있는 구성 요소가 있다는 사실을 받아들이고 이러한 실패를 처리하고 복구하십시오. 예를 들어 이
+   점을 설명하기 위해 다음 시나리오를 고려하십시오: 웹 인터페이스가 있고 웹 브라우저
+   클라이언트에서 들어오는 연결을 수락하는 네트워크 보안 카메라를 상상해 보십시오. 이 네트워크
+   보안 카메라가 NAT-PMP 또는 유사한 프로토콜을 사용하여 NAT 게이트웨이의 다른 쪽
+   클라이언트에서 들어오는 연결을 수신할 수 있도록 NAT 게이트웨이에서 인바운드 포트 매핑을
+   설정한다고 상상해 보십시오. 이제 이 카메라는 몇 주, 몇 달 또는 몇 년 동안 잘 작동할 수
+   있습니다. 이 시간 동안 NAT 게이트웨이에 정전이 발생하거나 재부팅될 수 있습니다. 사용자는
+   NAT 게이트웨이의 펌웨어를 업그레이드하거나 전체 NAT 게이트웨이 장치를 최신 모델로 교체할
+   수도 있습니다. 일반적인 요점은 카메라가 충분히 오랫동안 작동하면 NAT 게이트웨이에 어떤
+   종류의 중단이 불가피하다는 것입니다. 문제는 NAT 게이트웨이가 포트 매핑을 잃을지 여부가
+   아니라 시기와 빈도입니다. NAT 게이트웨이가 포트 매핑을 잃어버렸을 때 네트워크 카메라 및
+   이와 유사한 장치가 이를 감지하고 자동으로 다시 생성할 수 있다면 이러한 중단은 자체 수정되며
+   최종 사용자에게는 거의 보이지 않습니다. 반면에 중단이 자체 수정되지 않고 NAT 게이트웨이를
+   재부팅한 후 사용자가 네트워크의 다른 모든 장치도 수동으로 재설정하거나 재부팅해야 하는 경우
+   이러한 중단은 최종 사용자의 눈에 *매우* 잘보입니다. 디자인의 이러한 측면은 몇 달 또는 몇
+   년의 시간 척도에 걸쳐 무기한으로 계속 작동하는 프로토콜과 간단한 테스트에서 작동하지만 실제
+   세계에서 지속적으로 실패하고 다시 시작하려면 수동 개입이 필요합니다.
 
-   When a client renews its port mappings as the result of receiving a
-   packet where the Seconds Since Start of Epoch (SSSoE) field indicates
-   that a reboot or similar loss of state has occurred, the client MUST
-   first delay by a random amount of time selected with uniform random
-   distribution in the range 0 to 5 seconds, and then send its first
-   port mapping request.  After that request is acknowledged by the
-   gateway, the client may then send its second request, and so on, as
-   rapidly as the gateway allows.  The requests SHOULD be issued
-   serially, one at a time; the client SHOULD NOT issue multiple
-   concurrent requests.
+   클라이언트가 Seconds Since Start of Epoch 필드에 재부팅 또는 이와 유사한 상태 손실이
+   발생했는지 나타내는 패킷을 수신한 결과로 포트 매핑을 갱신할 때, 클라이언트는 MUST:{0~5초
+   범위의 균일한 무작위 분포로 선택된 임의의 시간만큼 먼저 지연한 다음 첫 번째 포트 매핑 요청}을
+   보내야 합니다. 해당 요청이 게이트웨이에서 승인된 후 클라이언트는 게이트웨이가 허용하는 한
+   빠르게 두 번째 요청 등을 보낼 수 있습니다. 요청은 SHOULD:{한 번에 하나씩 순차적으로 발행}
+   되어야 합니다; 클라이언트는 SHOULD NOT:{여러 개의 동시 요청을 발행하면 안 됩니다}.
 
-   The discussion in this section focuses on recreating inbound port
-   mappings after loss of NAT gateway state, because that is the more
-   serious problem.  Losing port mappings for outgoing connections
-   destroys those currently active connections, but does not prevent
-   clients from establishing new outgoing connections.  In contrast,
-   losing inbound port mappings not only destroys all existing inbound
-   connections, but also prevents the reception of any new inbound
-   connections until the port mapping is recreated.  Accordingly, we
-   consider recovery of inbound port mappings more important.  However,
-   clients that want outgoing connections to survive a NAT gateway
-   reboot can also achieve that using NAT-PMP, in the common case of a
-   residential NAT gateway with a single, relatively stable, external IP
-   address.  After initiating an outbound TCP connection (which will
-   cause the NAT gateway to establish an implicit port mapping), the
-   client should send the NAT gateway a port mapping request for the
-   source port of its TCP connection, which will cause the NAT gateway
-   to send a response giving the external port it allocated for that
-   mapping.  The client can then store this information, and use it
-   later to recreate the mapping if it determines that the NAT gateway
-   has lost its mapping state.
+   이 섹션에서는 NAT 게이트웨이 상태가 손실된 후 인바운드 포트 매핑을 생성하는 데 중점을
+   둡니다. 이것이 더 심각한 문제이기 때문입니다. 발신 연결에 대한 포트 매핑이 손실되면 현재
+   활성 연결이 파괴되지만 클라이언트가 새 발신 연결을 설정하는 것을 막지는 않습니다. 반대로
+   인바운드 포트 매핑이 손실되면 기존의 모든 인바운드 연결이 파괴될 뿐만 아니라 포트 매핑이
+   다시 생성될 때까지 새로운 인바운드 연결 수신이 차단됩니다. 따라서 우리는 인바운드 포트
+   매핑의 복구를 더 중요하게 생각합니다. 그러나 NAT 게이트웨이 재부팅 후에도 나가는 연결을
+   유지하려는 클라이언트는 일반적인 경우 상대적으로 안정적인 단일 외부 IP 주소가 있는 가정용
+   NAT 게이트웨이의 NAT-PMP를 사용하여 이를 달성할 수도 있습니다. 아웃바운드 TCP 연결을
+   시작한 후(NAT 게이트웨이가 암시적 포트 매핑을 설정하도록 함), 클라이언트는 NAT 
+   게이트웨이에 TCP 연결의 소스 포트에 대한 포트 매핑 요청을 보내면, NAT 게이트웨이가 해당
+   매핑에 할당한 외부 포트를 제공하는 응답을 보내게 됩니다. 그런 다음 클라이언트는 이 정보를
+   저장하고 NAT 게이트웨이가 매핑 상태를 상실했다고 판단되면 나중에 이를 사용하여 매핑을 다시
+   생성할 수 있습니다.
 
 3.8.  NAT Gateways with NAT Function Disabled
 
