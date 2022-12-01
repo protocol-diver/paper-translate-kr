@@ -643,118 +643,89 @@ Copyright Notice
    저장하고 NAT 게이트웨이가 매핑 상태를 상실했다고 판단되면 나중에 이를 사용하여 매핑을 다시
    생성할 수 있습니다.
 
-3.8.  NAT Gateways with NAT Function Disabled
+3.8.  NAT Gateways with NAT Function Disabled (NAT 기능이 비활성화된 NAT 게이트웨이)
 
-   Note that only devices that are *currently* acting in the role of NAT
-   gateway should participate in NAT-PMP protocol exchanges with
-   clients.  A network device that is capable of NAT (and NAT-PMP) but
-   is currently configured not to perform that function (e.g., it is
-   acting as a traditional IP router, forwarding packets without
-   modifying them) MUST NOT respond to NAT-PMP requests from clients nor
-   send spontaneous NAT-PMP address-change announcements.
+   *현재* NAT 게이트웨이 역할을 하는 장치만 클라이언트와의 NAT-PMP 프로토콜 교환에 참여해야
+   합니다. NAT(및 NAT-PMP)가 가능하지만 현재 해당 기능을 수행하지 않도록 구성된 네트워크
+   장치(예: 패킷을 수정하지 않고 전달하는 기존 IP 라우터 역할)는 MUST NOT:{클라이언트의
+   NAT-PMP 요청에 응답하거나 자발적인 NAT-PMP 주소 변경 알림을 보내서는 안 됩니다}.
 
-   In particular, a network device not currently acting in the role of
-   NAT gateway should not even respond to NAT-PMP requests by returning
-   an error code such as 2, "Not Authorized/Refused", since to do so is
-   misleading to clients -- it suggests that NAT port mapping is
-   necessary on this network for the client to successfully receive
-   inbound connections, but is not available because the administrator
-   has chosen to disable that functionality.
+   특히 현재 NAT 게이트웨이의 역할을 수행하지 않는 네트워크 장치는 2 ("NotAuthorized/
+   Refused")와 같은 오류 코드를 반환하는 것은 고객에게 오해의 소지가 있기 때문에 NAT-PMP
+   요청에 응답하지 않아야 합니다 -- 클라이언트가 인바운드 연결을 성공적으로 수신하려면 이
+   네트워크에서 NAT 포트 매핑이 필요하지만 관리자가 해당 기능을 비활성화하도록 선택했기 때문에
+   사용할 수 없음을 나타냅니다.
 
-   Clients should also be careful to avoid making unfounded assumptions,
-   such as the assumption that if the client has an IPv4 address in one
-   of the private IPv4 address ranges [RFC1918], then that means NAT
-   necessarily must be in use.  Net 10/8 has enough addresses to build a
-   private network with millions of hosts and thousands of
-   interconnected subnets, all without any use of NAT.  Many
-   organizations have built such private networks that benefit from
-   using standard TCP/IP technology, but by choice do not connect to the
-   public Internet.  The purpose of NAT-PMP is to mitigate some of the
-   damage caused by NAT.  It would be an ironic and unwanted side effect
-   of this protocol if it were to lead well-meaning but misguided
-   developers to create products that refuse to work on a private
-   network *unless* they can find a NAT gateway to talk to.
-   Consequently, a client finding that NAT-PMP is not available on its
-   network should not give up, but should proceed on the assumption that
-   the network may be a traditional routed IP network, with no address
-   translation being used.  This assumption may not always be true, but
-   it is better than the alternative of falsely assuming the worst and
-   not even trying to use normal (non-NAT) IP networking.
+   또한 클라이언트는 클라이언트가 프라이빗 IPv4 주소 범위[RFC1918] 중 하나에 IPv4 주소를
+   가지고 있다면 NAT를 반드시 사용해야 한다는 가정과 같은 근거 없는 가정을 하지 않도록
+   주의해야 합니다. Net 10/8에는 NAT를 전혀 사용하지 않고 수백만 개의 호스트와 수천 개의
+   상호 연결된 서브넷이 있는 개인 네트워크를 구축할 수 있는 충분한 주소가 있습니다. 많은
+   조직에서 표준 TCP/IP 기술을 사용하여 이점을 얻을 수 있는 사설 네트워크를 구축했지만
+   선택에 따라 공용 인터넷에 연결하지 않습니다. NAT-PMP의 목적은 NAT로 인한 손상을 일부
+   완화하는 것입니다. 의도는 좋으나 방향이 잘못된 개발자가 대화할 NAT 게이트웨이를 찾을 수
+   *없는 경우* 사설 네트워크에서 작동하지 않는 제품을 만들도록 유도한다면 이 프로토콜의
+   아이러니하고 원치 않는 부작용이 될 것입니다. 결과적으로 NAT-PMP를 네트워크에서 사용할 수
+   없음을 발견한 클라이언트는 포기해서는 안 되며 네트워크가 주소 변환이 사용되지 않는 기존의
+   라우팅된 IP 네트워크일 수 있다는 가정하에 진행해야 합니다. 이 가정이 항상 맞는 것은
+   아니지만 최악의 상황을 잘못 가정하고 일반(non-NAT) IP 네트워킹을 사용하지 않는 것보다
+   낫습니다.
 
-   If a network device not currently acting in the role of NAT gateway
-   receives UDP packets addressed to port 5351, it SHOULD respond
-   immediately with an "ICMP Port Unreachable" message to tell the
-   client that it needn't continue with timeouts and retransmissions,
-   and it should assume that NAT-PMP is not available and not needed on
-   this network.  Typically, this behavior can be achieved merely by not
-   having an open socket listening on UDP port 5351.
+   현재 NAT 게이트웨이의 역할을 수행하지 않는 네트워크 장치가 포트 5351로 지정된 UDP 패킷을
+   수신하는 경우 SHOULD:{"ICMP Port Unreachable" 메시지로 즉시 응답}하여 시간 초과
+   및 재전송을 계속할 필요가 없음을 클라이언트에 알리고 NAT-PMP를 사용할 수 없고 이
+   네트워크에서 필요하지 않다고 가정해야 합니다. 일반적으로 이 동작은 UDP 포트 5351에서 수신
+   대기 중인 열린 소켓이 없어도 달성할 수 있습니다.
 
-3.9.  All Mappings Are Bidirectional
+3.9.  All Mappings Are Bidirectional (모든 매핑은 양방향)
 
-   All NAT mappings, whether created implicitly by an outbound packet,
-   created explicitly using NAT-PMP, or configured statically, are
-   bidirectional.  This means that when an outbound packet from a
-   particular internal address and port is translated to an external
-   address and port, replies addressed to that external address and port
-   need to be translated back to the corresponding internal address and
-   port.
+   아웃바운드 패킷에 의해 암시적으로 생성되거나 NAT-PMP를 사용하여 명시적으로 생성되거나
+   정적으로 구성되는 모든 NAT 매핑은 양방향입니다. 즉, 특정 내부 주소 및 포트의 아웃바운드
+   패킷이 외부 주소 및 포트로 변환될 때 해당 외부 주소 및 포트로 지정된 응답은 해당 내부
+   주소 및 포트로 다시 변환되어야 합니다.
 
-   The converse is also true.  When an inbound packet is received that
-   is addressed to an external address and port that matches an existing
-   mapping (implicit, explicit, or static), it is translated to the
-   corresponding internal address and port and forwarded.  Outbound
-   replies from that internal address and port need to be translated to
-   the correct external address and port so that they are correctly
-   recognized by the remote peer.
+   그 반대도 마찬가지입니다. 기존 매핑(암시적, 명시적 또는 정적)과 일치하는 외부 주소 및
+   포트로 지정되는 인바운드 패킷이 수신되면 해당 내부 주소 및 포트로 변환되어 전달됩니다.
+   해당 내부 주소 및 포트의 아웃바운드 응답은 원격 피어에서 올바르게 인식되도록 올바른 외부
+   주소 및 포트로 변환되어야 합니다.
 
-   In particular, if an outbound UDP reply that matches an existing
-   explicit or static mapping is instead treated like a "new" outbound
-   UDP packet, and a new dynamic mapping is created (with a different
-   external address and port), then at the time that packet arrives at
-   the remote peer it will not be recognized as a valid reply.  For TCP
-   this bug is quickly spotted because all TCP implementations will
-   ignore replies with the wrong apparent source address and port.  For
-   UDP this bug can more easily go unnoticed because some UDP clients
-   neglect to check the source address and port of replies; thus, they
-   will appear to work some of the time with NAT gateways that put the
-   wrong source address and port in outbound packets.  All NAT gateways
-   MUST ensure that mappings, however created, are bidirectional.
+   특히, 기존의 명시적 또는 정적 매핑과 일치하는 아웃바운드 UDP 응답이 대신 "새로운"
+   아웃바운드 UDP 패킷처럼 취급되고, 새로운 동적 매핑이 생성된 경우(다른 외부 주소 및 포트
+   사용), 패킷이 원격 피어에 도착하면 유효한 응답으로 인식되지 않습니다. TCP의 경우 이 버그는
+   모든 TCP 구현이 잘못된 명백한 소스 주소 및 포트가 있는 응답을 무시하기 때문에 빠르게
+   발견됩니다. UDP의 경우 일부 UDP 클라이언트가 소스 주소와 응답 포트를 확인하지 않기 때문에
+   이 버그가 더 쉽게 눈에 띄지 않을 수 있습니다. 따라서 그들은 아웃바운드 패킷에 잘못된 소스
+   주소와 포트를 넣는 NAT 게이트웨이와 함께 작동하는 것처럼 보일 것입니다. 모든 NAT 
+   게이트웨이는 MUST:{생성된 매핑이 양방향임을 확인}해야 합니다.
 
-4.  UNSAF Considerations
+4.  UNSAF Considerations (UNSAF 고려 사항)
 
-   The document "IAB Considerations for UNilateral Self-Address Fixing
-   (UNSAF) Across Network Address Translation (NAT)" [RFC3424] covers a
-   number of issues when working with NATs.  It outlines some
-   requirements for any document that attempts to work around problems
-   associated with NATs.  This section addresses those requirements.
+   "IAB Considerations for UNilateral Self-Address Fixing (UNSAF)
+   Across Network Address Translation (NAT)" 문서 [RFC3424]는 NAT 작업 시
+   여러 가지 문제를 다룹니다. NAT와 관련된 문제를 해결하려는 모든 문서에 대한 몇 가지 요구
+   사항을 설명합니다. 이 섹션에서는 이러한 요구 사항을 다룹니다.
 
-4.1.  Scope
+4.1.  Scope (범위)
 
-   This protocol addresses the needs of TCP and UDP transport peers that
-   are separated from the public Internet by exactly one IPv4 NAT.  Such
-   peers must have access to some form of directory server for
-   registering the public IPv4 address and port at which they can be
-   reached.
+   이 프로토콜은 정확히 하나의 IPv4 NAT에 의해 공용 인터넷과 분리된 TCP 및 UDP 전송 피어의
+   요구를 해결합니다. 이러한 피어는 도달할 수 있는 공용 IPv4 주소 및 포트를 등록하기 위해
+   특정 형태의 디렉토리 서버에 액세스할 수 있어야 합니다.
 
-4.2.  Transition Plan
+4.2.  Transition Plan (전환 계획)
 
-   Any client making use of this protocol SHOULD implement IPv6 support.
-   If a client supports IPv6 and is running on a device with a global
-   IPv6 address, that IPv6 address SHOULD be preferred to the IPv4
-   external address learned via this NAT mapping protocol.  In case
-   other clients do not have IPv6 connectivity, both the IPv4 and IPv6
-   addresses SHOULD be registered with whatever form of directory server
-   is used.  Preference SHOULD be given to IPv6 addresses when
-   available.  By implementing support for IPv6 and using this protocol
-   for IPv4, vendors can ship products today that will work under both
-   scenarios.  As IPv6 becomes more widely deployed, clients of this
-   protocol following these recommendations will transparently make use
-   of IPv6.
+   이 프로토콜을 사용하는 모든 클라이언트는 SHOULD:{IPv6 지원을 구현}해야 합니다.
+   클라이언트가 IPv6를 지원하고 글로벌 IPv6 주소가 있는 장치에서 실행 중인 경우 해당
+   SHOULD:{IPv6 주소가 이 NAT 매핑 프로토콜을 통해 학습된 IPv4 외부 주소보다 선호}
+   되어야 합니다. 다른 클라이언트에 IPv6 연결이 없는 경우 IPv4 및 IPv6 주소는 SHOULD:
+   {사용되는 모든 형태의 디렉토리 서버에 등록}되어야 합니다. SHOULD:{사용 가능한 경우
+   IPv6 주소에 우선권을 부여}해야 합니다. IPv6에 대한 지원을 구현하고 IPv4에 이
+   프로토콜을 사용함으로써 공급업체는 현재 두 시나리오 모두에서 작동하는 제품을 출시할 수
+   있습니다. IPv6이 보다 광범위하게 배포됨에 따라 이러한 권장 사항을 따르는 이 프로토콜의
+   클라이언트는 IPv6을 투명하게 사용할 것입니다.
 
-4.3.  Failure Cases
+4.3.  Failure Cases (실패사례)
 
-   Aside from NATs that do not implement this protocol, there are a
-   number of situations where this protocol may not work.
+   이 프로토콜을 구현하지 않는 NAT 외에도 이 프로토콜이 작동하지 않는 여러 가지 상황이
+   있습니다.
 
 4.3.1.  NAT behind NAT
 
