@@ -356,7 +356,7 @@ Copyright Notice
    1 - UDP 매핑
    2 - TCP 매핑
 
-   MUST:{Reserved 필드는 전송 시 0으로 설정되어야 하며 수신 시 무시되어야 합니다.
+   MUST:{Reserved 필드는 전송 시 0으로 설정되어야 하며 수신 시 무시}되어야 합니다.
 
    Ports와 Lifetime은 기존 네트워크 바이트 순서(즉, 최상위 바이트 먼저)로 전송됩니다.
 
