@@ -76,7 +76,7 @@ Copyright Notice
       4.4. Long-Term Solution
            (장기적 해결책)
       4.5. Existing Deployed NATs
-           (기존 배포된 NAT들)
+           (기존에 배치된 NAT들)
    5. Security Considerations
       (보안 고려 사항)
    6. IANA Considerations
@@ -733,117 +733,94 @@ Copyright Notice
    이 프로토콜을 구현하지 않는 NAT 외에도 이 프로토콜이 작동하지 않는 여러 가지 상황이
    있습니다.
 
-4.3.1.  NAT behind NAT
+4.3.1.  NAT behind NAT (NAT 뒤의 NAT)
 
-   Some people's primary IPv4 address, assigned by their ISP, may itself
-   be a NAT address.  In addition, some people may have an external IPv4
-   address, but may then double NAT themselves, perhaps by choice or
-   perhaps by accident.  Although it might be possible in principle for
-   one NAT gateway to recursively request a mapping from the next one,
-   this document does not advocate that and does not try to prescribe
-   how it would be done.
+   ISP가 할당한 일부 사용자의 기본 IPv4 주소는 그 자체가 NAT 주소일 수 있습니다. 또한 일부
+   사람들은 외부 IPv4 주소를 가지고 있을 수 있지만 선택에 따라 또는 우발적으로 NAT 자체를
+   이중화할 수 있습니다. 원칙적으로 하나의 NAT 게이트웨이가 다음 게이트웨이에서 매핑을
+   재귀적으로 요청하는 것이 가능할 수 있지만 이 문서는 이를 옹호하지 않으며 수행 방법을
+   규정하지 않습니다.
 
-   It would be a lot of work to implement nested NAT port mapping
-   correctly, and there are a number of reasons why the end result might
-   not be as useful as we might hope.  Consider the case of an ISP that
-   offers each of its customers only a single NAT address.  This ISP
-   could instead have chosen to provide each customer with a single
-   public IPv4 address, or, if the ISP insists on running NAT, it could
-   have chosen to allow each customer a reasonable number of addresses,
-   enough for each customer device to have its own NAT address directly
-   from the ISP.  If, instead, this ISP chooses to allow each customer
-   just one and only one NAT address, forcing said customer to run
-   nested NAT in order to use more than one device, it seems unlikely
-   that such an ISP would be so obliging as to provide a NAT service
-   that supports NAT-PMP.  Supposing that such an ISP did wish to offer
-   its customers NAT service with NAT-PMP so as to give them the ability
-   to receive inbound connections, this ISP could easily choose to allow
-   each client to request a reasonable number of DHCP addresses from
-   that gateway.  Remember that Net 10/8 [RFC1918] allows for over 16
-   million addresses, so NAT addresses are not in any way in short
-   supply.  A single NAT gateway with 16 million available addresses is
-   likely to run out of packet forwarding capacity before it runs out of
-   internal addresses to hand out.  In this way, the ISP could offer
-   single-level NAT with NAT-PMP, obviating the need to support nested
-   NAT-PMP.  In addition, an ISP that is motivated to provide their
-   customers with unhindered access to the Internet by allowing incoming
-   as well as outgoing connections has better ways to offer this
-   service.  Such an ISP could offer its customers real public IPv4
-   addresses instead of NAT addresses, or could choose to offer its
-   customers full IPv6 connectivity, where no mapping or translation is
-   required at all.
+   중첩된 NAT 포트 매핑을 올바르게 구현하려면 많은 작업이 필요하며 최종 결과가 우리가 원하는
+   만큼 유용하지 않을 수 있는 데는 여러 가지 이유가 있습니다. 각 고객에게 단일 NAT 주소만
+   제공하는 ISP의 경우를 생각해 보십시오. 대신 이 ISP는 각 고객에게 단일 공용 IPv4 주소를
+   제공하도록 선택했을 수 있습니다. 또는 ISP가 NAT 실행을 고집하는 경우 각 고객 장치가
+   ISP에서 직접 자체 NAT 주소를 가질 수 있도록 각 고객에게 합리적인 수의 주소를 허용하도록
+   선택할 수 있습니다. 대신 이 ISP가 각 고객에게 단 하나의 NAT 주소만 허용하도록 선택하여
+   해당 고객이 둘 이상의 장치를 사용하기 위해 중첩된 NAT를 실행하도록 강요한다면 ISP가
+   NAT-PMP를 지원하는 NAT 서비스를 제공할 의무가 없어 보입니다. 그러한 ISP가 고객에게
+   인바운드 연결을 수신할 수 있는 기능을 제공하기 위해 NAT-PMP와 함께 NAT 서비스를
+   제공하고자 한다고 가정하면 이 ISP는 각 클라이언트가 해당 게이트웨이에서 적절한 수의 DHCP
+   주소를 요청할 수 있도록 쉽게 선택할 수 있습니다. Net 10/8[RFC1918]은 1,600만 개
+   이상의 주소를 허용하므로 NAT 주소는 결코 부족하지 않습니다. 1,600만 개의 사용 가능한
+   주소가 있는 단일 NAT 게이트웨이는 전달할 내부 주소가 소진되기 전에 패킷 전달 용량이
+   소진될 수 있습니다. 이러한 방식으로 ISP는 NAT-PMP와 함께 단일 수준 NAT를 제공할 수
+   있으므로 중첩된 NAT-PMP를 지원할 필요가 없습니다. 또한 들어오는 연결과 나가는 연결을
+   허용하여 인터넷에 대한 방해받지 않는 액세스를 고객에게 제공하려는 ISP는 이 서비스를
+   제공할 수 있는 더 나은 방법을 가지고 있습니다. 이러한 ISP는 고객에게 NAT 주소 대신
+   실제 공용 IPv4 주소를 제공하거나 매핑이나 변환이 전혀 필요하지 않은 완전한 IPv6 연결을
+   고객에게 제공하도록 선택할 수 있습니다.
 
-   Note: In the nine years since NAT-PMP was designed, the pool of
-   available IPv4 addresses has been exhausted, and many ISPs now offer
-   translated IPv4 addresses out of necessity.  Such ISPs have indicated
-   a willingness to offer PCP service to their customers.
+   참고: NAT-PMP가 설계된 지 9년 동안 사용 가능한 IPv4 주소 풀이 고갈되었으며 이제 많은
+   ISP가 필요에 따라 변환된 IPv4 주소를 제공합니다. 이러한 ISP는 고객에게 PCP 서비스를
+   제공할 의향이 있음을 나타냅니다.
 
-4.3.2.  NATs with Multiple External IPv4 Addresses
+4.3.2.  NATs with Multiple External IPv4 Addresses (외부 IPv4 주소가 여러 개인 NAT)
 
-   If a NAT maps internal addresses to multiple external addresses, then
-   it SHOULD pick one of those external addresses as the one it will
-   support for inbound connections, and for the purposes of this
-   protocol it SHOULD act as if that address were its only address.
+   NAT가 내부 주소를 여러 외부 주소에 매핑하는 경우 SHOULD:{이러한 외부 주소 중 하나를
+   인바운드 연결을 지원하는 것으로 선택}해야 하며 이 프로토콜의 목적을 위해 SHOULD:{해당
+   주소가 유일한 주소인 것처럼 작동}해야 합니다.
 
-4.3.3.  NATs and Routed Private Networks
+4.3.3.  NATs and Routed Private Networks (NAT 및 라우팅된 사설 네트워크)
 
-   In some cases, a large network may be subnetted.  Some sites may
-   install a NAT gateway and subnet the private network.  Such
-   subnetting breaks this protocol because the router address is not
-   necessarily the address of the device performing NAT.
+   경우에 따라 대규모 네트워크가 서브넷으로 연결될 수 있습니다. 일부 사이트는 NAT
+   게이트웨이를 설치하고 사설 네트워크를 서브넷팅할 수 있습니다. 이러한 서브넷은 라우터
+   주소가 반드시 NAT를 수행하는 장치의 주소가 아니기 때문에 이 프로토콜을 깨뜨립니다.
 
-   Addressing this problem is not a high priority.  Any site with the
-   resources to set up such a configuration should have the resources to
-   add manual mappings or attain a range of globally unique addresses.
+   이 문제를 해결하는 것은 높은 우선 순위가 아닙니다. 이러한 구성을 설정할 수 있는 리소스가
+   있는 모든 사이트에는 수동 매핑을 추가하거나 전역적으로 고유한 주소 범위를 확보할 수 있는
+   리소스가 있어야 합니다.
 
-   Not all NATs will support this protocol.  In the case where a client
-   is run behind a NAT that does not support this protocol, the software
-   relying on the functionality of this protocol may be unusable.
+   모든 NAT가 이 프로토콜을 지원하는 것은 아닙니다. 클라이언트가 이 프로토콜을 지원하지 않는
+   NAT 뒤에서 실행되는 경우 이 프로토콜의 기능에 의존하는 소프트웨어를 사용하지 못할 수
+   있습니다.
 
-4.3.4.  Communication between Hosts behind the Same NAT
+4.3.4.  Communication between Hosts behind the Same NAT (동일한 NAT 뒤의 호스트 간 통신)
 
-   NAT gateways supporting NAT-PMP should also implement "hairpin
-   translation".  Hairpin translation means supporting communication
-   between two local clients being served by the same NAT gateway.
+   NAT-PMP를 지원하는 NAT 게이트웨이는 "hairpin translation"도 구현해야 합니다.
+   hairpin translation은 동일한 NAT 게이트웨이에서 제공되는 두 로컬 클라이언트
+   간의 통신을 지원하는 것을 의미합니다.
 
-   Suppose device A is listening on internal address and port
-   10.0.0.2:80 for incoming connections.  Using NAT-PMP, device A has
-   obtained a mapping to external address and port x.x.x.x:80, and has
-   recorded this external address and port in a public directory of some
-   kind.  For example, it could have created a DNS SRV record containing
-   this information, and recorded it, using DNS Dynamic Update
-   [RFC3007], in a publicly accessible DNS server.  Suppose then that
-   device B, behind the same NAT gateway as device A, but unknowing or
-   uncaring of this fact, retrieves device A's DNS SRV record and
-   attempts to open a TCP connection to x.x.x.x:80.  The outgoing
-   packets addressed to this public Internet address will be sent to the
-   NAT gateway for translation and forwarding.  Having translated the
-   source address and port number on the outgoing packet, the NAT
-   gateway needs to be smart enough to recognize that the destination
-   address is in fact itself, and then feed this packet back into its
-   packet reception engine, to perform the destination port mapping
-   lookup to translate and forward this packet to device A at address
-   and port 10.0.0.2:80.
+   장치 A가 내부 주소와 포트 10.0.0.2:80에서 들어오는 연결을 수신하고 있다고 가정합니다.
+   NAT-PMP를 사용하여 장치 A는 외부 주소 및 포트 x.x.x.x:80에 대한 매핑을 얻었고 이
+   외부 주소 및 포트를 일종의 공용 디렉터리에 기록했습니다. 예를 들어, 이 정보를 포함하는
+   DNS SRV 레코드를 생성하고 DNS Dynamic Update [RFC3007]를 사용하여 공개적으로
+   액세스할 수 있는 DNS 서버에 기록할 수 있습니다. 그런 다음 장치 A와 동일한 NAT
+   게이트웨이 뒤에 있지만 이 사실을 모르거나 관심이 없는 장치 B가 장치 A의 DNS SRV
+   레코드를 검색하고 x.x.x.x:80에 대한 TCP 연결을 열려고 시도한다고 가정합니다. 이
+   공용 인터넷 주소로 주소가 지정된 발신 패킷은 변환 및 전달을 위해 NAT 게이트웨이로
+   전송됩니다. 발신 패킷의 출발지 주소와 포트 번호를 변환한 NAT 게이트웨이는 도착지 주소가
+   사실 그 자체임을 인식할 수 있을 만큼 똑똑해야 하며, 이 패킷을 패킷 수신 엔진에 다시
+   공급하여 대상 포트 매핑을 수행해야 합니다. 주소 및 포트 10.0.0.2:80에서 장치 A로 이
+   패킷을 변환하고 전달하기 위해 조회합니다.
 
-4.3.5.  Non-UDP/TCP Transport Traffic
+4.3.5.  Non-UDP/TCP Transport Traffic (비 UDP/TCP 전송 트래픽)
 
-   Any communication over transport protocols other than TCP and UDP
-   will not be served by this protocol.  Examples are Generic Routing
-   Encapsulation (GRE), Authentication Header (AH), and Encapsulating
-   Security Payload (ESP).
+   TCP 및 UDP 이외의 전송 프로토콜을 통한 모든 통신은 이 프로토콜에서 제공되지 않습니다.
+   Generic Routing Encapsulation (GRE), Authentication Header (AH) 및
+   Encapsulating Security Payload (ESP) 가 그 예입니다.
 
-4.4.  Long-Term Solution
+4.4.  Long-Term Solution (장기적 해결책)
 
-   As IPv6 is deployed, clients of this protocol supporting IPv6 will be
-   able to bypass this protocol and the NAT when communicating with
-   other IPv6 devices.  In order to ensure this transition, any client
-   implementing this protocol SHOULD also implement IPv6 and use this
-   solution only when IPv6 is not available to both peers.
+   IPv6이 배포되면 IPv6를 지원하는 이 프로토콜의 클라이언트는 다른 IPv6 장치와 통신할 때
+   이 프로토콜과 NAT를 우회할 수 있습니다. 이러한 전환을 보장하기 위해 이 프로토콜을 구현하는
+   모든 클라이언트는 MUST:{IPv6도 구현해야 하며 두 피어 모두에서 IPv6을 사용할 수 없는
+   경우에만 이 솔루션을 사용}해야 합니다.
 
-4.5.  Existing Deployed NATs
+4.5.  Existing Deployed NATs (기존에 배치된 NAT들)
 
-   Existing deployed NATs will not support this protocol.  This protocol
-   will only work with NATs that are upgraded to support it.
+   기존에 배치된 NAT는 이 프로토콜을 지원하지 않습니다. 이 프로토콜은 이를 지원하도록
+   업그레이드된 NAT에서만 작동합니다.
 
 5.  Security Considerations
 
