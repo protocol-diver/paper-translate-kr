@@ -822,136 +822,106 @@ Copyright Notice
    기존에 배치된 NAT는 이 프로토콜을 지원하지 않습니다. 이 프로토콜은 이를 지원하도록
    업그레이드된 NAT에서만 작동합니다.
 
-5.  Security Considerations
+5.  Security Considerations (보안 고려 사항)
 
-   As discussed in Section 3.2, "Determining the External Address", only
-   a client on the internal side of the NAT may create port mappings,
-   and it may do so only on its own behalf.  By using IP address
-   spoofing, it's possible for one client to delete the port mappings of
-   another client.  It's also possible for one client to create port
-   mappings on behalf of another client.  In cases where this is a
-   concern, it can be dealt with using IPsec [RFC4301].
+   섹션 3.2 "Determining the External Address"에서 설명한 것처럼 NAT의 내부 측에
+   있는 클라이언트만 포트 매핑을 생성할 수 있으며 자체적으로만 그렇게 할 수 있습니다. IP 주소
+   스푸핑을 사용하면 한 클라이언트가 다른 클라이언트의 포트 매핑을 삭제할 수 있습니다. 한
+   클라이언트가 다른 클라이언트를 대신하여 포트 매핑을 생성하는 것도 가능합니다. 이것이 우려되는
+   경우 IPsec[RFC4301]을 사용하여 처리할 수 있습니다.
 
-   The multicast announcements described in Section 3.2.1, "Announcing
-   Address Changes", could be spoofed, facilitating a denial-of-service
-   attack.  This makes NAT-PMP unsuitable for use on LANs with large
-   numbers of hosts where one or more of the hosts may be untrustworthy.
+   섹션 3.2.1, "Announcing Address Changes"에 설명된 멀티캐스트 알림은 스푸핑되어
+   서비스 거부 공격을 용이하게 할 수 있습니다. 이로 인해 NAT-PMP는 호스트 중 하나 이상이
+   신뢰할 수 없는 많은 수의 호스트가 있는 LAN에서 사용하기에 적합하지 않습니다.
 
-   Another concern is that rogue software running on a local host could
-   create port mappings for unsuspecting hosts, thereby rendering them
-   vulnerable to external attack.  However, it's not clear how realistic
-   this threat model is, since rogue software on a local host could
-   attack such unsuspecting hosts directly itself, without resorting to
-   such a convoluted indirect technique.  This concern is also a little
-   misguided because it is based on the assumption that a NAT gateway
-   and a firewall are the same thing, which they are not.
+   또 다른 우려는 로컬 호스트에서 실행되는 악성 소프트웨어가 순진한 호스트에 대한 포트 매핑을
+   생성하여 외부 공격에 취약하게 만들 수 있다는 것입니다. 그러나 이 위협 모델이 얼마나
+   현실적인지는 명확하지 않습니다. 로컬 호스트의 불량 소프트웨어가 복잡한 간접 기술에 의존하지
+   않고 순진한 호스트를 직접 공격할 수 있기 때문입니다. 이 문제는 또한 NAT 게이트웨이와
+   방화벽이 동일한 것이라는 가정에 기반하고 있기 때문에 약간 잘못된 것입니다.
 
-   Some people view the property of NATs blocking inbound connections as
-   a security benefit that is undermined by this protocol.  The authors
-   of this document have a different point of view.  In the days before
-   NAT became prevalent, all hosts had unique public IP addresses, and
-   had unhindered ability to communicate with any other host on the
-   Internet (a configuration that is still surprisingly common).  Using
-   NAT breaks this unhindered connectivity, relegating hosts to second-
-   class status, unable to receive inbound connections.  This protocol
-   goes some way to partially reverse that damage.  The purpose of a NAT
-   gateway should be to allow several hosts to share a single address,
-   not to simultaneously impede those host's ability to communicate
-   freely.  Security is most properly provided by end-to-end
-   cryptographic security, and/or by explicit firewall functionality, as
-   appropriate.  Blocking of certain connections should occur only as a
-   result of explicit and intentional firewall policy, not as an
-   accidental side effect of some other technology.
+   일부 사람들은 인바운드 연결을 차단하는 NAT의 속성을 이 프로토콜에 의해 약화되는 보안
+   이점으로 간주합니다. 이 문서의 작성자는 다른 관점을 가지고 있습니다. NAT가 널리 보급되기
+   이전에는 모든 호스트가 고유한 공용 IP 주소를 가지고 있었고 인터넷의 다른 호스트와 방해받지
+   않고 통신할 수 있었습니다(아직도 놀라울 정도로 일반적인 구성). NAT를 사용하면 이러한
+   방해받지 않는 연결이 끊기고 호스트가 인바운드 연결을 수신할 수 없는 2등급 상태로 강등됩니다.
+   이 프로토콜은 그 손상을 부분적으로 되돌리기 위해 어떤 방법을 사용합니다. NAT 게이트웨이의
+   목적은 여러 호스트가 단일 주소를 공유할 수 있도록 하는 것이지 호스트의 자유로운 통신 능력을
+   동시에 방해하지 않는 것입니다. 보안은 종단 간 암호화 보안 및/또는 명시적 방화벽 기능에 의해
+   적절하게 제공됩니다. 특정 연결 차단은 다른 기술의 우발적인 부작용이 아니라 명시적이고
+   의도적인 방화벽 정책의 결과로만 발생해야 합니다.
 
-   However, since many users do have an expectation that their NAT
-   gateways can function as a kind of firewall, any NAT gateway
-   implementing this protocol SHOULD have an administrative mechanism to
-   disable it, thereby restoring the pre-NAT-PMP behavior.
+   그러나 많은 사용자가 NAT 게이트웨이가 일종의 방화벽 역할을 할 수 있다고 기대하기 때문에 이
+   프로토콜을 구현하는 모든 NAT 게이트웨이는 MUST:{이를 비활성화하여 NAT-PMP 이전 동작을
+   복원하는 관리 메커니즘이 있어야 합니다}.
 
-6.  IANA Considerations
+6.  IANA Considerations (IANA 고려 사항)
 
-   UDP ports 5350 and 5351 have been assigned for use by NAT-PMP, and
-   subsequently by its successor, Port Control Protocol [RFC6887].
+   UDP 포트 5350 및 5351은 NAT-PMP에서 사용할 수 있도록 할당되었으며 이후에는 그 후속
+   버전인 Port Control Protocol [RFC6887]에서 사용할 수 있습니다.
 
-   No further IANA services are required by this document.
+   이 문서에는 추가 IANA 서비스가 필요하지 않습니다.
 
-7.  Acknowledgments
+7.  Acknowledgments (감사의 말)
 
-   The concepts described in this document have been explored,
-   developed, and implemented with help from Mark Baugher, Bob Bradley,
-   Josh Graessley, Rory McGuire, Rob Newberry, Roger Pantos, John
-   Saxton, Kiren Sekar, Jessica Vazquez, and James Woodyatt.
+   이 문서에 설명된 개념은 Mark Baugher, Bob Bradley, Josh Graessley, Rory
+   McGuire, Rob Newberry, Roger Pantos, John Saxton, Kiren Sekar,
+   Jessica Vazquez 및 James Woodyatt의 도움을 받아 탐색, 개발 및 구현되었습니다.
 
-   Special credit goes to Mike Bell, the Apple Vice President who
-   recognized the need for a clean, elegant, reliable Port Mapping
-   Protocol, and made the decision early on that Apple's AirPort base
-   stations would support NAT-PMP.
+   깨끗하고 우아하며 신뢰할 수 있는 Port Mapping Protocol의 필요성을 인식하고 초기에
+   Apple의 AirPort 베이스 스테이션이 NAT-PMP를 지원할 것이라고 결정을 내린 Apple
+   부사장 Mike Bell에게 특별한 공로를 돌립니다.
 
-8.  Deployment History
+8.  Deployment History (배포 내역)
 
-   In August 2004, NAT-PMP client software first became available to the
-   public through Apple's Darwin Open Source code.  In April 2005,
-   NAT-PMP implementations began shipping to end users with the launch
-   of Mac OS X 10.4 Tiger and Bonjour for Windows 1.0, and in June 2005
-   the protocol was first publicly documented in the original draft
-   version of this document.
+   2004년 8월 NAT-PMP 클라이언트 소프트웨어는 Apple의 Darwin 오픈 소스 코드를 통해
+   처음으로 대중에게 공개되었습니다. 2005년 4월에 NAT-PMP 구현은 Windows 1.0용 Mac OS
+   X 10.4 Tiger 및 Bonjour의 출시와 함께 최종 사용자에게 제공되기 시작했으며 2005년
+   6월에 이 프로토콜은 이 문서의 원본 초안 버전에 처음 공개적으로 문서화되었습니다.
 
-   The NAT-PMP client in Mac OS X 10.4 Tiger and Bonjour for Windows
-   exists as part of the mDNSResponder/mdnsd system service.  When a
-   client advertises a service using Wide Area Bonjour [RFC6763], and
-   the machine is behind a NAT-PMP-capable NAT gateway, and the machine
-   is so configured, the mDNSResponder system service automatically uses
-   NAT-PMP to set up an inbound port mapping, and then records the
-   external IPv4 address and port in the global DNS.  Existing client
-   software using the Bonjour programming APIs [Bonjour] got this new
-   NAT traversal functionality automatically.  The logic behind this
-   decision was that if client software publishes its information into
-   the global DNS via Wide Area Bonjour service advertising, then it's
-   reasonable to infer an expectation that this information should
-   actually be usable by the peers retrieving it.  Generally speaking,
-   recording a private IPv4 address like 10.0.0.2 in the public DNS is
-   likely to be pointless because that address is not reachable from
-   clients on the other side of the NAT gateway.  In the case of a home
-   user with a single computer directly connected to their Cable or DSL
-   modem, with a single global IPv4 address and no NAT gateway (a common
-   configuration at that time), publishing the machine's global IPv4
-   address into the global DNS is useful, because that IPv4 address is
-   globally reachable.  In contrast, a home user using a NAT gateway to
-   share a single global IPv4 address between several computers loses
-   this ability to receive inbound connections.  This breaks many peer-
-   to-peer collaborative applications, like the multi-user text editor
-   SubEthaEdit [SEE].  For many users, moving from one computer with a
-   global IPv4 address, to two computers using NAT to share a single
-   global IPv4 address, loss of inbound reachability was an unwanted
-   side effect of using NAT for address sharing.  Automatically creating
-   the necessary inbound port mappings helped remedy this unwanted side
-   effect of NAT.
+   Windows용 Mac OS X 10.4 Tiger 및 Bonjour의 NAT-PMP 클라이언트는
+   mDNSResponder/mdnsd 시스템 서비스의 일부로 존재합니다. 클라이언트가 Wide Area
+   Bonjour[RFC6763]를 사용하여 서비스를 알리고 머신이 NAT-PMP-capable NAT
+   게이트웨이 뒤에 있고 머신이 그렇게 구성된 경우 mDNSResponder 시스템 서비스는 자동으로
+   NAT-PMP를 사용하여 인바운드 포트를 설정합니다. 매핑한 다음 글로벌 DNS에 외부 IPv4
+   주소와 포트를 기록합니다. Bonjour 프로그래밍 API[Bonjour]를 사용하는 기존 클라이언트
+   소프트웨어는 이 새로운 NAT 통과 기능을 자동으로 얻었습니다. 이 결정의 논리는 클라이언트
+   소프트웨어가 Wide Area Bonjour 서비스 광고를 통해 정보를 글로벌 DNS에 게시하는 경우
+   이 정보를 검색하는 동료가 실제로 사용할 수 있어야 한다는 기대를 추론하는 것이 합리적이라는
+   것입니다. 일반적으로 말하자면, 퍼블릭 DNS에 10.0.0.2와 같은 프라이빗 IPv4 주소를
+   기록하는 것은 해당 주소가 NAT 게이트웨이의 반대편에 있는 클라이언트에서 도달할 수 없기
+   때문에 무의미할 수 있습니다. 하나의 컴퓨터가 케이블 또는 DSL 모뎀에 직접 연결되어 있고
+   단일 글로벌 IPv4 주소가 있고 NAT 게이트웨이가 없는(당시 일반적인 구성) 가정 사용자의
+   경우 머신의 글로벌 IPv4 주소를 글로벌 DNS에 게시하는 것은 다음과 같습니다. 해당 IPv4
+   주소는 전역적으로 도달할 수 있기 때문에 유용합니다. 반대로 NAT 게이트웨이를 사용하여 여러
+   컴퓨터 간에 단일 글로벌 IPv4 주소를 공유하는 가정 사용자는 인바운드 연결을 수신할 수 있는
+   이 기능을 상실합니다. 이로 인해 다중 사용자 텍스트 편집기 SubEthaEdit[SEE]와 같은
+   많은 P2P 협업 애플리케이션이 중단됩니다. 전역 IPv4 주소가 있는 한 대의 컴퓨터에서 단일
+   전역 IPv4 주소를 공유하기 위해 NAT를 사용하는 두 대의 컴퓨터로 이동하는 많은 사용자에게
+   인바운드 도달 가능성 손실은 주소 공유에 NAT를 사용하는 원치 않는 부작용이었습니다. 필요한
+   인바운드 포트 매핑을 자동으로 생성하면 이러한 NAT의 원치 않는 부작용을 해결하는 데 도움이
+   되었습니다.
 
-   The server side of the NAT-PMP protocol is implemented in Apple's
-   AirPort Extreme, AirPort Express, and Time Capsule wireless base
-   stations, and in the Internet Sharing feature of Mac OS X 10.4 and
-   later.  Some third-party NAT vendors, such as Peplink, also offer
-   NAT-PMP in their products.
+   NAT-PMP 프로토콜의 서버 측은 Apple의 AirPort Extreme, AirPort Express 및
+   Time Capsule 무선 베이스 스테이션과 Mac OS X 10.4 이상의 인터넷 공유 기능에서
+   구현됩니다. Peplink와 같은 일부 타사 NAT 공급업체도 자사 제품에 NAT-PMP를 제공합니다.
 
-   In Mac OS X 10.4 Tiger, the NAT-PMP client was invoked automatically
-   as a side effect of clients requesting Wide Area Bonjour service
-   registrations.  Using NAT-PMP without an associated Wide Area Bonjour
-   service registration required use of a third-party client library.
+   Mac OS X 10.4 Tiger에서는 Wide Area Bonjour 서비스 등록을 요청하는 클라이언트의
+   부작용으로 NAT-PMP 클라이언트가 자동으로 호출되었습니다. 연결된 Wide Area Bonjour
+   서비스 등록 없이 NAT-PMP를 사용하려면 타사 클라이언트 라이브러리를 사용해야 했습니다.
 
-   In October 2007, Mac OS X 10.5 Leopard added the "DNSServiceNATPort-
-   MappingCreate" API, which made NAT-PMP client functionality directly
-   available, so software could use it with other directory and
-   rendezvous mechanisms in addition to Wide Area Bonjour DNS Updates.
+   2007년 10월 Mac OS X 10.5 Leopard는 "DNSServiceNATPort MappingCreate"
+   API를 추가하여 NAT-PMP 클라이언트 기능을 직접 사용할 수 있도록 하여 소프트웨어가 이를
+   광역 Bonjour DNS 업데이트 외에도 다른 디렉토리 및 랑데부 메커니즘과 함께 사용할 수
+   있도록 했습니다.
 
-   In 2013, NAT-PMP was superseded by the IETF Standards Track Port
-   Control Protocol [RFC6887].  PCP builds on NAT-PMP and uses a
-   compatible packet format, and adds a number of significant
-   enhancements, including IPv6 support, management of outbound
-   mappings, management of firewall rules, full compatibility with
-   large-scale NATs with a pool of external addresses, error lifetimes,
-   and an extension mechanism to enable future enhancements.
+   2013년에 NAT-PMP는 IETF Standards Track Port Control Protocol[RFC6887]
+   로 대체되었습니다. PCP는 NAT-PMP를 기반으로 하며 호환되는 패킷 형식을 사용하고 IPv6
+   지원, 아웃바운드 매핑 관리, 방화벽 규칙 관리, 외부 주소 풀이 있는 대규모 NAT와의 완벽한
+   호환성, 오류 수명 및 향후 개선을 가능하게 하는 확장 메커니즘을 포함하여 여러 가지 중요한
+   개선 사항을 추가합니다.
 
-9.  Noteworthy Features of NAT Port Mapping Protocol and PCP
+9.  Noteworthy Features of NAT Port Mapping Protocol and PCP (NAT 포트 매핑 프로토콜 및 PCP의 주목할만한 기능)
 
    Some readers have asked how NAT-PMP and PCP compare to other similar
    solutions, particularly the UPnP Forum's Internet Gateway Device
