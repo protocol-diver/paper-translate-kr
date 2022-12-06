@@ -923,38 +923,28 @@ Copyright Notice
 
 9.  Noteworthy Features of NAT Port Mapping Protocol and PCP (NAT 포트 매핑 프로토콜 및 PCP의 주목할만한 기능)
 
-   Some readers have asked how NAT-PMP and PCP compare to other similar
-   solutions, particularly the UPnP Forum's Internet Gateway Device
-   (IGD) Device Control Protocol [IGD].
+   일부 독자들은 NAT-PMP 및 PCP를 다른 유사한 솔루션, 특히 UPnP Forum의 Internet
+   Gateway Device(IGD) 장치 제어 프로토콜[IGD]과 어떻게 비교하는지 질문했습니다.
 
-   The answer is that although the Universal Plug and Play (UPnP) IGD
-   protocol is often used as a way for client devices to create port
-   mappings programmatically, it's not ideal for that task.  Whereas
-   NAT-PMP was explicitly designed to be used primarily by software
-   entities managing their own port mappings, UPnP IGD is more tailored
-   towards being used by humans configuring all the settings of their
-   gateway using some GUI tool.  This difference in emphasis leads to
-   protocol differences.  For example, while it is reasonable and
-   sensible to require software entities to renew their mappings
-   periodically to prove that they are still there (like a device
-   renewing its DHCP address lease), it would be unreasonable to require
-   the same thing of a human user.  When a human user configures their
-   gateway, they expect it to stay configured that way until they decide
-   to change it.  If they configure a port mapping, they expect it to
-   stay configured until they decide to delete it.
+   답은 Universal Plug and Play (UPnP) IGD 프로토콜이 클라이언트 장치가 프로그래밍
+   방식으로 포트 매핑을 생성하는 방법으로 자주 사용되지만 해당 작업에는 적합하지 않다는
+   것입니다. NAT-PMP는 자체 포트 매핑을 관리하는 소프트웨어 엔터티에서 주로 사용하도록
+   명시적으로 설계된 반면, UPnP IGD는 일부 GUI 도구를 사용하여 게이트웨이의 모든 설정을
+   구성하는 사람이 사용하도록 더 맞춤화되었습니다. 이러한 강조점의 차이는 프로토콜 차이로
+   이어집니다. 예를 들어 소프트웨어 엔터티가 여전히 존재한다는 것을 증명하기 위해 주기적으로
+   매핑을 갱신하도록 요구하는 것은 합리적이고 합리적인 반면(DHCP 주소 임대를 갱신하는 장치와
+   같이) 인간 사용자에게 동일한 것을 요구하는 것은 비합리적입니다. 인간 사용자는 게이트웨이를
+   구성할 때 변경하기로 결정할 때까지 게이트웨이가 그대로 구성되어 있을 것으로 기대합니다.
+   포트 매핑을 구성하면 삭제하기로 결정할 때까지 구성이 유지될 것으로 예상합니다.
 
-   Because of this focus on being a general administration protocol for
-   all aspects of home gateway configuration, UPnP IGD is a large and
-   complicated collection of protocols (360 pages of specification
-   spread over 13 separate documents, not counting supporting protocol
-   specifications like Simple Service Discovery Protocol (SSDP) and
-   Extensible Markup Language (XML)).  While it may be a fine way for
-   human users to configure their home gateways, it is not especially
-   suited to the task of programmatically creating dynamic port
-   mappings.
+   홈 게이트웨이 구성의 모든 측면에 대한 일반 관리 프로토콜이 되는 데 중점을 두기 때문에
+   UPnP IGD는 대규모의 복잡한 프로토콜 모음입니다(360페이지의 사양이 13개의 별도 문서에
+   걸쳐 있으며 Simple Service Discovery Protocol (SSDP) 및 확장 가능 마크업
+   언어(XML) 같은 지원 프로토콜 사양은 포함하지 않습니다). 인간 사용자가 홈 게이트웨이를
+   구성하는 좋은 방법일 수 있지만 프로그래밍 방식으로 동적 포트 매핑을 만드는 작업에는 특별히
+   적합하지 않습니다.
 
-   The requirements for a good port mapping protocol, requirements that
-   are met by NAT-PMP, are outlined below.
+   좋은 포트 매핑 프로토콜에 대한 요구 사항, NAT-PMP가 충족하는 요구 사항은 다음과 같습니다.
 
 9.1.  Simplicity
 
