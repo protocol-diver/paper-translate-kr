@@ -104,8 +104,11 @@ Copyright Notice
       9.8. On-Path NAT Discovery
            (On-Path NAT 검색)
    10. References
+       (참조)
       10.1. Normative References
+            (규범적 참조)
       10.2. Informative References
+            (유익한 참조)
 
 1.  Introduction (소개)
 
@@ -1130,9 +1133,9 @@ Copyright Notice
    [RFC6281]가 어떤 기능적인 포트 매핑도 할 수 없다고 보고하기 시작했을 때 이 사람들은 NAT
    게이트웨이에서 작동하는 포트 매핑이 전혀 없었다는 것을 발견했습니다.
 
-10.  References
+10.  References (참조)
 
-10.1.  Normative References
+10.1.  Normative References (규범적 참조)
 
    [RFC1918]  Rekhter, Y., Moskowitz, B., Karrenberg, D., de Groot, G.,
               and E. Lear, "Address Allocation for Private Internets",
@@ -1141,7 +1144,7 @@ Copyright Notice
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119, March 1997.
 
-10.2.  Informative References
+10.2.  Informative References (유익한 참조)
 
    [Bonjour]  Apple "Bonjour" <http://developer.apple.com/bonjour/>.
 
