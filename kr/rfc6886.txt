@@ -1039,51 +1039,37 @@ Copyright Notice
    TCP 포트 80을 요청하고 성공할 때까지 연속적으로 증가하는 포트를 시도하면 UPnP IGD
    클라이언트는 성공하기 전에 63,409개의 요청을 발행해야 합니다.
 
-9.5.  Garbage Collection
+9.5.  Garbage Collection (가비지 컬렉션)
 
-   In any system that operates for a long period of time (as a home
-   gateway should), it is important that garbage data does not
-   accumulate indefinitely until the system runs out of memory and
-   fails.
+   오랜 시간 동안 작동하는 모든 시스템에서(홈 게이트웨이가 그래야 하는 것처럼) 시스템의
+   메모리가 부족하여 실패할 때까지 가비지 데이터가 무한정 누적되지 않는 것이 중요합니다.
 
-   Similar to how DHCP leases an IP address to a client for a finite
-   length of time, NAT-PMP leases an external port to a client for a
-   finite length of time.  The NAT-PMP client must renew the port
-   mapping before it expires, or, like an unrenewed DHCP address, it
-   will be reclaimed.  If a laptop computer is abruptly disconnected
-   from the network without the opportunity to delete its port mappings,
-   the NAT gateway will reclaim those mappings when they are not
-   renewed.
+   DHCP가 유한한 시간 동안 클라이언트에게 IP 주소를 임대하는 것과 유사하게 NAT-PMP는
+   유한한 시간 동안 클라이언트에게 외부 포트를 임대합니다. NAT-PMP 클라이언트는 만료되기
+   전에 포트 매핑을 갱신해야 합니다. 그렇지 않으면 갱신되지 않은 DHCP 주소처럼 회수됩니다.
+   랩톱 컴퓨터가 해당 포트 매핑을 삭제할 기회 없이 네트워크에서 갑자기 연결이 끊어지면 NAT
+   게이트웨이는 매핑이 갱신되지 않을 때 해당 매핑을 회수합니다.
 
-   In principle, UPnP IGD should allow clients to specify a lifetime on
-   port mappings.  However, a Google search for "UPnP NewLeaseDuration"
-   shows that in practice pretty much every client uses
-   "<NewLeaseDuration>0</NewLeaseDuration>" to request an infinite
-   lease, and the protocol has no way for the NAT gateway to decline
-   that infinite lease request and require the client to renew it at
-   reasonable intervals.  Furthermore, anecdotal evidence is that if the
-   client requests a lease other than zero, there are IGD home gateways
-   that will ignore the request, fail in other ways, or even crash
-   completely.  As a client implementer then, you would be well advised
-   not to attempt to request a lease other than zero, unless you want to
-   suffer the support costs and bad publicity of lots of people
-   complaining that your device brought down their entire network.
+   원칙적으로 UPnP IGD는 클라이언트가 포트 매핑에서 수명을 지정할 수 있도록 허용해야 합니다.
+   그러나 Google에서 "UPnP NewLeaseDuration"을 검색하면 실제로 거의 모든 클라이언트가
+   "<NewLeaseDuration>0</NewLeaseDuration>"을 사용하여 무한 임대를 요청하고
+   프로토콜은 NAT 게이트웨이가 무한 임대 요청을 거부하고 클라이언트가 합리적인 간격으로 이를
+   갱신하도록 요구할 방법이 없다는 것을 보여줍니다. 또한 클라이언트가 0이 아닌 임대를 요청하면
+   요청을 무시하거나 다른 방식으로 실패하거나 완전히 충돌하는 IGD 홈 게이트웨이가 있다는
+   일화적인 증거가 있습니다. 클라이언트 구현자로서 지원 비용과 많은 사람들이 귀하의 장치가 전체
+   네트워크를 다운시켰다고 불평하는 나쁜 홍보를 원하지 않는 한 0 이외의 임대를 요청하지 않는
+   것이 좋습니다.
 
-   Because none of the early UPnP IGD clients requested port mapping
-   leases, many UPnP IGD home gateway vendors never tested that
-   functionality, and got away with shipping home gateways where that
-   functionality was buggy or nonexistent.  Because there are so many
-   buggy UPnP IGD home gateways already deployed, client writers wisely
-   stick to the well-trodden path of only requesting infinite leases.
-   Because there are now few (if any) clients attempting to request non-
-   zero leases, home gateway vendors have little incentive to expend
-   resources implementing a feature no one uses.
+   초기 UPnP IGD 클라이언트 중 어느 것도 포트 매핑 임대를 요청하지 않았기 때문에 많은 UPnP
+   IGD 홈 게이트웨이 공급업체는 해당 기능을 테스트하지 않았으며 해당 기능이 버그가 있거나
+   존재하지 않는 홈 게이트웨이를 배송했습니다. 버그가 많은 UPnP IGD 홈 게이트웨이가 이미
+   배포되어 있기 때문에 클라이언트 작성자는 현명하게도 무한 임대만 요청하는 잘 다져진 경로를
+   고수합니다. 이제 0이 아닌 임대를 요청하려는 클라이언트가 거의 없기 때문에 홈 게이트웨이
+   공급업체는 아무도 사용하지 않는 기능을 구현하는 데 리소스를 소비할 인센티브가 거의 없습니다.
 
-   This unfortunate consequence of the way UPnP IGD was developed and
-   deployed means that in practice it has no usable port mapping lease
-   facility today, and therefore when run for a long period of time UPnP
-   IGD home gateways have no good way to avoid accumulating an unbounded
-   number of stale port mappings.
+   UPnP IGD가 개발 및 배포된 방식의 이러한 불행한 결과는 실제로 현재 사용할 수 있는 포트
+   매핑 임대 시설이 없다는 것을 의미하며, 따라서 장기간 실행 시 UPnP IGD 홈 게이트웨이는
+   무한한 수의 부실 포트 매핑 축적을 피할 수 있는 좋은 방법이 없습니다.
 
 9.6.  State Change Announcements
 
