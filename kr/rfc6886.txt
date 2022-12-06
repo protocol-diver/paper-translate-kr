@@ -946,35 +946,26 @@ Copyright Notice
 
    좋은 포트 매핑 프로토콜에 대한 요구 사항, NAT-PMP가 충족하는 요구 사항은 다음과 같습니다.
 
-9.1.  Simplicity
+9.1.  Simplicity (간단함)
 
-   Many home gateways, and many of the devices that connect to them, are
-   small, low-cost devices, with limited RAM, flash memory, and CPU
-   resources.  Protocols they use should be considerate of this,
-   supporting a small number of simple operations that can be
-   implemented easily with a small amount of code.  A quick comparison,
-   based on page count of the respective documents alone, suggests that
-   NAT-PMP is at least ten times simpler than UPnP IGD.
+   많은 홈 게이트웨이와 이에 연결되는 많은 장치는 RAM, 플래시 메모리 및 CPU 리소스가 제한된
+   소형 저비용 장치입니다. 그들이 사용하는 프로토콜은 이를 고려하여 소량의 코드로 쉽게 구현할
+   수 있는 소수의 간단한 작업을 지원해야 합니다. 각 문서의 페이지 수만을 기반으로 한 빠른
+   비교를 통해 NAT-PMP가 UPnP IGD보다 최소 10배 더 간단하다는 것을 알 수 있습니다.
 
-9.2.  Focused Scope
+9.2.  Focused Scope (집중 범위)
 
-   The more things a protocol can do, the more chance there is that
-   something it does could be exploited for malicious purposes.  NAT-PMP
-   is tightly focused on the specific task of creating port mappings.
-   Were the protocol to be misused in some way, this helps limit the
-   scope of what mischief could be performed using the protocol.
+   프로토콜이 할 수 있는 일이 많을수록 악의적인 목적으로 악용될 가능성이 높아집니다.
+   NAT-PMP는 포트 매핑을 생성하는 특정 작업에 집중되어 있습니다. 어떤 식으로든 프로토콜이
+   오용되면 프로토콜을 사용하여 수행할 수 있는 장난의 범위를 제한하는 데 도움이 됩니다.
 
-   Because UPnP IGD allows control over all home gateway configuration
-   settings, the potential for mischief is far greater.  For example, a
-   UPnP IGD home gateway allows messages that tell it to change the DNS
-   server addresses that it sends to clients in its DHCP packets.  Using
-   this mechanism, a single item of malicious web content (e.g., a rogue
-   Flash banner advert on a web page) can make a persistent change to
-   the home gateway's configuration without the user's knowledge, such
-   that all future DNS requests by all local clients will be sent to a
-   rogue DNS server.  This allows criminals to perform a variety of
-   mischief, such as hijacking connections to bank web sites and
-   redirecting them to the criminals' web servers instead [VU347812].
+   UPnP IGD는 모든 홈 게이트웨이 구성 설정을 제어할 수 있기 때문에 장난의 가능성이 훨씬 더
+   큽니다. 예를 들어 UPnP IGD 홈 게이트웨이는 DHCP 패킷에서 클라이언트로 보내는 DNS 서버
+   주소를 변경하라는 메시지를 허용합니다. 이 메커니즘을 사용하면 악의적인 웹 콘텐츠의 단일
+   항목(예: 웹 페이지의 악성 플래시 배너 광고)이 사용자 모르게 홈 게이트웨이의 구성을
+   영구적으로 변경할 수 있으므로 모든 로컬 클라이언트의 모든 향후 DNS 요청이 불량 DNS 서버로
+   전송됩니다. 이를 통해 범죄자는 은행 웹 사이트에 대한 연결을 하이재킹하고 대신 범죄자의 웹
+   서버로 리디렉션하는 등의 다양한 장난을 수행할 수 있습니다 [VU347812].
 
 9.3.  Efficiency
 
