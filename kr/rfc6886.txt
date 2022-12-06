@@ -1011,41 +1011,33 @@ Copyright Notice
    마찬가지로 UPnP IGD의 포트 매핑에 대한 HTTP "POST" 요청은 NAT-PMP의 2패킷 UDP
    교환과 비교하여 일반적으로 14패킷 교환입니다.
 
-9.4.  Atomic Allocation Operations
+9.4.  Atomic Allocation Operations (원자 할당 작업)
 
-   Some of the useful properties of NAT-PMP were inspired by DHCP, a
-   reliable and successful protocol.  For example, DHCP allows a client
-   to request a desired IP address, but if that address is already in
-   use the DHCP server will instead assign some other available address.
+   NAT-PMP의 유용한 속성 중 일부는 신뢰할 수 있고 성공적인 프로토콜인 DHCP에서 영감을
+   받았습니다. 예를 들어 DHCP를 사용하면 클라이언트가 원하는 IP 주소를 요청할 수 있지만 해당
+   주소가 이미 사용 중인 경우 DHCP 서버는 대신 사용 가능한 다른 주소를 할당합니다.
 
-   Correspondingly, NAT-PMP allows a client to request a desired
-   external port, and if that external port is already in use by some
-   other client, the NAT-PMP server will instead assign some other
-   available external port.
+   이에 따라 NAT-PMP는 클라이언트가 원하는 외부 포트를 요청할 수 있도록 하며, 해당 외부
+   포트가 다른 클라이언트에서 이미 사용 중인 경우 NAT-PMP 서버는 대신 사용 가능한 다른 외부
+   포트를 할당합니다.
 
-   UPnP IGD does not do this.  If a UPnP IGD client requests an external
-   port that has already been allocated, then one of two things happens.
+   UPnP IGD는 이 작업을 수행하지 않습니다. UPnP IGD 클라이언트가 이미 할당된 외부 포트를
+   요청하면 두 가지 중 하나가 발생합니다.
 
-   Some UPnP IGD home gateways just silently overwrite the old mapping
-   with the new one, causing the previous client to lose connectivity.
-   If the previous client renews its port mapping, then it in turn
-   overwrites the new mapping, and the two clients fight over the same
-   external port indefinitely, neither achieving reliable connectivity.
+   일부 UPnP IGD 홈 게이트웨이는 이전 매핑을 새 매핑으로 자동으로 덮어쓰므로 이전
+   클라이언트의 연결이 끊어집니다. 이전 클라이언트가 포트 매핑을 갱신하면 새 매핑을 덮어쓰고
+   두 클라이언트가 동일한 외부 포트를 두고 무한정 싸우며 안정적인 연결을 달성하지 못합니다.
 
-   Other IGD home gateways return a "Conflict" error if the port is
-   already in use, which does at least tell the client what happened,
-   but doesn't tell the client what to do.  Instead of the NAT gateway
-   (which does know which ports are available) assigning one to the
-   client, the NAT gateway makes the client (which doesn't know) keep
-   guessing until it gets lucky.  This problem remains mild as long as
-   not many clients are using UPnP IGD, but gets progressively worse as
-   the number of clients on the network requesting port mappings goes
-   up.  In addition, UPnP IGD works particularly badly in conjunction
-   with the emerging policy of allocating pre-assigned port ranges to
-   each client.  If a client is assigned TCP port range 63488-64511, and
-   the UPnP IGD client requests TCP port 80, trying successive
-   incrementing ports until it succeeds, then the UPnP IGD client will
-   have to issue 63,409 requests before it succeeds.
+   다른 IGD 홈 게이트웨이는 포트가 이미 사용 중인 경우 "Conflict" 오류를 반환합니다. 이는
+   적어도 클라이언트에게 무슨 일이 일어났는지 알려주지만 클라이언트에게 무엇을 해야 하는지
+   알려주지는 않습니다. NAT 게이트웨이(사용 가능한 포트를 알고 있는)가 클라이언트에 하나를
+   할당하는 대신 NAT 게이트웨이는 클라이언트(알지 못함)가 운이 좋을 때까지 추측을 계속하게
+   합니다. 이 문제는 많은 클라이언트가 UPnP IGD를 사용하지 않는 한 경미하지만 포트 매핑을
+   요청하는 네트워크의 클라이언트 수가 증가함에 따라 점진적으로 악화됩니다. 또한 UPnP IGD는
+   미리 할당된 포트 범위를 각 클라이언트에 할당하는 새로운 정책에서 특히 제대로 작동하지
+   않습니다. 클라이언트에 TCP 포트 범위 63488-64511이 할당되고 UPnP IGD 클라이언트가
+   TCP 포트 80을 요청하고 성공할 때까지 연속적으로 증가하는 포트를 시도하면 UPnP IGD
+   클라이언트는 성공하기 전에 63,409개의 요청을 발행해야 합니다.
 
 9.5.  Garbage Collection
 
