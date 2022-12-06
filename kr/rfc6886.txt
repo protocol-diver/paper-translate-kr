@@ -1071,41 +1071,34 @@ Copyright Notice
    매핑 임대 시설이 없다는 것을 의미하며, 따라서 장기간 실행 시 UPnP IGD 홈 게이트웨이는
    무한한 수의 부실 포트 매핑 축적을 피할 수 있는 좋은 방법이 없습니다.
 
-9.6.  State Change Announcements
+9.6.  State Change Announcements (상태 변경 알림)
 
-   When using DHCP on the external interface, as is the norm for home
-   gateways, there is no guarantee that a UPnP IGD home gateway's
-   external IPv4 address will remain unchanged.  Indeed, some ISPs
-   change their customer's IPv4 address every 24 hours (possibly in an
-   effort to make it harder for their customers to "run a server" at
-   home).  What this means is that if the home gateway's external IPv4
-   address changes, it needs to inform its clients, so that they can
-   make any necessary updates to global directory information (e.g.,
-   performing a Dynamic DNS update to update their address record).
+   외부 인터페이스에서 DHCP를 사용하는 경우 홈 게이트웨이의 표준과 마찬가지로 UPnP IGD
+   홈 게이트웨이의 외부 IPv4 주소가 변경되지 않는다는 보장이 없습니다. 실제로 일부 ISP는
+   고객의 IPv4 주소를 24시간마다 변경합니다(아마도 고객이 집에서 "서버를 실행"하는 것을 더
+   어렵게 만들기 위한 노력의 일환일 수 있음). 이것이 의미하는 바는 홈 게이트웨이의 외부
+   IPv4 주소가 변경되면 클라이언트에게 알려서 글로벌 디렉터리 정보에 필요한 업데이트를
+   수행할 수 있도록 해야 한다는 것입니다(예: 동적 DNS 업데이트를 수행하여 주소 레코드
+   업데이트).
 
-   When a NAT-PMP gateway's external IPv4 address changes, it broadcasts
-   announcement packets to inform clients of this.  UPnP IGD does not.
+   NAT-PMP 게이트웨이의 외부 IPv4 주소가 변경되면 알림 패킷을 브로드캐스트하여 클라이언트에
+   이를 알립니다. UPnP IGD는 그렇지 않습니다.
 
-9.7.  Soft State Recovery
+9.7.  Soft State Recovery (비규율 복구)
 
-   When run for a long enough period of time, any network will have
-   devices that fail, get rebooted, suffer power outages, or lose state
-   for other reasons.  A home gateway that runs for long enough is
-   likely to suffer some such incident eventually.  After losing state,
-   it has no record of the port mappings it created, and clients suffer
-   a consequent loss of connectivity.
+   충분한 시간 동안 실행되면 모든 네트워크에 장애가 발생하거나, 재부팅되거나, 정전이 발생하거나,
+   다른 이유로 상태가 손실되는 장치가 있습니다. 충분히 오래 실행되는 홈 게이트웨이는 결국 이러한
+   사고를 겪을 수 있습니다. 상태를 잃은 후에는 생성한 포트 매핑에 대한 기록이 없으며 결과적으로
+   클라이언트 연결이 끊어집니다.
 
-   To handle this case, NAT-PMP has the "Seconds Since Start of Epoch"
-   mechanism.  After a reboot or other loss of state, a NAT-PMP gateway
-   broadcasts announcement packets giving its external IPv4 address,
-   with the Seconds Since Start of Epoch field reset to begin counting
-   from zero again.  When a NAT-PMP client observes packets from its
-   NAT-PMP gateway where the gateway's notion of time has apparently
-   gone backwards compared to the client's, the client knows the gateway
-   has probably lost state, and immediately recreates its mappings to
-   restore connectivity.
+   이 경우를 처리하기 위해 NAT-PMP에는 "Seconds Since Start of Epoch" 메커니즘이
+   있습니다. 재부팅 또는 기타 상태 손실 후 NAT-PMP 게이트웨이는 외부 IPv4 주소를 제공하는
+   알림 패킷을 브로드캐스트하고 Seconds Since Start of Epoch 필드는 0부터 다시 계산하기
+   시작하도록 재설정됩니다. NAT-PMP 클라이언트가 NAT-PMP 게이트웨이에서 게이트웨이의 시간
+   개념이 클라이언트에 비해 명백히 뒤쳐진 패킷을 관찰하면 클라이언트는 게이트웨이가 아마도 손실된
+   상태임을 알고 연결을 복원하기 위해 즉시 매핑을 다시 생성합니다.
 
-   UPnP IGD has no equivalent mechanism.
+   UPnP IGD에는 이에 상응하는 메커니즘이 없습니다.
 
 9.8.  On-Path NAT Discovery
 
