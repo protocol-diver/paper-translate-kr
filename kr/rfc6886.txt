@@ -967,58 +967,49 @@ Copyright Notice
    전송됩니다. 이를 통해 범죄자는 은행 웹 사이트에 대한 연결을 하이재킹하고 대신 범죄자의 웹
    서버로 리디렉션하는 등의 다양한 장난을 수행할 수 있습니다 [VU347812].
 
-9.3.  Efficiency
+9.3.  Efficiency (능률)
 
-   In addition to low-cost home gateways, many of the clients will also
-   be similarly constrained low-cost devices with limited RAM resources.
+   저비용 홈 게이트웨이 외에도 많은 클라이언트는 제한된 RAM 리소스를 가진 유사하게 제한된
+   저비용 장치일 것입니다.
 
-   When implementing a NAT-PMP client on a constrained device, it's
-   beneficial to have well-defined bounds on RAM requirements that are
-   fixed and known in advance.  For example, when requesting the
-   gateway's external IPv4 address, a NAT-PMP client on Ethernet knows
-   that to receive the reply it will require 14 bytes for the Ethernet
-   header, 20 bytes for the IPv4 header, 8 bytes for the UDP header, and
-   12 bytes for the NAT-PMP payload, making a total of 54 bytes.
+   제한된 장치에서 NAT-PMP 클라이언트를 구현할 때 고정되고 미리 알려진 RAM 요구 사항에 대해
+   잘 정의된 경계를 갖는 것이 좋습니다. 예를 들어 게이트웨이의 외부 IPv4 주소를 요청할 때
+   이더넷의 NAT-PMP 클라이언트는 응답을 받으려면 이더넷 헤더에 14바이트, IPv4 헤더에
+   20바이트, UDP 헤더에 8바이트, NAT-PMP 페이로드용 바이트 12바이트로 총 54바이트가
+   필요하다는 것을 알고 있습니다.
 
-   In contrast, UPnP IGD uses an XML reply of unbounded size.  It is not
-   uncommon for a UPnP IGD device to return an XML document 4000 to 8000
-   bytes in size to communicate its 4-byte external IPv4 address, and
-   the protocol specification places no upper bound on how large the XML
-   response may be, so there's nothing to stop the reply being even
-   larger.  This means that developers of UPnP client devices can only
-   guess at how much memory they may need to receive the XML reply.
-   Operational experience suggests that 10,000 bytes is usually enough
-   for most UPnP IGD home gateways today, but that's no guarantee that
-   some future UPnP IGD home gateway might not return a perfectly legal
-   XML reply much larger than that.
+   반대로 UPnP IGD는 제한 없는 크기의 XML 회신을 사용합니다. UPnP IGD 장치가 4바이트
+   외부 IPv4 주소와 통신하기 위해 크기가 4000~8000바이트인 XML 문서를 반환하는 것은 드문
+   일이 아니며 프로토콜 사양에는 XML 응답의 크기에 대한 상한선이 없으므로 응답이 더 커지는
+   것을 막을 방법이 없습니다. 즉, UPnP 클라이언트 장치 개발자는 XML 응답을 수신하는 데
+   필요한 메모리 양만 추측할 수 있습니다. 운영 경험에 따르면 오늘날 대부분의 UPnP IGD 홈
+   게이트웨이에는 일반적으로 10,000바이트면 충분하지만, 미래의 일부 UPnP IGD 홈
+   게이트웨이가 이보다 훨씬 더 큰 완벽하게 합법적인 XML 응답을 반환하지 않을 수도 있다는
+   보장은 없습니다.
 
-   In addition, because the XML reply is too large to fit in a single
-   UDP packet, UPnP IGD has to use a TCP connection, thereby adding the
-   overhead of TCP connection setup and teardown.
+   또한 XML 응답이 너무 커서 단일 UDP 패킷에 맞지 않기 때문에 UPnP IGD는 TCP 연결을
+   사용해야 하므로 TCP 연결 설정 및 해제의 오버헤드가 추가됩니다.
 
-   The process of discovering a UPnP IGD home gateway's external IPv4
-   address consists of:
+   UPnP IGD 홈 게이트웨이의 외부 IPv4 주소를 검색하는 프로세스는 다음과 같이 구성됩니다:
 
-   o SSDP transaction to discover the TCP port to use, and the "URL" of
-     the XML document to fetch from the gateway.  Following the SSDP
-     specification, this is 3 multicast requests, eliciting 9 unicast
-     responses.
+   o 사용할 TCP 포트 및 게이트웨이에서 가져올 XML 문서의 "URL"을 검색하기 위한 SSDP
+     트랜잭션입니다. SSDP 사양에 따라 이것은 3개의 멀티캐스트 요청이며 9개의 유니캐스트
+     응답을 이끌어냅니다.
 
-   o HTTP "GET" request to get the device description.  Typically, 16
-     packets: 3 for TCP connection setup, 9 packets of data exchange,
-     and a 4-packet FIN-ACK-FIN-ACK sequence to close the connection.
+   o 장치 설명을 가져오기 위한 HTTP "GET" 요청. 일반적으로 16개의 패킷: TCP 연결
+     설정용 3개, 데이터 교환용 9개 패킷, 연결 종료를 위한 4개 패킷 FIN-ACK-FIN-ACK
+     시퀀스.
 
-   o HTTP "POST" to request the external IPv4 address.  Typically, 14
-     packets: 3 for TCP connection setup, 7 packets of data exchange,
-     and a 4-packet FIN-ACK-FIN-ACK sequence to close the connection.
+   o 외부 IPv4 주소를 요청하는 HTTP "POST" 요청. 일반적으로 14개의 패킷: TCP 연결
+     설정용 3개, 데이터 교환용 7개 패킷, 연결 종료를 위한 4개 패킷 FIN-ACK-FIN-ACK
+     시퀀스.
 
-   To retrieve the external IPv4 address NAT-PMP takes a 2-packet UDP
-   exchange (44-byte request, 54-byte response); the same thing using
-   UPnP IGD takes 42 packets and thousands of bytes.
+   외부 IPv4 주소를 검색하기 위해 NAT-PMP는 2패킷 UDP 교환(44바이트 요청, 54바이트
+   응답)을 취합니다. UPnP IGD를 사용하는 것과 동일한 작업에는 42개의 패킷과 수천
+   바이트가 필요합니다.
 
-   Similarly, UPnP IGD's HTTP "POST" request for a port mapping is
-   typically a 14-packet exchange, compared with NAT-PMP's 2-packet UDP
-   exchange.
+   마찬가지로 UPnP IGD의 포트 매핑에 대한 HTTP "POST" 요청은 NAT-PMP의 2패킷 UDP
+   교환과 비교하여 일반적으로 14패킷 교환입니다.
 
 9.4.  Atomic Allocation Operations
 
