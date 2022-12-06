@@ -3,9 +3,13 @@
 [문서 규격](https://github.com/protocol-diver/paper-translate-kr#spec)을 참고하세요.
 
 # Index
-1. [Network](https://github.com/protocol-diver/paper-translate-kr#network)
-2. [Protocol](https://github.com/protocol-diver/paper-translate-kr#protocol)
+1. 목록
+   - [Network](https://github.com/protocol-diver/paper-translate-kr#network)
+   - [Protocol](https://github.com/protocol-diver/paper-translate-kr#protocol)
+2. 문서 규격
+3. 기여
 
+# 목록
 
 ### Network
    - [x] [RFC894](https://github.com/protocol-diver/rfc-translate-kr/blob/main/kr/rfc894.txt) - A Standard for the Transmission of IP Datagrams over Ethernet Networks (이더넷 네트워크를 통한 IP 데이터그램 전송 표준)
@@ -16,12 +20,12 @@
 ### Protocol
    - [ ] [RFC6886](https://github.com/protocol-diver/rfc-translate-kr/blob/main/kr/rfc6886.txt) - NAT Port Mapping Protocol (NAT-PMP)
 
-# Spec
+# 문서 규격
 한/영 변환 Github Page 운영에 대비하여 원본과 번역본 둘 다 저장합니다.
 
 ### 페이지 관련 내용은 삭제하여 커밋합니다(번역하는 과정에서 원본의 페이징이 틀어질 것 같아 미리 제거).
 
-<b>목차</b><br>
+<b>> 목차</b><br>
 기존)
 ```
    Table of Contents
@@ -39,7 +43,7 @@
    2. Conventions and Terminology Used in This Document
 ```
 
-<b>페이지</b><br>
+<b>> 페이지</b><br>
 기존)
 ```
    9.3.  Efficiency
@@ -57,7 +61,7 @@
 
 
 Cheshire & Krochmal           Informational                    [Page 27]
-
+
 RFC 6886                         NAT-PMP                      April 2013
 
 
@@ -95,3 +99,7 @@ RFC 6886                         NAT-PMP                      April 2013
    Private Internets"[RFC1918]에 정의된 개인 IPv4 주소 범위 중 하나에 있다고 판단하는
    경우에만 사용}해야 합니다 [RFC1918].
 ```
+# 기여
+1. 작업을 진행하기 전, 페이지 관련 내용을 삭제한 뒤 `/en`, `/kr` 디렉토리에 문서를 먼저 저장합니다(작업이 진행중임을 파악하기 위함).
+2. branch를 만들어 번역을 진행하되, 적절한 크기로 commit을 나눕니다(e.g. section 1, section2 ...). commit의 크기를 작게 유지하면 merge 전 검수할 때 원활합니다. 
+
