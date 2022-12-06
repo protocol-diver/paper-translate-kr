@@ -1100,48 +1100,35 @@ Copyright Notice
 
    UPnP IGD에는 이에 상응하는 메커니즘이 없습니다.
 
-9.8.  On-Path NAT Discovery
+9.8.  On-Path NAT Discovery (On-Path NAT 검색)
 
-   For any given host, it is only useful to request NAT port mappings in
-   the NAT gateway through which that host's packets are flowing.  A NAT
-   port mapping is a request for packets to be translated in a certain
-   way; the NAT gateway can only perform that translation if it's
-   actually forwarding inbound and outbound packets for that host.
+   지정된 호스트의 경우 해당 호스트의 패킷이 흐르는 NAT 게이트웨이에서 NAT 포트 매핑을
+   요청하는 것이 유용합니다. NAT 포트 매핑은 패킷이 특정 방식으로 변환되도록 요청하는 것입니다.
+   NAT 게이트웨이는 실제로 해당 호스트에 대한 인바운드 및 아웃바운드 패킷을 전달하는 경우에만
+   해당 변환을 수행할 수 있습니다.
 
-   This is why NAT-PMP sends its requests to the host's default router,
-   since this is the device that is forwarding (and possibly
-   translating) inbound and outbound packets for that host.  (In a
-   larger network with multiple hops between a host and its NAT gateway,
-   some other mechanism would need to be used to discover the correct
-   on-path NAT for a host; this is possible, but outside the scope of
-   this document.)
+   이것은 NAT-PMP가 호스트의 기본 라우터로 요청을 보내는 이유이며, 이는 해당 호스트에 대한
+   인바운드 및 아웃바운드 패킷을 전달(및 변환)하는 장치이기 때문입니다. (호스트와 해당 NAT
+   게이트웨이 사이에 다중 홉이 있는 대규모 네트워크에서는 호스트에 대한 올바른 on-path
+   NAT를 검색하기 위해 일부 다른 메커니즘을 사용해야 합니다; 이는 가능하지만 이 문서의
+   범위를 벗어납니다.)
 
-   In contrast, UPnP IGD does not limit itself to using only on-path
-   NATs.  UPnP IGD uses a multicast SSDP query, and uses any device it
-   finds on the local network claiming UPnP IGD capability, regardless
-   of whether any inbound or outbound traffic is actually flowing
-   through that device.  Over the past few years this led to many bug
-   reports being sent to Apple with the general form: "Port Mapping
-   doesn't work on my Mac and that's a bug because everything else on my
-   network says UPnP IGD is working fine." Upon investigation it always
-   turned out that: (i) these people had NAT gateways that either didn't
-   support port mapping requests, or had that capability disabled, and
-   (ii) for some reason they also had some other old NAT device still
-   connected to their network, and those other NAT devices were
-   advertising UPnP IGD capability, even though they were not the active
-   NAT gateway for the network.  This led to UPnP IGD clients falsely
-   reporting that they were "working fine", and only the Mac correctly
-   reporting that it was unable to make any useful port mappings.  In
-   many cases the people reporting this "bug" had devices like game
-   consoles on their home network that for many years had been reporting
-   that UPnP IGD was "working fine", yet during those years they had
-   never once successfully received any inbound network packet or
-   connection.  The irony is that, for these people who were reporting
-   bugs to Apple, UPnP IGD "working fine" had been indistinguishable
-   from UPnP IGD doing nothing useful at all.  It was only when Back to
-   My Mac [RFC6281] started reporting that it was unable to make any
-   functional port mappings that these people discovered they'd never
-   had any working port mappings on their NAT gateway.
+   반대로 UPnP IGD는 on-path NAT만 사용하도록 제한하지 않습니다. UPnP IGD는 멀티캐스트
+   SSDP 쿼리를 사용하고 인바운드 또는 아웃바운드 트래픽이 실제로 해당 장치를 통과하는지 여부에
+   관계없이 UPnP IGD 기능을 요구하는 로컬 네트워크에서 찾은 모든 장치를 사용합니다. 지난 몇
+   년 동안 이로 인해 다음과 같은 일반 형식으로 Apple에 많은 버그 보고서가 전송되었습니다. 조사
+   결과 항상 밝혀진 사실은 다음과 같습니다. (i) 이 사람들은 포트 매핑 요청을 지원하지 않거나
+   해당 기능이 비활성화된 NAT 게이트웨이를 가지고 있었고, (ii) 어떤 이유로 그들은 여전히
+   연결된 다른 오래된 NAT 장치도 가지고 있었습니다. 그들의 네트워크와 다른 NAT 장치는
+   네트워크의 활성 NAT 게이트웨이가 아니더라도 UPnP IGD 기능을 광고하고 있었습니다. 이로 인해
+   UPnP IGD 클라이언트가 "잘 작동 중"이라고 잘못 보고했으며 Mac에서만 유용한 포트 매핑을
+   만들 수 없다고 올바르게 보고했습니다. 많은 경우에 이 "버그"를 보고한 사람들은 홈 네트워크에
+   게임 콘솔과 같은 장치를 가지고 있었습니다. 이러한 장치는 수년 동안 UPnP IGD가 "정상적으로
+   작동"한다고 보고했지만 그 동안 한 번도 인바운드 네트워크 패킷이나 연결을 성공적으로 수신한
+   적이 없었습니다. 아이러니하게도 Apple에 버그를 보고하는 사람들에게 UPnP IGD는 "잘 작동"
+   하는 것과 전혀 유용하지 않은 UPnP IGD를 구별할 수 없었습니다. Back to My Mac
+   [RFC6281]가 어떤 기능적인 포트 매핑도 할 수 없다고 보고하기 시작했을 때 이 사람들은 NAT
+   게이트웨이에서 작동하는 포트 매핑이 전혀 없었다는 것을 발견했습니다.
 
 10.  References
 
