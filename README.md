@@ -18,7 +18,7 @@
    - [ ] [RFC5128](https://github.com/protocol-diver/rfc-translate-kr/blob/main/kr/rfc5128.txt) - State of Peer-to-Peer (P2P) Communication across Network Address Translators (NATs)
 
 ### Protocol
-   - [ ] [RFC6886](https://github.com/protocol-diver/rfc-translate-kr/blob/main/kr/rfc6886.txt) - NAT Port Mapping Protocol (NAT-PMP)
+   - [x] [RFC6886](https://github.com/protocol-diver/rfc-translate-kr/blob/main/kr/rfc6886.txt) - NAT Port Mapping Protocol (NAT-PMP)
 
 # 문서 규격
 한/영 변환 Github Page 운영에 대비하여 원본과 번역본 둘 다 저장합니다.
