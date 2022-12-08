@@ -7,32 +7,26 @@ Category: Informational                                          B. Ford
                                                               March 2008
 
 
-           State of Peer-to-Peer (P2P) Communication across
-                   Network Address Translators (NATs)
+         네트워크 주소 변환기(NAT)를 통한 P2P(Peer-to-Peer) 통신의 상태
 
 Status of This Memo
 
-   This memo provides information for the Internet community.  It does
-   not specify an Internet standard of any kind.  Distribution of this
-   memo is unlimited.
+   이 메모는 인터넷 커뮤니티에 대한 정보를 제공합니다. 어떤 종류의 인터넷 표준도 지정하지
+   않습니다. 메모 배포에 제한은 없습니다.
 
-Abstract
+개요
 
-   This memo documents the various methods known to be in use by
-   applications to establish direct communication in the presence of
-   Network Address Translators (NATs) at the current time.  Although
-   this memo is intended to be mainly descriptive, the Security
-   Considerations section makes some purely advisory recommendations
-   about how to deal with security vulnerabilities the applications
-   could inadvertently create when using the methods described.  This
-   memo covers NAT traversal approaches used by both TCP- and UDP-based
-   applications.  This memo is not an endorsement of the methods
-   described, but merely an attempt to capture them in a document.
+   이 메모는 현재 네트워크 주소 변환기(NAT)가 있는 상태에서 직접 통신을 설정하기 위해 응용
+   프로그램에서 사용 중인 것으로 알려진 다양한 방법을 문서화합니다. 이 메모는 주로 설명을 위한
+   것이지만 보안 고려 사항 섹션에서는 설명된 방법을 사용할 때 응용 프로그램이 실수로 생성할 수
+   있는 보안 취약점을 처리하는 방법에 대한 순전히 권고 사항을 제공합니다. 이 메모는 TCP 및
+   UDP 기반 애플리케이션에서 사용되는 NAT 순회 접근 방식을 다룹니다. 이 메모는 설명된 방법을
+   보증하는 것이 아니라 문서에서 캡처하려는 시도일 뿐입니다.
 
-Table of Contents
+목차
 
-   1. Introduction and Scope
-   2. Terminology and Conventions Used
+   1. Introduction and Scope (소개 및 범위)
+   2. Terminology and Conventions Used (사용된 용어 및 규약)
       2.1. Endpoint
       2.2. Endpoint Mapping
       2.3. Endpoint-Independent Mapping
@@ -43,31 +37,31 @@ Table of Contents
       2.8. NAT-Friendly P2P Application
       2.9. Endpoint-Independent Mapping NAT (EIM-NAT)
       2.10. Hairpinning
-   3. Techniques Used by P2P Applications to Traverse NATs
-      3.1. Relaying
+   3. Techniques Used by P2P Applications to Traverse NATs (NAT 통과를 위해 P2P 애플리케이션에서 사용하는 기술)
+      3.1. Relaying (중계))
       3.2. Connection Reversal
       3.3. UDP Hole Punching
-           3.3.1. Peers behind Different NATs
-           3.3.2. Peers behind the Same NAT
-           3.3.3. Peers Separated by Multiple NATs
+           3.3.1. Peers behind Different NATs (다른 NAT 뒤의 피어)
+           3.3.2. Peers behind the Same NAT (동일한 NAT 뒤에 있는 피어)
+           3.3.3. Peers Separated by Multiple NATs (여러 NAT로 분리된 피어)
       3.4. TCP Hole Punching
-      3.5. UDP Port Number Prediction
-      3.6. TCP Port Number Prediction
-   4. Recent Work on NAT Traversal
-   5. Summary of Observations
+      3.5. UDP Port Number Prediction (UDP 포트 번호 예측)
+      3.6. TCP Port Number Prediction (TCP 포트 번호 예측)
+   4. Recent Work on NAT Traversal (NAT 순회에 대한 최근 작업)
+   5. Summary of Observations (관찰 요약)
       5.1. TCP/UDP Hole Punching
       5.2. NATs Employing Endpoint-Dependent Mapping
       5.3. Peer Discovery
       5.4. Hairpinning
-   6. Security Considerations
-      6.1. Lack of Authentication Can Cause Connection Hijacking
+   6. Security Considerations (보안 고려 사항)
+      6.1. Lack of Authentication Can Cause Connection Hijacking (인증 부족으로 인한 커넥션 하이재킹 야기)
       6.2. Denial-of-Service Attacks
       6.3. Man-in-the-Middle Attacks
       6.4. Security Impact from EIM-NAT Devices
-   7. Acknowledgments
-   8. References
-      8.1. Normative References
-      8.2. Informative References
+   7. Acknowledgments (감사의 말)
+   8. References (참조)
+      8.1. Normative References (규범적 참조)
+      8.2. Informative References (유익한 참조)
 
 1.  Introduction and Scope
 
