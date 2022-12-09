@@ -63,77 +63,56 @@ Status of This Memo
       8.1. Normative References (규범적 참조)
       8.2. Informative References (유익한 참조)
 
-1.  Introduction and Scope
+1.  Introduction and Scope (소개 및 범위)
 
-   The present-day Internet has seen ubiquitous deployment of Network
-   Address Translators (NATs).  There are a variety of NAT devices and a
-   variety of network topologies utilizing NAT devices in deployments.
-   The asymmetric addressing and connectivity regimes established by
-   these NAT devices have created unique problems for peer-to-peer (P2P)
-   applications and protocols, such as teleconferencing and multiplayer
-   online gaming.  These issues are likely to persist even into the IPv6
-   world.  During the transition to IPv6, some form of NAT may be
-   required to enable IPv4-only nodes to communicate with IPv6-only
-   nodes [NAT-PT], although the appropriate protocols and guidelines for
-   this use of NAT are still unresolved [NAT-PT-HIST].  Even a future
-   "pure IPv6 world" may still include firewalls, which employ similar
-   filtering behavior of NATs but without the address translation
-   [V6-CPE-SEC].  The filtering behavior interferes with the functioning
-   of P2P applications.  For this reason, IPv6 applications that use the
-   techniques described in this document for NAT traversal may also work
-   with some firewalls that have filtering behavior similar to NATs.
+   오늘날의 인터넷은 네트워크 주소 변환기(NATs)의 유비쿼터스 배치를 보았습니다. 배치에서 NAT
+   장치를 활용하는 다양한 NAT 장치 및 다양한 네트워크 토폴로지가 있습니다. 이러한 NAT 장치에
+   의해 설정된 비대칭 주소 지정 및 연결 체계는 원격 회의 및 멀티플레이어 온라인 게임과 같은
+   peer-to-peer(P2P) 애플리케이션 및 프로토콜에 고유한 문제를 발생시켰습니다. 이러한
+   문제는 IPv6 세계에서도 지속될 가능성이 높습니다. IPv6으로 전환하는 동안 IPv4 전용
+   노드가 IPv6 전용 노드[NAT-PT]와 통신할 수 있도록 하기 위해 일부 형태의 NAT가 필요할 수
+   있습니다[NAT-PT-HIST]. 미래의 "순수한 IPv6 세계"에도 NAT와 유사한 필터링 동작을
+   사용하지만 주소 변환[V6-CPE-SEC]이 없는 방화벽이 여전히 포함될 수 있습니다. 필터링 동작은
+   P2P 애플리케이션의 기능을 방해합니다. 이러한 이유로 NAT 통과를 위해 이 문서에 설명된 기술을
+   사용하는 IPv6 응용 프로그램은 NAT와 유사한 필터링 동작이 있는 일부 방화벽에서도 작동할 수
+   있습니다.
 
-   Currently deployed NAT devices are designed primarily around the
-   client/server paradigm, in which relatively anonymous client machines
-   inside a private network initiate connections to public servers with
-   stable IP addresses and DNS names.  NAT devices encountered en route
-   provide dynamic address assignment for the client machines.  The
-   illusion of anonymity (private IP addresses) and inaccessibility of
-   the internal hosts behind a NAT device is not a problem for
-   applications such as Web browsers, which only need to initiate
-   outgoing connections.  This illusion of anonymity and inaccessibility
-   is sometimes perceived as a privacy benefit.  As noted in Section 2.2
-   of [RFC4941], this perceived privacy may be illusory in a majority of
-   cases utilizing Small-Office-Home-Office (SOHO) NATs.
+   현재 배포된 NAT 장치는 클라이언트/서버 패러다임을 중심으로 설계되었으며, 사설 네트워크
+   내부의 상대적으로 익명인 클라이언트 시스템은 안정적인 IP 주소와 DNS 이름을 사용하여 공용
+   서버에 대한 연결을 시작합니다. 도중에 만나는 NAT 장치는 클라이언트 시스템에 동적 주소
+   할당을 제공합니다. NAT 장치 뒤에 있는 내부 호스트의 익명성(사설 IP 주소) 및 액세스
+   불가능성에 대한 환상은 나가는 연결만 시작하면 되는 웹 브라우저와 같은 응용 프로그램에서는
+   문제가 되지 않습니다. 이러한 익명성과 접근 불가능성에 대한 환상은 때때로 개인 정보 보호
+   혜택으로 인식됩니다. [RFC4941]의 섹션 2.2에 언급된 바와 같이, Small-Office-Home
+   -Office (SOHO) NAT를 사용하는 대부분의 경우 이러한 개인 정보 보호는 환상일 수
+   있습니다.
 
-   In the peer-to-peer paradigm, Internet hosts that would normally be
-   considered "clients" not only initiate sessions to peer nodes, but
-   also accept sessions initiated by peer nodes.  The initiator and the
-   responder might lie behind different NAT devices with neither
-   endpoint having a permanent IP address or other form of public
-   network presence.  A common online gaming architecture, for example,
-   involves all participating application hosts contacting a publicly
-   addressable rendezvous server for registering themselves and
-   discovering peer hosts.  Subsequent to the communication with the
-   rendezvous server, the hosts establish direct connections with each
-   other for fast and efficient propagation of updates during game play.
-   Similarly, a file sharing application might contact a well-known
-   rendezvous server for resource discovery or searching, but establish
-   direct connections with peer hosts for data transfer.  NAT devices
-   create problems for peer-to-peer connections because hosts behind a
-   NAT device normally have no permanently visible public ports on the
-   Internet to which incoming TCP or UDP connections from other peers
-   can be directed.  RFC 3235 [NAT-APPL] briefly addresses this issue.
+   P2P 패러다임에서 일반적으로 "클라이언트"로 간주되는 인터넷 호스트는 피어 노드에 대한 
+   세션을 시작할 뿐만 아니라 피어 노드가 시작한 세션도 수락합니다. 개시자와 응답자는 영구 IP
+   주소나 다른 형태의 공용 네트워크 존재를 갖지 않는 엔드포인트 없이 서로 다른 NAT 장치
+   뒤에 있을 수 있습니다. 예를 들어, 일반적인 온라인 게임 아키텍처는 자신을 등록하고 피어
+   호스트를 검색하기 위해 공개적으로 주소 지정이 가능한 랑데부 서버에 접속하는 모든 참여
+   애플리케이션 호스트를 포함합니다. 랑데부 서버와의 통신에 이어 호스트는 게임 플레이 중에
+   업데이트를 빠르고 효율적으로 전파하기 위해 서로 직접 연결을 설정합니다. 마찬가지로 파일
+   공유 응용 프로그램은 리소스 검색 또는 검색을 위해 잘 알려진 랑데부 서버에 연결할 수 있지만
+   데이터 전송을 위해 피어 호스트와 직접 연결을 설정할 수 있습니다. NAT 장치 뒤에 있는
+   호스트는 일반적으로 다른 피어에서 들어오는 TCP 또는 UDP 연결이 향할 수 있는 인터넷에서
+   영구적으로 볼 수 있는 공용 포트가 없기 때문에 NAT 장치는 피어 투 피어 연결에 문제를
+   일으킵니다. RFC 3235[NAT-APPL]는 이 문제를 간략하게 설명합니다.
 
-   NAT traversal strategies that involve explicit signaling between
-   applications and NAT devices, namely [NAT-PMP], [NSIS-NSLP], [SOCKS],
-   [RSIP], [MIDCOM], and [UPNP] are out of the scope of this document.
-   These techniques, if available, are a complement to the techniques
-   described in the document.  [UNSAF] is in scope.
+   [NAT-PMP], [NSIS-NSLP], [SOCKS], [RSIP], [MIDCOM] 및 [UPNP]와 같이 응용
+   프로그램과 NAT 장치 간의 명시적 신호를 포함하는 NAT 통과 전략은 이 문서의 범위를
+   벗어납니다. 사용 가능한 경우 이러한 기술은 문서에 설명된 기술을 보완합니다. [UNSAF]가
+   범위 내에 있습니다.
 
-   In this document, we summarize the currently known methods by which
-   applications work around the presence of NAT devices, without
-   directly altering the NAT devices.  The techniques described predate
-   BEHAVE documents ([BEH-UDP], [BEH-TCP], and [BEH-ICMP]).  The scope
-   of the document is restricted to describing currently known
-   techniques used to establish 2-way communication between endpoints of
-   an application.  Discussion of timeouts, RST processing, keepalives,
-   and so forth that concern a running session are outside the scope of
-   this document.  The scope is also restricted to describing techniques
-   for TCP- and UDP-based applications.  It is not the objective of this
-   document to provide solutions to NAT traversal problems for
-   applications in general [BEH-APP] or to a specific class of
-   applications [ICE].
+   이 문서에서는 응용 프로그램이 NAT 장치를 직접 변경하지 않고 NAT 장치를 우회하여 작동하는
+   현재 알려진 방법을 요약합니다. 설명된 기술은 BEHAVE 문서([BEH-UDP], [BEH-TCP] 및
+   [BEH-ICMP]) 이전 버전입니다. 문서의 범위는 응용 프로그램의 끝점 간에 양방향 통신을
+   설정하는 데 사용되는 현재 알려진 기술을 설명하는 것으로 제한됩니다. 실행 중인 세션과 관련된
+   시간 초과, RST 처리, keepalive 등에 대한 논의는 이 문서의 범위를 벗어납니다. 또한
+   범위는 TCP 및 UDP 기반 응용 프로그램에 대한 기술을 설명하는 것으로 제한됩니다. 이 문서의
+   목적은 일반적인 애플리케이션[BEH-APP] 또는 특정 클래스의 애플리케이션[ICE]에 대한 NAT
+   통과 문제에 대한 솔루션을 제공하는 것이 아닙니다.
 
 2.  Terminology and Conventions Used
 
