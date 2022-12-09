@@ -141,16 +141,16 @@ Status of This Memo
 
 2.1.  Endpoint
 
-   Endpoint는 끝 호스트의 세션별 튜플입니다. Endpoint는 각 IP 프로토콜에 대해 다르게
-   표시될 수 있습니다. 예를 들어 UDP 또는 TCP 세션 endpoint는 (IP 주소, UDP/TCP
+   엔드포인트는 끝 호스트의 세션별 튜플입니다. 엔드포인트는 각 IP 프로토콜에 대해 다르게
+   표시될 수 있습니다. 예를 들어 UDP 또는 TCP 세션 엔드포인트는 (IP 주소, UDP/TCP
    포트)의 튜플로 표시됩니다.
 
 2.2.  Endpoint Mapping
 
    사설 영역의 호스트가 NAT 장치를 통해 공용 영역의 호스트로 나가는 세션을 시작하면 NAT 장치는
-   외부 호스트의 후속 응답 패킷을 NAT에서 수신할 수 있도록 사설 endpoint를 변환할 공용
-   endpoint을 할당하고, 번환되어 및 사설 endpoint로 전달됩니다. 사설 endpoint를 공용
-   endpoint로 또는 그 반대로 변환하기 위한 NAT 장치의 할당을 Endpoint Mapping이라고
+   외부 호스트의 후속 응답 패킷을 NAT에서 수신할 수 있도록 사설 엔드포인트를 변환할 공용
+   엔드포인트를 할당하고, 번환되어 및 사설 endpoint로 전달됩니다. 사설 엔드포인트를 공용
+   엔드포인트로 또는 그 반대로 변환하기 위한 NAT 장치의 할당을 Endpoint Mapping이라고
    합니다. NAT는 Endpoint Mapping을 사용하여 세션 기간 동안 변환을 수행합니다.
 
 2.3.  Endpoint-Independent Mapping
@@ -211,42 +211,37 @@ Status of This Memo
    "Endpoint-Dependent Filtering"을 사용하는 NAT 장치는 공용 네트워크의 제한된 외부
    끝점 집합에서 매핑된 공용 포트로 들어오는 트래픽만 허용합니다.
 
-2.7.  P2P Application
+2.7.  P2P Application (P2P 애플리케이션)
 
-   A P2P application is an application that uses the same endpoint to
-   initiate outgoing sessions to peering hosts as well as accept
-   incoming sessions from peering hosts.  A P2P application may use
-   multiple endpoints for peer-to-peer communication.
+   P2P 애플리케이션은 동일한 엔드포인트를 사용하여 피어링 호스트로 나가는 세션을 시작하고
+   피어링 호스트에서 들어오는 세션을 수락하는 애플리케이션입니다. P2P 애플리케이션은 P2P
+   통신을 위해 여러 엔드포인트를 사용할 수 있습니다.
 
-2.8.  NAT-Friendly P2P Application
+2.8.  NAT-Friendly P2P Application (NAT 친화적 P2P 애플리케이션)
 
-   A NAT-friendly P2P application is a P2P application that is designed
-   to work effectively even as peering nodes are located in distinct IP
-   address realms, connected by one or more NATs.
+   NAT 친화적인 P2P 애플리케이션은 피어링 노드가 하나 이상의 NAT로 연결된 개별 IP 주소
+   영역에 있는 경우에도 효과적으로 작동하도록 설계된 P2P 애플리케이션입니다.
 
-   One common way P2P applications establish peering sessions and remain
-   NAT-friendly is by using a publicly addressable rendezvous server for
-   registration and peer discovery purposes.
+   P2P 애플리케이션이 피어링 세션을 설정하고 NAT 친화적인 상태를 유지하는 일반적인 방법 중
+   하나는 등록 및 피어 검색 목적으로 공개 주소 지정이 가능한 랑데뷰 서버를 사용하는 것입니다.
 
 2.9. Endpoint-Independent Mapping NAT (EIM-NAT)
 
-   An Endpoint-Independent Mapping NAT (EIM-NAT, for short) is a NAT
-   device employing Endpoint-Independent Mapping.  An EIM-NAT can have
-   any type of filtering behavior.  BEHAVE-compliant NAT devices are
-   good examples of EIM-NAT devices.  A NAT device employing Address-
-   Dependent Mapping is an example of a NAT device that is not EIM-NAT.
+   Endpoint-Independent Mapping NAT (EIM-NAT)는 엔드포인트 독립 매핑을 사용하는
+   NAT 장치입니다. EIM-NAT는 모든 유형의 필터링 동작을 가질 수 있습니다. BEHAVE 호환
+   NAT 장치는 EIM-NAT 장치의 좋은 예입니다. 주소 종속 매핑을 사용하는 NAT 장치는
+   EIM-NAT가 아닌 NAT 장치의 예입니다.
 
 2.10.  Hairpinning
 
-   Hairpinning is defined in [BEH-UDP] as follows:
+   Hairpinning은 [BEH-UDP]에서 다음과 같이 정의됩니다:
 
-        If two hosts (called X1 and X2) are behind the same NAT and
-        exchanging traffic, the NAT may allocate an address on the
-        outside of the NAT for X2, called X2':x2'.  If X1 sends traffic
-        to X2':x2', it goes to the NAT, which must relay the traffic
-        from X1 to X2.  This is referred to as hairpinning.
+        두 호스트(X1 및 X2라고 함)가 동일한 NAT 뒤에 있고 트래픽을 교환하는 경우 NAT는
+        X2':x2'라고 하는 X2의 NAT 외부에 주소를 할당할 수 있습니다. X1이 트래픽을
+        X2':x2'로 보내면 트래픽은 X1에서 X2로 릴레이해야 하는 NAT로 이동합니다. 이것을
+        Hairpinning이라고 합니다.
 
-   Not all currently deployed NATs support hairpinning.
+   현재 배포된 모든 NAT가 Hairpinning을 지원하는 것은 아닙니다.
 
 3.  Techniques Used by P2P Applications to Traverse NATs
 
