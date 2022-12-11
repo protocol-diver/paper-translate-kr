@@ -243,26 +243,21 @@ Status of This Memo
 
    현재 배포된 모든 NAT가 Hairpinning을 지원하는 것은 아닙니다.
 
-3.  Techniques Used by P2P Applications to Traverse NATs
+3.  Techniques Used by P2P Applications to Traverse NATs (NAT 통과를 위해 P2P 애플리케이션에서 사용하는 기술)
 
-   This section reviews in detail the currently known techniques for
-   implementing peer-to-peer communication over existing NAT devices,
-   from the perspective of the application or protocol designer.
+   이 섹션에서는 응용 프로그램 또는 프로토콜 설계자의 관점에서 기존 NAT 장치를 통해
+   peer-to-peer 통신을 구현하기 위해 현재 알려진 기술을 자세히 검토합니다.
 
-3.1.  Relaying
+3.1.  Relaying (중계)
 
-   The most reliable, but least efficient, method of implementing peer-
-   to-peer communication in the presence of a NAT device is to make the
-   peer-to-peer communication look to the network like client/server
-   communication through relaying.  Consider the scenario in figure 1.
-   Two client hosts, A and B, have each initiated TCP or UDP connections
-   to a well-known rendezvous server S.  The Rendezvous Server S has a
-   publicly addressable IP address and is used for the purposes of
-   registration, discovery, and relay.  Hosts behind NAT register with
-   the server.  Peer hosts can discover hosts behind NATs and relay all
-   end-to-end messages using the server.  The clients reside on separate
-   private networks, and their respective NAT devices prevent either
-   client from directly initiating a connection to the other.
+   NAT 장치가 있는 상태에서 peer-to-peer 통신을 구현하는 가장 안정적이지만 가장 비효율적인
+   방법은 peer-to-peer 통신을 릴레이를 통한 클라이언트/서버 통신처럼 네트워크에 보이게
+   만드는 것입니다. 그림 1의 시나리오를 고려하십시오. 두 클라이언트 호스트 A와 B는 각각 잘
+   알려진 랑데뷰 서버 S에 대한 TCP 또는 UDP 연결을 시작했습니다. 랑데뷰 서버 S는 공인 주소
+   지정이 가능한 IP 주소를 가지며 등록, 검색 및 릴레이 목적으로 사용됩니다. NAT 뒤의 호스트는
+   서버에 등록됩니다. 피어 호스트는 NAT 뒤에 있는 호스트를 검색하고 서버를 사용하여 모든
+   end-to-end 메시지를 릴레이할 수 있습니다. 클라이언트는 별도의 사설 네트워크에 상주하며
+   각각의 NAT 장치는 클라이언트가 다른 클라이언트에 직접 연결을 시작하지 못하도록 합니다.
 
                            Registry, Discovery
                            Combined with Relay
@@ -289,35 +284,27 @@ Status of This Memo
      Client A                                                 Client B
      10.0.0.1:1234                                        10.1.1.3:1234
 
-         Figure 1: Use of a Relay Server to communicate with peers
+                     그림 1: 릴레이 서버를 사용하여 피어와 통신
 
-   Instead of attempting a direct connection, the two clients can simply
-   use the server S to relay messages between them.  For example, to
-   send a message to client B, client A simply sends the message to
-   server S along its already established client/server connection, and
-   server S then sends the message on to client B using its existing
-   client/server connection with B.
+   직접 연결을 시도하는 대신 두 클라이언트는 서버 S를 사용하여 메시지를 릴레이할 수 있습니다.
+   예를 들어 클라이언트 B에게 메시지를 보내기 위해 클라이언트 A는 이미 설정된 클라이언트/서버
+   연결을 따라 서버 S로 메시지를 보내고 서버 S는 B와의 기존 클라이언트/서버 연결을 사용하여
+   클라이언트 B로 메시지를 보냅니다.
 
-   This method has the advantage that it will always work as long as
-   both clients have connectivity to the server.  The enroute NAT device
-   is not required to be EIM-NAT.  The obvious disadvantages of relaying
-   are that it consumes the server's processing power and network
-   bandwidth, and communication latency between the peering clients is
-   likely to be increased even if the server has sufficient I/O
-   bandwidth and is located correctly topology-wise.  The TURN protocol
-   [TURN] defines a method of implementing application agnostic,
-   session-oriented, packet relay in a relatively secure fashion.
+   이 방법은 두 클라이언트가 서버에 연결되어 있는 한 항상 작동한다는 장점이 있습니다. 도중
+   NAT 장치는 EIM-NAT일 필요가 없습니다. 릴레이의 명백한 단점은 서버의 처리 능력과
+   네트워크 대역폭을 소모하고 서버가 충분한 I/O 대역폭을 가지고 있고 토폴로지 측면에서 올바른
+   위치에 있더라도 피어링 클라이언트 간의 통신 대기 시간이 증가할 가능성이 있다는 것입니다.
+   TURN 프로토콜[TURN]은 상대적으로 안전한 방식으로 응용 프로그램에 구애받지 않는 세션 지향
+   패킷 릴레이를 구현하는 방법을 정의합니다.
 
-3.2.  Connection Reversal
+3.2.  Connection Reversal (연결 반전)
 
-   The following connection reversal technique for a direct
-   communication works only when one of the peers is behind a NAT device
-   and the other is not.  For example, consider the scenario in figure
-   2.  Client A is behind a NAT, but client B has a publicly addressable
-   IP address.  Rendezvous Server S has a publicly addressable IP
-   address and is used for the purposes of registration and discovery.
-   Hosts behind a NAT register their endpoints with the server.  Peer
-   hosts discover endpoints of hosts behind a NAT using the server.
+   직접 통신을 위한 다음 연결 반전 기술은 피어 중 하나가 NAT 장치 뒤에 있고 다른 하나는
+   그렇지 않은 경우에만 작동합니다. 예를 들어 그림 2의 시나리오를 고려하십시오. 클라이언트
+   A는 NAT 뒤에 있지만 클라이언트 B는 공인 주소 지정이 가능한 IP 주소를 가지고 있습니다. Rendezvous Server S에는 공인 주소 지정이 가능한 IP 주소가 있으며 등록 및 검색
+   목적으로 사용됩니다. NAT 뒤의 호스트는 엔드포인트를 서버에 등록합니다. 피어 호스트는
+   서버를 사용하여 NAT 뒤에 있는 호스트의 엔드포인트를 검색합니다.
 
                           Registry and Discovery
                                  Server S
@@ -349,54 +336,41 @@ Status of This Memo
      Private Client A                                 Public Client B
      10.0.0.1:1234                                    192.0.2.254:1234
 
-           Figure 2: Connection reversal using Rendezvous server
+                  그림 2: Rendezvous 서버를 사용한 연결 반전
 
-   Client A has private IP address 10.0.0.1, and the application is
-   using TCP port 1234.  This client has established a connection with
-   server S at public IP address 192.0.2.128 and port 20001.  NAT A has
-   assigned TCP port 62000, at its own public IP address 192.0.2.1, to
-   serve as the temporary public endpoint address for A's session with
-   S; therefore, server S believes that client A is at IP address
-   192.0.2.1 using port 62000.  Client B, however, has its own permanent
-   IP address, 192.0.2.254, and the application on B is accepting TCP
-   connections at port 1234.
+   클라이언트 A는 사설 IP 주소 10.0.0.1을 가지고 있으며 응용 프로그램은 TCP 포트 1234를
+   사용하고 있습니다. 이 클라이언트는 공인 IP 주소 192.0.2.128 및 포트 20001에서
+   서버 S와 연결을 설정했습니다. NAT A는 자신의 공인 IP 주소 192.0.2.1에서 TCP 포트
+   62000을 할당하여 A와 S의 세션에 대한 임시 공용 엔드포인트 주소로 사용했습니다. 따라서
+   서버 S는 클라이언트 A가 포트 62000을 사용하는 IP 주소 192.0.2.1에 있다고 믿습니다.
+   그러나 클라이언트 B는 고유한 영구 IP 주소 192.0.2.254를 가지며 B의 응용 프로그램은
+   포트 1234에서 TCP 연결을 수락합니다.
 
-   Now suppose client B wishes to establish a direct communication
-   session with client A.  B might first attempt to contact client A
-   either at the address client A believes itself to have, namely,
-   10.0.0.1:1234, or at the address of A as observed by server S,
-   namely, 192.0.2.1:62000.  In either case, the connection will fail.
-   In the first case, traffic directed to IP address 10.0.0.1 will
-   simply be dropped by the network because 10.0.0.1 is not a publicly
-   routable IP address.  In the second case, the TCP SYN request from B
-   will arrive at NAT A directed to port 62000, but NAT A will reject
-   the connection request because only outgoing connections are allowed.
+   이제 클라이언트 B가 클라이언트 A와 직접 통신 세션을 설정하려고 한다고 가정합니다. B는 먼저
+   클라이언트 A가 자신이 가지고 있다고 믿는 주소(즉, 10.0.0.1:1234) 또는 서버 S가 관찰한
+   A의 주소(즉, 192.0.2.1:62000)에서 클라이언트 A에 접속을 시도할 수 있습니다. 두 경우
+   모두 연결이 실패합니다. 첫 번째 경우 10.0.0.1은 공개적으로 라우팅할 수 있는 IP 주소가
+   아니기 때문에 IP 주소 10.0.0.1로 향하는 트래픽은 네트워크에서 단순히 삭제됩니다. 두 번째
+   경우 B의 TCP SYN 요청은 포트 62000으로 지정된 NAT A에 도착하지만 나가는 연결만
+   허용되기 때문에 NAT A는 연결 요청을 거부합니다.
 
-   After attempting and failing to establish a direct connection to A,
-   client B can use server S to relay a request to client A to initiate
-   a "reversed" connection to client B.  Client A, upon receiving this
-   relayed request through S, opens a TCP connection to client B at B's
-   public IP address and port number.  NAT A allows the connection to
-   proceed because it is originating inside the firewall, and client B
-   can receive the connection because it is not behind a NAT device.
+   A에 대한 직접 연결 설정을 시도하고 실패한 후 클라이언트 B는 서버 S를 사용하여 클라이언트
+   A에 대한 요청을 릴레이하여 클라이언트 B에 대한 "역방향" 연결을 시작할 수 있습니다.
+   클라이언트 A는 S를 통해 이 릴레이된 요청을 수신하면 B의 공인 IP 주소 및 포트 번호에서
+   클라이언트 B에 대한 TCP 연결을 엽니다. NAT A는 방화벽 내부에서 시작되기 때문에 연결
+   진행을 허용하고 클라이언트 B는 NAT 장치 뒤에 있지 않기 때문에 연결을 수신할 수 있습니다.
 
-   A variety of current peer-to-peer applications implement this
-   technique.  Its main limitation, of course, is that it only works so
-   long as only one of the communicating peers is behind a NAT device.
-   If the NAT device is EIM-NAT, the public client can contact external
-   server S to determine the specific public endpoint from which to
-   expect Client-A-originated connection and allow connections from just
-   those endpoints.  If the NAT device is EIM-NAT, the public client can
-   contact the external server S to determine the specific public
-   endpoint from which to expect connections originated by client A, and
-   allow connections from just that endpoint.  If the NAT device is not
-   EIM-NAT, the public client cannot know the specific public endpoint
-   from which to expect connections originated by client A.  In the
-   increasingly common case where both peers can be behind NATs, the
-   Connection Reversal method fails.  Connection Reversal is not a
-   general solution to the peer-to-peer connection problem.  If neither
-   a "forward" nor a "reverse" connection can be established,
-   applications often fall back to another mechanism such as relaying.
+   현재 다양한 peer-to-peer 애플리케이션이 이 기술을 구현합니다. 물론 주요 제한 사항은 통신
+   피어 중 하나만 NAT 장치 뒤에 있는 경우에만 작동한다는 것입니다. NAT 장치가 EIM-NAT인
+   경우 퍼블릭 클라이언트는 외부 서버 S에 연결하여 클라이언트-A에서 시작된 연결을 예상하고 해당
+   엔드포인트의 연결을 허용할 특정 공인 엔드포인트를 결정할 수 있습니다. NAT 장치가 EIM-NAT인
+   경우 퍼블릭 클라이언트는 외부 서버 S에 연결하여 클라이언트 A에서 시작된 연결을 예상하고 해당
+   엔드포인트로부터의 연결을 허용할 특정 공인 엔드포인트를 결정할 수 있습니다. NAT 장치가
+   EIM-NAT가 아닌 경우 퍼블릭 클라이언트는 클라이언트 A에서 시작된 연결을 예상하는 공인 퍼블릭
+   엔드포인트를 알 수 없습니다. 두 피어가 모두 NAT 뒤에 있을 수 있는 점점 더 일반적인 경우에
+   연결 반전 방법이 실패합니다. 연결 반전은 P2P 연결 문제에 대한 일반적인 해결책이 아닙니다.
+   "정방향" 또는 "역방향" 연결을 설정할 수 없는 경우 응용 프로그램은 종종 릴레이와 같은 다른
+   메커니즘으로 대체됩니다.
 
 3.3.  UDP Hole Punching
 
