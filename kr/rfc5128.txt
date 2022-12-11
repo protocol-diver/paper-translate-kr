@@ -372,48 +372,36 @@ Status of This Memo
    "정방향" 또는 "역방향" 연결을 설정할 수 없는 경우 응용 프로그램은 종종 릴레이와 같은 다른
    메커니즘으로 대체됩니다.
 
-3.3.  UDP Hole Punching
+3.3.  UDP Hole Punching (UDP 홀 펀칭)
 
-   UDP hole punching relies on the properties of EIM-NATs to allow
-   appropriately designed peer-to-peer applications to "punch holes"
-   through the NAT device(s) enroute and establish direct connectivity
-   with each other, even when both communicating hosts lie behind NAT
-   devices.  When one of the hosts is behind a NAT that is not EIM-NAT,
-   the peering host cannot predictably know the mapped endpoint to which
-   to initiate a connection.  Further, the application on the host
-   behind non-EIM-NAT would be unable to reuse an already established
-   endpoint mapping for communication with different external
-   destinations, and the hole punching technique would fail.
+   UDP 홀 펀칭은 EIM-NAT의 속성에 의존하여 적절하게 설계된 P2P 애플리케이션이 NAT 장치를
+   통해 "구멍을 뚫고" 서로 간에 직접 연결을 설정할 수 있도록 합니다. 호스트 중 하나가
+   EIM-NAT가 아닌 NAT 뒤에 있는 경우 피어링 호스트는 연결을 시작할 매핑된 엔드포인트를
+   예측할 수 없습니다. 또한 비 EIM-NAT 뒤에 있는 호스트의 애플리케이션은 다른 외부 대상과의
+   통신을 위해 이미 설정된 끝점 매핑을 재사용할 수 없으며 홀 펀칭 기술이 실패합니다.
 
-   This technique was mentioned briefly in Section 5.1 of RFC 3027
-   [NAT-PROT], first described in [KEGEL], and used in some recent
-   protocols [TEREDO, ICE].  Readers may refer to Section 3.4 for
-   details on "TCP hole punching".
+   이 기술은 RFC 3027 [NAT-PROT]의 섹션 5.1에서 간략하게 언급되었으며 [KEGEL]에서
+   처음 설명되었으며 일부 최근 프로토콜 [TEREDO, ICE]에서 사용되었습니다. "TCP 홀 펀칭"에
+   대한 자세한 내용은 섹션 3.4를 참조하십시오.
 
-   We will consider two specific scenarios, and how applications are
-   designed to handle both of them gracefully.  In the first situation,
-   representing the common case, two clients desiring direct peer-to-
-   peer communication reside behind two different NATs.  In the second,
-   the two clients actually reside behind the same NAT, but do not
-   necessarily know that they do.
+   우리는 두 가지 특정 시나리오와 두 시나리오를 정상적으로 처리하도록 애플리케이션을 설계하는
+   방법을 고려할 것입니다. 일반적인 경우를 나타내는 첫 번째 상황에서 직접 P2P 통신을 원하는 두
+   클라이언트가 두 개의 서로 다른 NAT 뒤에 상주합니다. 두 번째에서 두 클라이언트는 실제로
+   동일한 NAT 뒤에 상주하지만 반드시 알 필요는 없습니다.
 
-3.3.1.  Peers behind Different NATs
+3.3.1.  Peers behind Different NATs (다른 NAT 뒤의 피어)
 
-   Consider the scenario in figure 3.  Clients A and B both have private
-   IP addresses and lie behind different NAT devices.  Rendezvous Server
-   S has a publicly addressable IP address and is used for the purposes
-   of registration, discovery, and limited relay.  Hosts behind a NAT
-   register their public endpoints with the server.  Peer hosts discover
-   the public endpoints of hosts behind a NAT using the server.  Unlike
-   in Section 3.1, peer hosts use the server to relay just connection
-   initiation control messages, instead of end-to-end messages.
+   그림 3의 시나리오를 고려하십시오. 클라이언트 A와 B는 둘 다 사설 IP 주소를 가지고 있으며
+   서로 다른 NAT 장치 뒤에 있습니다. Rendezvous Server S는 공개적으로 주소를 지정할 수
+   있는 IP 주소를 가지며 등록, 검색 및 제한된 릴레이 목적으로 사용됩니다. NAT 뒤의 호스트는
+   공인 엔드포인트를 서버에 등록합니다. 피어 호스트는 서버를 사용하여 NAT 뒤에 있는 호스트의
+   공인 엔드포인트를 검색합니다. 섹션 3.1과 달리 피어 호스트는 서버를 사용하여 종단 간 메시지
+   대신 연결 시작 제어 메시지만 중계합니다.
 
-   The peer-to-peer application running on clients A and B use UDP port
-   1234.  The rendezvous server S uses UDP port 20001.  A and B have
-   each initiated UDP communication sessions with server S, causing NAT
-   A to assign its own public UDP port 62000 for A's session with S, and
-   causing NAT B to assign its port 31000 to B's session with S,
-   respectively.
+   클라이언트 A와 B에서 실행 중인 P2P 애플리케이션은 UDP 포트 1234를 사용합니다. 랑데부
+   서버 S는 UDP 포트 20001을 사용합니다. A와 B는 각각 서버 S와의 UDP 통신 세션을
+   시작하여 NAT A가 자체 공인 UDP 포트를 할당하도록 합니다. A와 S의 세션에 대해 62000,
+   NAT B가 포트 31000을 S와 B의 세션에 각각 할당하도록 합니다.
 
                       Registry and Discovery Combined
                             with Limited Relay
@@ -446,45 +434,32 @@ Status of This Memo
      Client A                                                 Client B
      10.0.0.1:1234                                        10.1.1.3:1234
 
-         Figure 3: UDP Hole Punching to set up direct connectivity
+                     그림 3: 직접 연결을 설정하기 위한 UDP 홀 펀칭
 
-   Now suppose that client A wants to establish a UDP communication
-   session directly with client B.  If A simply starts sending UDP
-   messages to B's public endpoint 192.0.2.254:31000, then NAT B will
-   typically discard these incoming messages (unless it employs
-   Endpoint-Independent Filtering), because the source address and port
-   number do not match those of S, with which the original outgoing
-   session was established.  Similarly, if B simply starts sending UDP
-   messages to A's public endpoint, then NAT A will typically discard
-   these messages.
+   이제 클라이언트 A가 클라이언트 B와 직접 UDP 통신 세션을 설정하려고 한다고 가정해
+   보겠습니다. A가 단순히 UDP 메시지를 B의 공인 엔드포인트 192.0.2.254:31000으로 보내기
+   시작하면 NAT B는 일반적으로 이러한 들어오는 메시지를 버립니다(엔드포인트 독립적 필터링을
+   사용하지 않는 한). 소스 주소와 포트 번호가 원래 나가는 세션이 설정된 S의 주소와 일치하지 않기
+   때문입니다. 마찬가지로 B가 UDP 메시지를 A의 공인 엔드포인트로 보내기 시작하면 NAT A는
+   일반적으로 이러한 메시지를 버립니다.
 
-   Suppose A starts sending UDP messages to B's public endpoint, and
-   simultaneously relays a request through server S to B, asking B to
-   start sending UDP messages to A's public endpoint.  A's outgoing
-   messages directed to B's public endpoint (192.0.2.254:31000) cause
-   EIM-NAT A to open up a new communication session between A's private
-   endpoint and B's public endpoint.  At the same time, B's messages to
-   A's public endpoint (192.0.2.1:62000) cause EIM-NAT B to open up a
-   new communication session between B's private endpoint and A's public
-   endpoint.  Once the new UDP sessions have been opened up in each
-   direction, clients A and B can communicate with each other directly
-   without further burden on the server S.  Server S, which helps with
-   relaying connection initiation requests to peer nodes behind NAT
-   devices, ends up like an "introduction" server to peer hosts.
+   A가 B의 공인 엔드포인트로 UDP 메시지를 보내기 시작하고 동시에 서버 S를 통해 B로 요청을
+   릴레이하여 B에게 A의 공인 엔드포인트로 UDP 메시지를 보내도록 요청한다고 가정합니다. B의 공인
+   엔드포인트(192.0.2.254:31000)로 향하는 A의 발신 메시지는 EIM-NAT A가 A의 사설
+   엔드포인트와 B의 공인 엔드포인트 간에 새로운 통신 세션을 열도록 합니다. 동시에 A의 공인
+   엔드포인트(192.0.2.1:62000)에 대한 B의 메시지는 EIM-NAT B가 B의 사설 엔드포인트와 A의
+   공인 엔드포인트 간에 새로운 통신 세션을 열도록 합니다. 새로운 UDP 세션이 각 방향으로 열리면
+   클라이언트 A와 B는 서버 S에 추가 부담 없이 서로 직접 통신할 수 있습니다. 피어 호스트에 대한
+   "소개" 서버와 같습니다.
 
-   The UDP hole punching technique has several useful properties.  Once
-   a direct peer-to-peer UDP connection has been established between two
-   clients behind NAT devices, either party on that connection can in
-   turn take over the role of "introducer" and help the other party
-   establish peer-to-peer connections with additional peers, minimizing
-   the load on the initial introduction server S.  The application does
-   not need to attempt to detect the kind of NAT device it is behind,
-   since the procedure above will establish peer-to-peer communication
-   channels equally well if either or both clients do not happen to be
-   behind a NAT device.  The UDP hole punching technique even works
-   automatically with multiple NATs, where one or both clients are
-   distant from the public Internet via two or more levels of address
-   translation.
+   UDP 홀 펀칭 기술에는 몇 가지 유용한 속성이 있습니다. NAT 장치 뒤에 있는 두 클라이언트
+   사이에 직접 P2P UDP 연결이 설정되면 해당 연결의 어느 쪽이든 "소개자"의 역할을 대신할 수
+   있고 상대방이 추가로 P2P 연결을 설정하도록 도울 수 있습니다. 초기 도입 서버 S의 부하를
+   최소화합니다. 애플리케이션은 뒤에 있는 NAT 장치의 종류를 감지하려고 시도할 필요가 없습니다.
+   위의 절차는 클라이언트 중 하나 또는 둘 모두가 NAT 장치 뒤에 있지 않은 경우 동등하게 
+   peer-to-peer 통신 채널을 설정하기 때문입니다. UDP 홀 펀칭 기술은 하나 또는 두 개의
+   클라이언트가 둘 이상의 주소 변환 수준을 통해 공인 인터넷에서 멀리 떨어져 있는 다중 NAT에서도
+   자동으로 작동합니다.
 
 3.3.2.  Peers behind the Same NAT
 
