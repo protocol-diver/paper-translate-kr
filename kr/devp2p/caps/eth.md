@@ -80,14 +80,14 @@ NewPooledTransactionHashes 알림을 수신하면 클라이언트는 수신된 �
 원래 이 피어로부터 정보를 받았기 때문). 이것은 일반적으로 피어가 최근에 릴레이한 일련의 트랜잭션 해시를 기억함으로써
 달성됩니다.
 
-### Transaction Encoding and Validity
+### Transaction Encoding and Validity (트랜잭션 인코딩 및 유효성)
 
-Transaction objects exchanged by peers have one of two encodings. In definitions across
-this specification, we refer to transactions of either encoding using the identifier `txₙ`.
+피어가 교환하는 트랜잭션 개체에는 두 가지 인코딩 중 하나가 있습니다. 이 사양의 정의에서 우리는 식별자 `txₙ`를
+사용하는 인코딩 트랜잭션을 참조합니다.
 
     tx = {legacy-tx, typed-tx}
 
-Untyped, legacy transactions are given as an RLP list.
+유형이 지정되지 않은 레거시 트랜잭션은 RLP 목록으로 제공됩니다.
 
     legacy-tx = [
         nonce: P,
@@ -101,45 +101,35 @@ Untyped, legacy transactions are given as an RLP list.
         S: P,
     ]
 
-[EIP-2718] typed transactions are encoded as RLP byte arrays where the first byte is the
-transaction type (`tx-type`) and the remaining bytes are opaque type-specific data.
+[EIP-2718] 유형이 지정된 트랜잭션은 첫 번째 바이트가 트랜잭션 유형(`tx-type`)이고 나머지 바이트가 불투명한
+유형별 데이터인 RLP 바이트 배열로 인코딩됩니다.
 
     typed-tx = tx-type || tx-data
 
-Transactions must be validated when they are received. Validity depends on the Ethereum
-chain state. The specific kind of validity this specification is concerned with is not
-whether the transaction can be executed successfully by the EVM, but only whether it is
-acceptable for temporary storage in the local pool and for exchange with other peers.
+트랜잭션은 수신 시 유효성을 검사해야 합니다. 유효성은 Ethereum 체인 상태에 따라 다릅니다. 이 사양과 관련된 특정
+종류의 유효성은 트랜잭션이 EVM에 의해 성공적으로 실행될 수 있는지 여부가 아니라 로컬 풀의 임시 저장 및 다른 피어와의
+교환에 허용되는지 여부입니다.
 
-Transactions are validated according to the rules below. While the encoding of typed
-transactions is opaque, it is assumed that their `tx-data` provides values for `nonce`,
-`gas-price`, `gas-limit`, and that the sender account of the transaction can be determined
-from their signature.
+트랜잭션은 아래 규칙에 따라 검증됩니다. 유형이 지정된 트랜잭션의 인코딩은 불투명하지만 `tx-data`는 `nonce`,
+`gas-price`, `gas limit`에 대한 값을 제공한다고 가정하며 트랜잭션의 발신자 계정은 서명에서 확인할 수 있습니다.
 
-- If the transaction is typed, the `tx-type` must be known to the implementation. Defined
-  transaction types may be considered valid even before they become acceptable for
-  inclusion in a block. Implementations should disconnect peers sending transactions of
-  unknown type.
-- The signature must be valid according to the signature schemes supported by the chain.
-  For typed transactions, signature handling is defined by the EIP introducing the type.
-  For legacy transactions, the two schemes in active use are the basic 'Homestead' scheme
-  and the [EIP-155] scheme.
-- The `gas-limit` must cover the 'intrinsic gas' of the transaction.
-- The sender account of the transaction, which is derived from the signature, must have
-  sufficient ether balance to cover the cost (`gas-limit * gas-price + value`) of the
-  transaction.
-- The `nonce` of the transaction must be equal or greater than the current nonce of the
-  sender account.
-- When considering the transaction for inclusion in the local pool, it is up to
-  implementations to determine how many 'future' transactions with nonce greater than the
-  current account nonce are valid, and to which degree 'nonce gaps' are acceptable.
+- 유형이 지정된 트랜잭션은 `tx-type`이 구현에 알려져야 합니다. 정의된 트랜잭션 유형은 블록에 포함될 수 있게 되기
+  전에도 유효한 것으로 간주될 수 있습니다. 구현은 알 수 없는 유형의 트랜잭션을 보내는 피어의 연결을 끊어야 합니다.
+- 서명은 체인에서 지원하는 서명 체계에 따라 유효해야 합니다. 유형이 지정된 트랜잭션의 경우 서명 처리는 유형을 도입하는
+  EIP에 의해 정의됩니다. 레거시 트랜잭션의 경우 현재 사용되고 있는 두 가지 방식은 기본 'Homestead' 방식과
+  [EIP-155] 방식이다.
+- `gas-limit`는 트랜잭션의 `intrinsic gas`를 포함해야 합니다.
+- 서명에서 파생된 트랜잭션의 발신자 계정에는 거래 비용(`gas-limit * gas-price + value`)을 충당할 수 있는
+  충분한 이더 잔고가 있어야 합니다.
+- 트랜잭션의 `nonce`는 발신자 계정의 현재 nonce보다 크거나 같아야 합니다.
+- 로컬 풀에 포함할 트랜잭션을 고려할 때 현재 계정 nonce보다 더 큰 nonce을 가진 'future' 트랜잭션이 얼마나
+  유효한지, 허용 가능한 'nonce gaps'의 정도를 결정하는 것은 구현에 달려 있습니다.
 
-Implementations may enforce other validation rules for transactions. For example, it is
-common practice to reject encoded transactions larger than 128 kB.
+구현은 트랜잭션에 대한 다른 유효성 검사 규칙을 적용할 수 있습니다. 예를 들어 128kB보다 큰 인코딩된 트랜잭션을
+거부하는 것이 일반적입니다.
 
-Unless noted otherwise, implementations must not disconnect peers for sending invalid
-transactions, and should simply discard them instead. This is because the peer might be
-operating under slightly different validation rules.
+달리 명시되지 않는 한, 구현은 유효하지 않은 트랜잭션을 보내기 위해 피어의 연결을 끊지 않아야 하며 대신 단순히 폐기해야
+합니다. 이는 피어가 약간 다른 유효성 검사 규칙에 따라 작동할 수 있기 때문입니다.
 
 ### Block Encoding and Validity
 
