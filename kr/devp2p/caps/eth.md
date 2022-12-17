@@ -11,8 +11,8 @@
 세션 내에서 체인 동기화, 블록 전파 및 트랜잭션 교환의 세 가지 상위 수준 작업을 수행할 수 있습니다. 이러한 작업은
 연결되지 않은 프로토콜 메시지 세트를 사용하며 클라이언트는 일반적으로 모든 피어 연결에서 동시 활동으로 이를 수행합니다.
 
-클라이언트 구현은 프로토콜 메시지 크기에 제한을 적용해야 합니다. 기본 RLPx 전송은 단일 메시지의 크기를 16.7MiB로
-제한합니다. eth 프로토콜의 실제 제한은 더 낮으며 일반적으로 10MiB입니다. 수신된 메시지가 제한보다 크면 피어 연결을
+클라이언트 구현은 프로토콜 메시지 크기에 제한을 적용해야 합니다. 기본 RLPx 전송은 단일 메시지의 크기를 16.7 MiB로
+제한합니다. eth 프로토콜의 실제 제한은 더 낮으며 일반적으로 10 MiB입니다. 수신된 메시지가 제한보다 크면 피어 연결을
 끊어야 합니다.
 
 수신된 메시지에 대한 엄격한 제한 외에도 클라이언트는 보내는 요청 및 응답에 'soft(부드러운)' 제한을 적용해야 합니다.
@@ -131,9 +131,9 @@ NewPooledTransactionHashes 알림을 수신하면 클라이언트는 수신된 �
 달리 명시되지 않는 한, 구현은 유효하지 않은 트랜잭션을 보내기 위해 피어의 연결을 끊지 않아야 하며 대신 단순히 폐기해야
 합니다. 이는 피어가 약간 다른 유효성 검사 규칙에 따라 작동할 수 있기 때문입니다.
 
-### Block Encoding and Validity
+### Block Encoding and Validity (블록 인코딩 및 유효성)
 
-Ethereum blocks are encoded as follows:
+Ethereum 블록은 다음과 같이 인코딩됩니다:
 
     block = [header, transactions, ommers]
     transactions = [tx₁, tx₂, ...]
@@ -157,60 +157,49 @@ Ethereum blocks are encoded as follows:
         basefee-per-gas: P,
     ]
 
-In certain protocol messages, the transaction and ommer lists are relayed together as a
-single item called the 'block body'.
+특정 프로토콜 메시지에서 트랜잭션 및 ommers 목록은 'block body'이라는 단일 항목으로 함께 릴레이됩니다.
 
     block-body = [transactions, ommers]
 
-The validity of block headers depends on the context in which they are used. For a single
-block header, only the validity of the proof-of-work seal (`mix-digest`, `block-nonce`)
-can be verified. When a header is used to extend the client's local chain, or multiple
-headers are processed in sequence during chain synchronization, the following rules apply:
+블록 헤더의 유효성은 사용되는 컨텍스트에 따라 다릅니다. 단일 블록 헤더의 경우 작업 증명 봉인(`mix-digest`,
+`block-nonce`)의 유효성만 확인할 수 있습니다. 헤더가 클라이언트의 로컬 체인을 확장하는 데 사용되거나 체인 동기화
+중에 여러 헤더가 순차적으로 처리되는 경우 다음 규칙이 적용됩니다:
 
-- Headers must form a chain where block numbers are consecutive and the `parent-hash` of
-  each header matches the hash of the preceding header.
-- When extending the locally-stored chain, implementations must also verify that the
-  values of `difficulty`, `gas-limit` and `time` are within the bounds of protocol rules
-  given in the [Yellow Paper].
-- The `gas-used` header field must be less than or equal to the `gas-limit`.
-- The `basefee-per-gas` header field must be present for blocks after the [London hard
-  fork]. Note that `basefee-per-gas` must be absent for earlier blocks. This rule was
-  added implicity by [EIP-1559], which added the field into the definition of the Ethereum
-  block hash.
+- 헤더는 블록 번호가 연속적이고 각 헤더의 `parent-hash`가 이전 헤더의 해시와 일치하는 체인을 형성해야 합니다.
+- 로컬에 저장된 체인을 확장할 때 구현은 `difficulty`, `gas-limit` 및 `time` 값이 [Yellow Paper]에
+  제공된 프로토콜 규칙 범위 내에 있는지도 확인해야 합니다.
+- `gas-used` 헤더 필드는 `gas-limit`보다 작거나 같아야 합니다.
+- [London hard fork] 이후 블록에 대해 `basefee-per-gas` 헤더 필드가 있어야 합니다. 이전 블록에는
+  `basefee-per-gas`가 없어야 합니다. 이 규칙은 [EIP-1559]에 의해 이더리움 블록 해시의 정의에 필드를 추가하여
+  암시성을 추가했습니다.
 
-For complete blocks, we distinguish between the validity of the block's EVM state
-transition, and the (weaker) 'data validity' of the block. The definition of state
-transition rules is not dealt with in this specification. We require data validity of the
-block for the purposes of immediate [block propagation] and during [state synchronization].
+완전한 블록의 경우 블록의 EVM 상태 전환 유효성과 블록의 (약한) '데이터 유효성'을 구별합니다. 상태 전이 규칙의 정의는
+이 명세서에서 다루지 않습니다. 즉각적인 [block propagation]와 [state synchronization] 동안 블록의 데이터
+유효성이 필요합니다.
 
-To determine the data validity of a block, use the rules below. Implementations should
-disconnect peers sending invalid blocks.
+블록의 데이터 유효성을 확인하려면 아래 규칙을 사용하십시오. 구현은 유효하지 않은 블록을 보내는 피어의 연결을 끊어야
+합니다.
 
-- The block `header` must be valid.
-- The `transactions` contained in the block must be valid for inclusion into the chain at
-  the block's number. This means that, in addition to the transaction validation rules
-  given earlier, validating whether the `tx-type` is permitted at the block number is
-  required, and validation of transaction gas must take the block number into account.
-- The sum of the `gas-limit`s of all transactions must not exceed the `gas-limit` of the
-  block.
-- The `transactions` of the block must be verified against the `txs-root` by computing and
-  comparing the merkle trie hash of the transactions list.
-- The `ommers` list may contain at most two headers.
-- `keccak256(ommers)` must match the `ommers-hash` of the block header.
-- The headers contained in the `ommers` list must be valid headers. Their block number
-  must not be greater than that of the block they are included in. The parent hash of an
-  ommer header must refer to an ancestor of depth 7 or less of its including block, and it
-  must not have been included in any earlier block contained in this ancestor set.
+- 블록 `header`는 유효해야 합니다.
+- 블록에 포함된 `transactions`은 블록 번호의 체인에 포함되기 위해 유효해야 합니다. 즉, 앞서 제시한 트랜잭션 유효성
+  검사 규칙 외에도 블록 번호에서 `tx-type`이 허용되는지 유효성 검사가 필요하며 트랜잭션 가스의 유효성 검사는 블록
+  번호를 고려해야 합니다.
+- 모든 트랜잭션의 `gas-limit`의 합은 블록의 `gas-limit`를 초과하지 않아야 합니다.
+- 트랜잭션 목록의 머클 트리 해시를 계산하고 비교하여 블록의 `transactions`을 `txs-root`에 대해 확인해야 합니다.
+- `ommers` 목록에는 최대 2개의 헤더가 포함될 수 있습니다.
+- `keccak256(ommers)`는 블록 헤더의 `ommers-hash`와 일치해야 합니다.
+- `ommers` 목록에 포함된 헤더는 유효한 헤더여야 합니다. 그들의 블록 번호는 그들이 포함된 블록의 번호보다 크지 않아야
+  합니다. ommer 헤더의 부모 해시는 포함 블록의 깊이 7 이하의 조상을 참조해야 하며 이 조상 집합에 포함된 이전 블록에
+  포함되지 않아야 합니다.
 
-### Receipt Encoding and Validity
+### Receipt Encoding and Validity (영수증 인코딩 및 유효성)
 
-Receipts are the output of the EVM state transition of a block. Like transactions,
-receipts have two distinct encodings and we will refer to either encoding using the
-identifier `receiptₙ`.
+영수증은 블록의 EVM 상태 전환의 출력입니다. 거래와 마찬가지로 영수증에는 두 가지 고유한 인코딩이 있으며 식별자
+`receiptₙ`를 사용하여 인코딩을 참조합니다.
 
     receipt = {legacy-receipt, typed-receipt}
 
-Untyped, legacy receipts are encoded as follows:
+유형이 지정되지 않은 레거시 영수증은 다음과 같이 인코딩됩니다:
 
     legacy-receipt = [
         post-state-or-status: {B_32, {0, 1}},
@@ -224,44 +213,37 @@ Untyped, legacy receipts are encoded as follows:
         data: B
     ]
 
-[EIP-2718] typed receipts are encoded as RLP byte arrays where the first byte gives the
-receipt type (matching `tx-type`) and the remaining bytes are opaque data specific to the
-type.
+[EIP-2718] 유형이 지정된 영수증은 첫 번째 바이트가 영수증 유형(`tx-type`과 일치)을 제공하고 나머지 바이트는 해당
+유형에 특정한 불투명 데이터인 RLP 바이트 배열로 인코딩됩니다.
 
     typed-receipt = tx-type || receipt-data
 
-In the Ethereum Wire Protocol, receipts are always transferred as the complete list of all
-receipts contained in a block. It is also assumed that the block containing the receipts
-is valid and known. When a list of block receipts is received by a peer, it must be
-verified by computing and comparing the merkle trie hash of the list against the
-`receipts-root` of the block. Since the valid list of receipts is determined by the EVM
-state transition, it is not necessary to define any further validity rules for receipts in
-this specification.
+Ethereum Wire Protocol에서 영수증은 항상 블록에 포함된 모든 영수증의 전체 목록으로 전송됩니다. 또한 영수증을
+포함하는 블록이 유효하고 알려져 있다고 가정합니다. 피어가 블록 수신 목록을 수신하면 목록의 머클 트리 해시를 계산하고
+블록의 `receipts-root`와 비교하여 확인해야 합니다. 유효한 영수증 목록은 EVM 상태 전환에 의해 결정되므로 이 사양에서
+영수증에 대한 추가 유효성 규칙을 정의할 필요가 없습니다.
 
-## Protocol Messages
+## Protocol Messages (프로토콜 메시지)
 
-In most messages, the first element of the message data list is the `request-id`. For
-requests, this is a 64-bit integer value chosen by the requesting peer. The responding
-peer must mirror the value in the `request-id` element of the response message.
+대부분의 메시지에서 메시지 데이터 목록의 첫 번째 요소는 `request-id`입니다. 요청의 경우 요청 피어에서 선택한
+64비트 정수 값입니다. 응답하는 피어는 응답 메시지의 `request-id` 요소 값을 미러링해야 합니다.
 
 ### Status (0x00)
 
 `[version: P, networkid: P, td: P, blockhash: B_32, genesis: B_32, forkid]`
 
-Inform a peer of its current state. This message should be sent just after the connection
-is established and prior to any other eth protocol messages.
+피어에게 현재 상태를 알립니다. 이 메시지는 연결이 설정된 직후 다른 eth 프로토콜 메시지보다 먼저 전송되어야 합니다.
 
-- `version`: the current protocol version
-- `networkid`: integer identifying the blockchain, see table below
-- `td`: total difficulty of the best chain. Integer, as found in block header.
-- `blockhash`: the hash of the best (i.e. highest TD) known block
-- `genesis`: the hash of the genesis block
-- `forkid`: An [EIP-2124] fork identifier, encoded as `[fork-hash, fork-next]`.
+- `version`: 현재 프로토콜 버전
+- `networkid`: 블록체인을 식별하는 정수, 아래 표 참조
+- `td`: 최고의 체인의 총 난이도. 블록 헤더에 있는 정수입니다.
+- `blockhash`: 가장 좋은(즉, 가장 높은 TD) 알려진 블록의 해시
+- `genesis`: 제네시스 블록의 해시
+- `forkid`: `[fork-hash, fork-next]`로 인코딩된 [EIP-2124] 포크 식별자.
 
-This table lists common Network IDs and their corresponding networks. Other IDs exist
-which aren't listed, i.e. clients should not require that any particular network ID is
-used. Note that the Network ID may or may not correspond with the EIP-155 Chain ID used
-for transaction replay prevention.
+이 표에는 일반적인 네트워크 ID와 해당 네트워크가 나열되어 있습니다. 나열되지 않은 다른 ID가 있습니다. 즉,
+클라이언트는 특정 네트워크 ID를 사용하도록 요구하지 않아야 합니다. 네트워크 ID는 트랜잭션 재생 방지에 사용되는
+EIP-155 Chain ID와 일치할 수도 있고 일치하지 않을 수도 있습니다.
 
 | ID | chain                         |
 |----|-------------------------------|
@@ -271,101 +253,90 @@ for transaction replay prevention.
 | 3  | Ropsten (current PoW testnet) |
 | 4  | [Rinkeby]                     |
 
-For a community curated list of chain IDs, see <https://chainid.network>.
+커뮤니티에서 선별한 체인 ID 목록은 <https://chainid.network>를 참조하세요.
 
 ### NewBlockHashes (0x01)
 
 `[[blockhash₁: B_32, number₁: P], [blockhash₂: B_32, number₂: P], ...]`
 
-Specify one or more new blocks which have appeared on the network. To be maximally
-helpful, nodes should inform peers of all blocks that they may not be aware of. Including
-hashes that the sending peer could reasonably be considered to know (due to the fact they
-were previously informed of because that node has itself advertised knowledge of the
-hashes through NewBlockHashes) is considered bad form, and may reduce the reputation of
-the sending node. Including hashes that the sending node later refuses to honour with a
-proceeding [GetBlockHeaders] message is considered bad form, and may reduce the reputation
-of the sending node.
+네트워크에 나타난 하나 이상의 새로운 블록을 지정하십시오. 최대로 도움이 주려면 노드는 피어가 인식하지 못할 수 있는 모든
+블록을 피어에게 알려야 합니다. 보내는 피어가 합리적으로 알 수 있는 것으로 간주될 수 있는 해시를 포함하는 것은(해당 노드
+자체가 NewBlockHashes를 통해 해시에 대한 지식을 광고했고 이전에 알려졌기 때문에) 잘못된 형식으로 간주되며 보내는
+노드의 평판을 떨어뜨릴 수 있습니다. 전송 노드가 나중에 진행 중인 [GetBlockHeaders] 메시지를 준수하기를 거부하는
+해시를 포함하는 것은 잘못된 형식으로 간주되며 전송 노드의 평판을 떨어뜨릴 수 있습니다.
 
 ### Transactions (0x02)
 
 `[tx₁, tx₂, ...]`
 
-Specify transactions that the peer should make sure is included on its transaction queue.
-The items in the list are transactions in the format described in the main Ethereum
-specification. Transactions messages must contain at least one (new) transaction, empty
-Transactions messages are discouraged and may lead to disconnection.
+피어가 트랜잭션 대기열에 포함되도록 해야 하는 트랜잭션을 지정합니다. 목록의 항목은 주요 이더리움 사양에 설명된 형식의
+트랜잭션입니다. 트랜잭션 메시지는 적어도 하나의 (새) 트랜잭션을 포함해야 하며 빈 트랜잭션 메시지는 사용하지 않는 것이
+좋으며 연결이 끊어질 수 있습니다.
 
-Nodes must not resend the same transaction to a peer in the same session and must not
-relay transactions to a peer they received that transaction from. In practice this is
-often implemented by keeping a per-peer bloom filter or set of transaction hashes which
-have already been sent or received.
+노드는 동일한 세션의 피어에게 동일한 트랜잭션을 다시 보내서는 안 되며 해당 트랜잭션을 받은 피어에게 트랜잭션을
+릴레이해서는 안 됩니다. 실제로 이는 이미 보내거나 받은 트랜잭션 해시 세트 또는 피어별 블룸 필터를 유지하여 구현되는
+경우가 많습니다.
 
 ### GetBlockHeaders (0x03)
 
 `[request-id: P, [startblock: {P, B_32}, limit: P, skip: P, reverse: {0, 1}]]`
 
-Require peer to return a BlockHeaders message. The response must contain a number of block
-headers, of rising number when `reverse` is `0`, falling when `1`, `skip` blocks apart,
-beginning at block `startblock` (denoted by either number or hash) in the canonical chain,
-and with at most `limit` items.
+BlockHeaders 메시지를 반환하려면 피어가 필요합니다. 응답에는 `reverse`가 `0`일 때 증가하는 숫자, `1`일 때
+떨어지는 `skip` 블록, 최대 `limit` 항목이 있는 캐노니컬 체인의 `startblock` 블록에서 시작하는 여러 블록의 헤더가
+포함되어야 합니다.
 
 ### BlockHeaders (0x04)
 
 `[request-id: P, [header₁, header₂, ...]]`
 
-This is the response to GetBlockHeaders, containing the requested headers. The header list
-may be empty if none of the requested block headers were found. The number of headers that
-can be requested in a single message may be subject to implementation-defined limits.
+이것은 요청된 헤더를 포함하는 GetBlockHeaders에 대한 응답입니다. 요청된 블록 헤더가 없으면 헤더 목록이 비어 있을 수
+있습니다. 단일 메시지에서 요청할 수 있는 헤더의 수는 구현 정의 제한에 따라 달라질 수 있습니다.
 
-The recommended soft limit for BlockHeaders responses is 2 MiB.
+BlockHeaders 응답에 권장되는 soft 제한은 2 MiB입니다.
 
 ### GetBlockBodies (0x05)
 
 `[request-id: P, [blockhash₁: B_32, blockhash₂: B_32, ...]]`
 
-This message requests block body data by hash. The number of blocks that can be requested
-in a single message may be subject to implementation-defined limits.
+이 메시지는 해시로 블록 바디 데이터를 요청합니다. 단일 메시지에서 요청할 수 있는 블록 수는 구현 정의 제한에 따라 달라질
+수 있습니다.
 
 ### BlockBodies (0x06)
 
 `[request-id: P, [block-body₁, block-body₂, ...]]`
 
-This is the response to GetBlockBodies. The items in the list contain the body data of the
-requested blocks. The list may be empty if none of the requested blocks were available.
+이것은 GetBlockBodies에 대한 응답입니다. 목록의 항목에는 요청된 블록의 바디 데이터가 포함됩니다. 요청된 블록을 사용할
+수 없는 경우 목록이 비어 있을 수 있습니다.
 
-The recommended soft limit for BlockBodies responses is 2 MiB.
+BlockBodies 응답에 권장되는 osft 제한은 2 MiB입니다.
 
 ### NewBlock (0x07)
 
 `[block, td: P]`
 
-Specify a single complete block that the peer should know about. `td` is the total
-difficulty of the block, i.e. the sum of all block difficulties up to and including this
-block.
+피어가 알아야 하는 단일 전체 블록을 지정합니다. `td`는 블록의 총 난이도, 즉 이 블록을 포함한 모든 블록 난이도의
+합입니다.
 
 ### NewPooledTransactionHashes (0x08)
 
 `[txhash₁: B_32, txhash₂: B_32, ...]`
 
-This message announces one or more transactions that have appeared in the network and
-which have not yet been included in a block. To be maximally helpful, nodes should inform
-peers of all transactions that they may not be aware of.
+이 메시지는 네트워크에 나타나고 아직 블록에 포함되지 않은 하나 이상의 트랜잭션을 알립니다. 최대로 도움이 되려면 노드는
+피어가 인식하지 못할 수 있는 모든 트랜잭션을 피어에게 알려야 합니다.
 
-The recommended soft limit for this message is 4096 hashes (128 KiB).
+이 메시지에 권장되는 soft 제한은 4096개 해시(128 KiB)입니다.
 
-Nodes should only announce hashes of transactions that the remote peer could reasonably be
-considered not to know, but it is better to return more transactions than to have a nonce
-gap in the pool.
+노드는 원격 피어가 합리적으로 알 수 없는 것으로 간주될 수 있는 트랜잭션의 해시만 발표해야 하지만 풀에 nonce 갭이 있는
+것보다 더 많은 트랜잭션을 반환하는 것이 좋습니다.
 
 ### GetPooledTransactions (0x09)
 
 `[request-id: P, [txhash₁: B_32, txhash₂: B_32, ...]]`
 
-This message requests transactions from the recipient's transaction pool by hash.
+이 메시지는 해시로 수신자의 트랜잭션 풀에서 트랜잭션을 요청합니다.
 
-The recommended soft limit for GetPooledTransactions requests is 256 hashes (8 KiB). The
-recipient may enforce an arbitrary limit on the response (size or serving time), which
-must not be considered a protocol violation.
+GetPooledTransactions 요청에 대한 권장 soft 제한은 256개 해시(8 KiB)입니다. 수신자는 응답(크기 또는 서빙
+시간)에 대해 임의의 제한을 적용할 수 있으며, 이는 프로토콜 위반으로 간주되어서는 안 됩니다.
 
 ### PooledTransactions (0x0a)
 
