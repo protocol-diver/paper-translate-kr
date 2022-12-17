@@ -46,7 +46,7 @@
 ```
 
 <b>> 페이지</b><br>
-[임시: https://datatracker.ietf.org/doc/ 해당 페이지에서 w/errata 포맷을 누르면 페이지가 없는 상태로 나와서 편함. 신뢰할 수 있는지 확인 후 임시 표기 제거]
+[임시: https://datatracker.ietf.org/doc/ 해당 페이지에서 w/errata 포맷을 누르면 페이지가 없는 상태로 나와서 편함. 신뢰할 수 있는지 확인 후 임시 표기 제거]<br>
 기존)
 ```
    9.3.  Efficiency
