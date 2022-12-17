@@ -342,47 +342,39 @@ GetPooledTransactions 요청에 대한 권장 soft 제한은 256개 해시(8 KiB
 
 `[request-id: P, [tx₁, tx₂...]]`
 
-This is the response to GetPooledTransactions, returning the requested transactions from
-the local pool. The items in the list are transactions in the format described in the main
-Ethereum specification.
+로컬 풀에서 요청된 트랜잭션을 반환하는 GetPooledTransactions에 대한 응답입니다. 목록의 항목은 주요 이더리움 사양에
+설명된 형식의 트랜잭션입니다.
 
-The transactions must be in same order as in the request, but it is OK to skip
-transactions which are not available. This way, if the response size limit is reached,
-requesters will know which hashes to request again (everything starting from the last
-returned transaction) and which to assume unavailable (all gaps before the last returned
-transaction).
+트랜잭션은 요청과 동일한 순서여야 하지만 사용할 수 없는 트랜잭션은 건너뛰어도 됩니다. 이렇게 하면 응답 크기 제한에
+도달하면 요청자는 다시 요청할 해시 (마지막 반환된 트랜잭션에서 시작하는 모든 것)와 사용할 수 없다고 가정할 해시 (마지막
+반환된 트랜잭션 이전의 모든 간격)를 알 수 있습니다.
 
-It is permissible to first announce a transaction via NewPooledTransactionHashes, but then
-to refuse serving it via PooledTransactions. This situation can arise when the transaction
-is included in a block (and removed from the pool) in between the announcement and the
-request.
+먼저 NewPooledTransactionHashes를 통해 트랜잭션을 알리고 PooledTransactions를 통해 제공을 거부하는 것이
+허용됩니다. 이러한 상황은 announcement와 요청 사이에 트랜잭션이 블록에 포함되고 풀에서 제거될 때 발생할 수 있습니다.
 
-A peer may respond with an empty list iff none of the hashes match transactions in its
-pool.
+풀의 트랜잭션과 일치하는 해시가 없는 경우 피어는 빈 목록으로 응답할 수 있습니다.
 
 ### GetReceipts (0x0f)
 
 `[request-id: P, [blockhash₁: B_32, blockhash₂: B_32, ...]]`
 
-Require peer to return a Receipts message containing the receipts of the given block
-hashes. The number of receipts that can be requested in a single message may be subject to
-implementation-defined limits.
+피어가 주어진 블록 해시의 영수증을 포함하는 Receipts 메시지를 반환하도록 요구합니다. 단일 메시지에서 요청할 수 있는
+확인 수는 구현 정의 제한에 따라 달라질 수 있습니다.
 
 ### Receipts (0x10)
 
 `[request-id: P, [[receipt₁, receipt₂], ...]]`
 
-This is the response to GetReceipts, providing the requested block receipts. Each element
-in the response list corresponds to a block hash of the GetReceipts request, and must
-contain the complete list of receipts of the block.
+요청된 블록 영수증을 제공하는 GetReceipts에 대한 응답입니다. 응답 목록의 각 요소는 GetReceipts 요청의 블록 해시에
+해당하며 블록의 전체 영수증 목록을 포함해야 합니다.
 
-The recommended soft limit for Receipts responses is 2 MiB.
+Receipts 응답에 대한 권장 soft 한계는 2 MiB입니다.
 
-## Change Log
+## Change Log (변경 로그)
 
 ### eth/67 ([EIP-4938], March 2022)
 
-Version 67 removed the GetNodeData and NodeData messages.
+버전 67에서는 GetNodeData 및 NodeData 메시지가 제거되었습니다.
 
 - GetNodeData (0x0d)
   `[request_id: P, [hash_0: B_32, hash_1: B_32, ...]]`
@@ -391,48 +383,43 @@ Version 67 removed the GetNodeData and NodeData messages.
 
 ### eth/66 ([EIP-2481], April 2021)
 
-Version 66 added the `request-id` element in messages [GetBlockHeaders], [BlockHeaders],
-[GetBlockBodies], [BlockBodies], [GetPooledTransactions], [PooledTransactions],
-GetNodeData, NodeData, [GetReceipts], [Receipts].
+버전 66은 [GetBlockHeaders], [BlockHeaders], [GetBlockBodies], [BlockBodies],
+[GetPooledTransactions], [PooledTransactions], GetNodeData, NodeData, [GetReceipts],
+[Receipts] 메시지에 `request-id` 요소를 추가했습니다.
 
 ### eth/65 with typed transactions ([EIP-2976], April 2021)
 
-When typed transactions were introduced by [EIP-2718], client implementers decided to
-accept the new transaction and receipt formats in the wire protocol without increasing the
-protocol version. This specification update also added definitions for the encoding of all
-consensus objects instead of referring to the Yellow Paper.
+유형이 지정된 트랜잭션이 [EIP-2718]에 의해 도입되었을 때 클라이언트 구현자는 프로토콜 버전을 높이지 않고 유선
+프로토콜에서 새로운 트랜잭션 및 영수증 형식을 수락하기로 결정했습니다. 이 사양 업데이트는 또한 Yellow Paper를 참조하는
+대신 모든 합의 개체의 인코딩에 대한 정의를 추가했습니다.
 
 ### eth/65 ([EIP-2464], January 2020)
 
-Version 65 improved transaction exchange, introducing three additional messages:
-[NewPooledTransactionHashes], [GetPooledTransactions], and [PooledTransactions].
+버전 65는 트랜잭션 교환을 개선하여 세 가지 추가 메시지를 도입했습니다:
+[NewPooledTransactionHashes], [GetPooledTransactions] 및 [PooledTransactions].
 
-Prior to version 65, peers always exchanged complete transaction objects. As activity and
-transaction sizes increased on the Ethereum mainnet, the network bandwidth used for
-transaction exchange became a significant burden on node operators. The update reduced the
-required bandwidth by adopting a two-tier transaction broadcast system similar to block
-propagation.
+버전 65 이전에는 피어가 항상 완전한 트랜잭션 개체를 교환했습니다. 이더리움 메인넷에서 활동 및 트랜잭션 크기가 증가함에
+따라 트랜잭션 교환에 사용되는 네트워크 대역폭은 노드 운영자에게 상당한 부담이 되었습니다. 업데이트는 블록 전파와 유사한
+2계층 트랜잭션 브로드캐스트 시스템을 채택하여 필요한 대역폭을 줄였습니다.
 
 ### eth/64 ([EIP-2364], November 2019)
 
-Version 64 changed the [Status] message to include the [EIP-2124] ForkID. This allows
-peers to determine mutual compatibility of chain execution rules without synchronizing the
-blockchain.
+버전 64는 [EIP-2124] ForkID를 포함하도록 [Status] 메시지를 변경했습니다. 이를 통해 피어는 블록체인을 동기화하지
+않고도 체인 실행 규칙의 상호 호환성을 결정할 수 있습니다.
 
 ### eth/63 (2016)
 
-Version 63 added the GetNodeData, NodeData, [GetReceipts] and [Receipts] messages
-which allow synchronizing transaction execution results.
+버전 63은 트랜잭션 실행 결과를 동기화할 수 있는 GetNodeData, NodeData, [GetReceipts] 및 [Receipts]
+메시지를 추가했습니다.
 
 ### eth/62 (2015)
 
-In version 62, the [NewBlockHashes] message was extended to include block numbers
-alongside the announced hashes. The block number in [Status] was removed. Messages
-GetBlockHashes (0x03), BlockHashes (0x04), GetBlocks (0x05) and Blocks (0x06) were
-replaced by messages that fetch block headers and bodies. The BlockHashesFromNumber (0x08)
-message was removed.
+버전 62에서 [NewBlockHashes] 메시지는 발표된 해시와 함께 블록 번호를 포함하도록 확장되었습니다. [상태]의 블록
+번호가 제거되었습니다. GetBlockHashes(0x03), BlockHashes(0x04), GetBlocks(0x05) 및 Blocks(0x06)
+메시지는 블록 헤더 및 본문을 가져오는 메시지로 대체되었습니다. BlockHashesFromNumber(0x08) 메시지가
+제거되었습니다.
 
-Previous encodings of the reassigned/removed message codes were:
+재할당/제거된 메시지 코드의 이전 인코딩은 다음과 같습니다:
 
 - GetBlockHashes (0x03): `[hash: B_32, max-blocks: P]`
 - BlockHashes (0x04): `[hash₁: B_32, hash₂: B_32, ...]`
@@ -442,12 +429,12 @@ Previous encodings of the reassigned/removed message codes were:
 
 ### eth/61 (2015)
 
-Version 61 added the BlockHashesFromNumber (0x08) message which could be used to request
-blocks in ascending order. It also added the latest block number to the [Status] message.
+버전 61은 블록을 오름차순으로 요청하는 데 사용할 수 있는 BlockHashesFromNumber(0x08) 메시지를 추가했습니다.
+또한 [Status] 메시지에 최신 블록 번호를 추가했습니다.
 
 ### eth/60 and below
 
-Version numbers below 60 were used during the Ethereum PoC development phase.
+60 미만의 버전 번호는 Ethereum PoC 개발 단계에서 사용되었습니다.
 
 - `0x00` for PoC-1
 - `0x01` for PoC-2
