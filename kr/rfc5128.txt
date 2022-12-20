@@ -613,68 +613,46 @@ Status of This Memo
    따라서 클라이언트는 P2P 통신을 위해 S에서 볼 수 있는 글로벌 공인 엔드포인트를 사용하고
    NAT X를 사용하여 Hairpinning을 제공할 수밖에 없습니다.
 
-3.4.  TCP Hole Punching
+3.4.  TCP Hole Punching (TCP 홀 펀칭)
 
-   In this section, we will discuss the "TCP hole punching" technique
-   used for establishing direct TCP connection between a pair of nodes
-   that are both behind EIM-NAT devices.  Just as with UDP hole
-   punching, TCP hole punching relies on the properties of EIM-NATs to
-   allow appropriately designed peer-to-peer applications to "punch
-   holes" through the NAT device and establish direct connectivity with
-   each other, even when both communicating hosts lie behind NAT
-   devices.  This technique is also known sometimes as "Simultaneous TCP
-   Open".
+   이 섹션에서는 EIM-NAT 장치 뒤에 있는 한 쌍의 노드 간에 직접 TCP 연결을 설정하는 데
+   사용되는 "TCP 홀 펀칭" 기술에 대해 설명합니다. UDP 홀 펀칭과 마찬가지로 TCP 홀 펀칭은
+   적절하게 설계된 P2P 애플리케이션이 NAT 장치를 통해 두 통신 호스트가 모두 NAT 장치 뒤에
+   있는 경우에도 "구멍을 뚫고" 서로 직접 연결을 설정할 수 있도록 EIM-NAT의 속성에 의존합니다.
+   이 기술은 "Simultaneous TCP Open"라고도 합니다.
 
-   Most TCP sessions start with one endpoint sending a SYN packet, to
-   which the other party responds with a SYN-ACK packet.  It is
-   permissible, however, for two endpoints to start a TCP session by
-   simultaneously sending each other SYN packets, to which each party
-   subsequently responds with a separate ACK.  This procedure is known
-   as "Simultaneous TCP Open" technique and may be found in figure 6 of
-   the original TCP specification ([TCP]).  However, "Simultaneous TCP
-   Open" is not implemented correctly on many systems, including NAT
-   devices.
+   대부분의 TCP 세션은 한 엔드포인트가 SYN 패킷을 보내는 것으로 시작하고 다른 쪽은 SYN-ACK
+   패킷으로 응답합니다. 그러나 두 엔드포인트가 동시에 서로에게 SYN 패킷을 전송하여 TCP 세션을
+   시작하는 것은 허용되며, 각 당사자는 이후에 별도의 ACK로 응답합니다. 이 절차는
+   "Simultaneous TCP Open" 기술로 알려져 있으며 원래 TCP 사양([TCP])의 그림 6에서
+   찾을 수 있습니다. 그러나 "Simultaneous TCP Open"은 NAT 장치를 포함한 많은 시스템에서
+   올바르게 구현되지 않습니다.
 
-   If a NAT device receives a TCP SYN packet from outside the private
-   network attempting to initiate an incoming TCP connection, the NAT
-   device will normally reject the connection attempt by either dropping
-   the SYN packet or sending back a TCP RST (connection reset) packet.
-   In the case of SYN timeout or connection reset, the application
-   endpoint will continue to resend a SYN packet, until the peer does
-   the same from its end.
+   NAT 장치가 들어오는 TCP 연결을 시작하려고 시도하는 사설 네트워크 외부에서 TCP SYN 패킷을
+   수신하는 경우 NAT 장치는 일반적으로 SYN 패킷을 삭제하거나 TCP RST(연결 재설정) 패킷을 다시
+   전송하여 연결 시도를 거부합니다. SYN 시간 초과 또는 연결 재설정의 경우 응용 프로그램
+   엔드포인트는 피어가 끝에서 동일한 작업을 수행할 때까지 계속해서 SYN 패킷을 다시 보냅니다.
 
-   Let us consider the case where a NAT device supports "Simultaneous
-   TCP Open" sessions.  When a SYN packet arrives with source and
-   destination endpoints that correspond to a TCP session that the NAT
-   device believes is already active, then the NAT device would allow
-   the packet to pass through.  In particular, if the NAT device has
-   just recently seen and transmitted an outgoing SYN packet with the
-   same address and port numbers, then it will consider the session
-   active and allow the incoming SYN through.  If clients A and B can
-   each initiate an outgoing TCP connection with the other client timed
-   so that each client's outgoing SYN passes through its local NAT
-   device before either SYN reaches the opposite NAT device, then a
-   working peer-to-peer TCP connection will result.
+   NAT 장치가 "Simultaneous TCP Open" 세션을 지원하는 경우를 고려해 보겠습니다. NAT
+   장치가 이미 활성화되었다고 믿는 TCP 세션에 해당하는 소스 및 대상 엔드포인트와 함께 SYN
+   패킷이 도착하면 NAT 장치는 패킷 통과를 허용합니다. 특히, NAT 장치가 최근에 동일한 주소와
+   포트 번호로 나가는 SYN 패킷을 보고 전송한 경우 세션이 활성화된 것으로 간주하고 들어오는
+   SYN을 허용합니다. 클라이언트 A와 B가 각 클라이언트의 발신 SYN이 상대 NAT 장치에 도달하기
+   전에 로컬 NAT 장치를 통과하도록 시간에 따라 다른 클라이언트와 발신 TCP 연결을 시작할 수
+   있는 경우 peer-to-peer TCP 연결이 작동합니다.
 
-   This technique may not always work reliably for the following
-   reason(s).  If either node's SYN packet arrives at the remote NAT
-   device too quickly (before the peering node had a chance to send the
-   SYN packet), then the remote NAT device may either drop the SYN
-   packet or reject the SYN with a RST packet.  This could cause the
-   local NAT device in turn to close the new NAT session immediately or
-   initiate end-of-session timeout (refer to Section 2.6 of [NAT-TERM])
-   so as to close the NAT session at the end of the timeout.  Even as
-   both peering nodes simultaneously initiate continued SYN
-   retransmission attempts, some remote NAT devices might not let the
-   incoming SYNs through if the NAT session is in an end-of-session
-   timeout state.  This in turn would prevent the TCP connection from
-   being established.
+   이 기술은 다음과 같은 이유로 항상 안정적으로 작동하지 않을 수 있습니다. 어느 한 노드의 SYN
+   패킷이 원격 NAT 장치에 너무 빨리 도착하면(피어링 노드가 SYN 패킷을 보낼 기회를 갖기 전에)
+   원격 NAT 장치는 SYN 패킷을 삭제하거나 RST 패킷으로 SYN을 거부할 수 있습니다. 이로 인해
+   로컬 NAT 장치가 새 NAT 세션을 즉시 닫거나 세션 종료 시간 초과([NAT-TERM]의 섹션 2.6
+   참조)를 시작하여 시간 초과 시 NAT 세션을 닫을 수 있습니다. 두 피어링 노드가 동시에 계속되는
+   SYN 재전송 시도를 시작하더라도 일부 원격 NAT 장치는 NAT 세션이 세션 종료 시간 초과 상태인
+   경우 들어오는 SYN을 허용하지 않을 수 있습니다. 이렇게 하면 TCP 연결이 설정되지 않습니다.
 
-   In reality, the majority of NAT devices (more than 50%) support
-   Endpoint-Independent Mapping and do not send ICMP errors or RSTs in
-   response to unsolicited incoming SYNs.  As a result, the Simultaneous
-   TCP Open technique does work across NAT devices in the majority of
-   TCP connection attempts ([P2P-NAT], [TCP-CHARACT]).
+   실제로 대부분의 NAT 장치(50% 이상)는 엔드포인트 독립적 매핑을 지원하고 원치 않는 수신
+   SYN에 대한 응답으로 ICMP 오류 또는 RST를 보내지 않습니다. 결과적으로 Simultaneous TCP
+   Open 기술은 대부분의 TCP 연결 시도([P2P-NAT], [TCP-CHARACT])에서 NAT 장치 간에
+   작동합니다.
 
 3.5.  UDP Port Number Prediction
 
