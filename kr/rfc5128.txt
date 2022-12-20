@@ -7,32 +7,26 @@ Category: Informational                                          B. Ford
                                                               March 2008
 
 
-           State of Peer-to-Peer (P2P) Communication across
-                   Network Address Translators (NATs)
+         네트워크 주소 변환기(NAT)를 통한 P2P(Peer-to-Peer) 통신의 상태
 
 Status of This Memo
 
-   This memo provides information for the Internet community.  It does
-   not specify an Internet standard of any kind.  Distribution of this
-   memo is unlimited.
+   이 메모는 인터넷 커뮤니티에 대한 정보를 제공합니다. 어떤 종류의 인터넷 표준도 지정하지
+   않습니다. 메모 배포에 제한은 없습니다.
 
-Abstract
+개요
 
-   This memo documents the various methods known to be in use by
-   applications to establish direct communication in the presence of
-   Network Address Translators (NATs) at the current time.  Although
-   this memo is intended to be mainly descriptive, the Security
-   Considerations section makes some purely advisory recommendations
-   about how to deal with security vulnerabilities the applications
-   could inadvertently create when using the methods described.  This
-   memo covers NAT traversal approaches used by both TCP- and UDP-based
-   applications.  This memo is not an endorsement of the methods
-   described, but merely an attempt to capture them in a document.
+   이 메모는 현재 네트워크 주소 변환기(NAT)가 있는 상태에서 직접 통신을 설정하기 위해 응용
+   프로그램에서 사용 중인 것으로 알려진 다양한 방법을 문서화합니다. 이 메모는 주로 설명을 위한
+   것이지만 보안 고려 사항 섹션에서는 설명된 방법을 사용할 때 응용 프로그램이 실수로 생성할 수
+   있는 보안 취약점을 처리하는 방법에 대한 순전히 권고 사항을 제공합니다. 이 메모는 TCP 및
+   UDP 기반 애플리케이션에서 사용되는 NAT 순회 접근 방식을 다룹니다. 이 메모는 설명된 방법을
+   보증하는 것이 아니라 문서에서 캡처하려는 시도일 뿐입니다.
 
-Table of Contents
+목차
 
-   1. Introduction and Scope
-   2. Terminology and Conventions Used
+   1. Introduction and Scope (소개 및 범위)
+   2. Terminology and Conventions Used (사용된 용어 및 규약)
       2.1. Endpoint
       2.2. Endpoint Mapping
       2.3. Endpoint-Independent Mapping
@@ -43,286 +37,227 @@ Table of Contents
       2.8. NAT-Friendly P2P Application
       2.9. Endpoint-Independent Mapping NAT (EIM-NAT)
       2.10. Hairpinning
-   3. Techniques Used by P2P Applications to Traverse NATs
-      3.1. Relaying
+   3. Techniques Used by P2P Applications to Traverse NATs (NAT 통과를 위해 P2P 애플리케이션에서 사용하는 기술)
+      3.1. Relaying (중계))
       3.2. Connection Reversal
       3.3. UDP Hole Punching
-           3.3.1. Peers behind Different NATs
-           3.3.2. Peers behind the Same NAT
-           3.3.3. Peers Separated by Multiple NATs
+           3.3.1. Peers behind Different NATs (다른 NAT 뒤의 피어)
+           3.3.2. Peers behind the Same NAT (동일한 NAT 뒤에 있는 피어)
+           3.3.3. Peers Separated by Multiple NATs (여러 NAT로 분리된 피어)
       3.4. TCP Hole Punching
-      3.5. UDP Port Number Prediction
-      3.6. TCP Port Number Prediction
-   4. Recent Work on NAT Traversal
-   5. Summary of Observations
+      3.5. UDP Port Number Prediction (UDP 포트 번호 예측)
+      3.6. TCP Port Number Prediction (TCP 포트 번호 예측)
+   4. Recent Work on NAT Traversal (NAT 순회에 대한 최근 작업)
+   5. Summary of Observations (관찰 요약)
       5.1. TCP/UDP Hole Punching
       5.2. NATs Employing Endpoint-Dependent Mapping
       5.3. Peer Discovery
       5.4. Hairpinning
-   6. Security Considerations
-      6.1. Lack of Authentication Can Cause Connection Hijacking
+   6. Security Considerations (보안 고려 사항)
+      6.1. Lack of Authentication Can Cause Connection Hijacking (인증 부족으로 인한 커넥션 하이재킹 야기)
       6.2. Denial-of-Service Attacks
       6.3. Man-in-the-Middle Attacks
       6.4. Security Impact from EIM-NAT Devices
-   7. Acknowledgments
-   8. References
-      8.1. Normative References
-      8.2. Informative References
+   7. Acknowledgments (감사의 말)
+   8. References (참조)
+      8.1. Normative References (규범적 참조)
+      8.2. Informative References (유익한 참조)
 
-1.  Introduction and Scope
+1.  Introduction and Scope (소개 및 범위)
 
-   The present-day Internet has seen ubiquitous deployment of Network
-   Address Translators (NATs).  There are a variety of NAT devices and a
-   variety of network topologies utilizing NAT devices in deployments.
-   The asymmetric addressing and connectivity regimes established by
-   these NAT devices have created unique problems for peer-to-peer (P2P)
-   applications and protocols, such as teleconferencing and multiplayer
-   online gaming.  These issues are likely to persist even into the IPv6
-   world.  During the transition to IPv6, some form of NAT may be
-   required to enable IPv4-only nodes to communicate with IPv6-only
-   nodes [NAT-PT], although the appropriate protocols and guidelines for
-   this use of NAT are still unresolved [NAT-PT-HIST].  Even a future
-   "pure IPv6 world" may still include firewalls, which employ similar
-   filtering behavior of NATs but without the address translation
-   [V6-CPE-SEC].  The filtering behavior interferes with the functioning
-   of P2P applications.  For this reason, IPv6 applications that use the
-   techniques described in this document for NAT traversal may also work
-   with some firewalls that have filtering behavior similar to NATs.
+   오늘날의 인터넷은 네트워크 주소 변환기(NATs)의 유비쿼터스 배치를 보았습니다. 배치에서 NAT
+   장치를 활용하는 다양한 NAT 장치 및 다양한 네트워크 토폴로지가 있습니다. 이러한 NAT 장치에
+   의해 설정된 비대칭 주소 지정 및 연결 체계는 원격 회의 및 멀티플레이어 온라인 게임과 같은
+   peer-to-peer(P2P) 애플리케이션 및 프로토콜에 고유한 문제를 발생시켰습니다. 이러한
+   문제는 IPv6 세계에서도 지속될 가능성이 높습니다. IPv6으로 전환하는 동안 IPv4 전용
+   노드가 IPv6 전용 노드[NAT-PT]와 통신할 수 있도록 하기 위해 일부 형태의 NAT가 필요할 수
+   있습니다[NAT-PT-HIST]. 미래의 "순수한 IPv6 세계"에도 NAT와 유사한 필터링 동작을
+   사용하지만 주소 변환[V6-CPE-SEC]이 없는 방화벽이 여전히 포함될 수 있습니다. 필터링 동작은
+   P2P 애플리케이션의 기능을 방해합니다. 이러한 이유로 NAT 통과를 위해 이 문서에 설명된 기술을
+   사용하는 IPv6 응용 프로그램은 NAT와 유사한 필터링 동작이 있는 일부 방화벽에서도 작동할 수
+   있습니다.
 
-   Currently deployed NAT devices are designed primarily around the
-   client/server paradigm, in which relatively anonymous client machines
-   inside a private network initiate connections to public servers with
-   stable IP addresses and DNS names.  NAT devices encountered en route
-   provide dynamic address assignment for the client machines.  The
-   illusion of anonymity (private IP addresses) and inaccessibility of
-   the internal hosts behind a NAT device is not a problem for
-   applications such as Web browsers, which only need to initiate
-   outgoing connections.  This illusion of anonymity and inaccessibility
-   is sometimes perceived as a privacy benefit.  As noted in Section 2.2
-   of [RFC4941], this perceived privacy may be illusory in a majority of
-   cases utilizing Small-Office-Home-Office (SOHO) NATs.
+   현재 배포된 NAT 장치는 클라이언트/서버 패러다임을 중심으로 설계되었으며, 사설 네트워크
+   내부의 상대적으로 익명인 클라이언트 시스템은 안정적인 IP 주소와 DNS 이름을 사용하여 공용
+   서버에 대한 연결을 시작합니다. 도중에 만나는 NAT 장치는 클라이언트 시스템에 동적 주소
+   할당을 제공합니다. NAT 장치 뒤에 있는 내부 호스트의 익명성(사설 IP 주소) 및 액세스
+   불가능성에 대한 환상은 나가는 연결만 시작하면 되는 웹 브라우저와 같은 응용 프로그램에서는
+   문제가 되지 않습니다. 이러한 익명성과 접근 불가능성에 대한 환상은 때때로 개인 정보 보호
+   혜택으로 인식됩니다. [RFC4941]의 섹션 2.2에 언급된 바와 같이, Small-Office-Home
+   -Office (SOHO) NAT를 사용하는 대부분의 경우 이러한 개인 정보 보호는 환상일 수
+   있습니다.
 
-   In the peer-to-peer paradigm, Internet hosts that would normally be
-   considered "clients" not only initiate sessions to peer nodes, but
-   also accept sessions initiated by peer nodes.  The initiator and the
-   responder might lie behind different NAT devices with neither
-   endpoint having a permanent IP address or other form of public
-   network presence.  A common online gaming architecture, for example,
-   involves all participating application hosts contacting a publicly
-   addressable rendezvous server for registering themselves and
-   discovering peer hosts.  Subsequent to the communication with the
-   rendezvous server, the hosts establish direct connections with each
-   other for fast and efficient propagation of updates during game play.
-   Similarly, a file sharing application might contact a well-known
-   rendezvous server for resource discovery or searching, but establish
-   direct connections with peer hosts for data transfer.  NAT devices
-   create problems for peer-to-peer connections because hosts behind a
-   NAT device normally have no permanently visible public ports on the
-   Internet to which incoming TCP or UDP connections from other peers
-   can be directed.  RFC 3235 [NAT-APPL] briefly addresses this issue.
+   P2P 패러다임에서 일반적으로 "클라이언트"로 간주되는 인터넷 호스트는 피어 노드에 대한 
+   세션을 시작할 뿐만 아니라 피어 노드가 시작한 세션도 수락합니다. 개시자와 응답자는 영구 IP
+   주소나 다른 형태의 공용 네트워크 존재를 갖지 않는 엔드포인트 없이 서로 다른 NAT 장치
+   뒤에 있을 수 있습니다. 예를 들어, 일반적인 온라인 게임 아키텍처는 자신을 등록하고 피어
+   호스트를 검색하기 위해 공개적으로 주소 지정이 가능한 랑데부 서버에 접속하는 모든 참여
+   애플리케이션 호스트를 포함합니다. 랑데부 서버와의 통신에 이어 호스트는 게임 플레이 중에
+   업데이트를 빠르고 효율적으로 전파하기 위해 서로 직접 연결을 설정합니다. 마찬가지로 파일
+   공유 응용 프로그램은 리소스 검색 또는 검색을 위해 잘 알려진 랑데부 서버에 연결할 수 있지만
+   데이터 전송을 위해 피어 호스트와 직접 연결을 설정할 수 있습니다. NAT 장치 뒤에 있는
+   호스트는 일반적으로 다른 피어에서 들어오는 TCP 또는 UDP 연결이 향할 수 있는 인터넷에서
+   영구적으로 볼 수 있는 공용 포트가 없기 때문에 NAT 장치는 피어 투 피어 연결에 문제를
+   일으킵니다. RFC 3235[NAT-APPL]는 이 문제를 간략하게 설명합니다.
 
-   NAT traversal strategies that involve explicit signaling between
-   applications and NAT devices, namely [NAT-PMP], [NSIS-NSLP], [SOCKS],
-   [RSIP], [MIDCOM], and [UPNP] are out of the scope of this document.
-   These techniques, if available, are a complement to the techniques
-   described in the document.  [UNSAF] is in scope.
+   [NAT-PMP], [NSIS-NSLP], [SOCKS], [RSIP], [MIDCOM] 및 [UPNP]와 같이 응용
+   프로그램과 NAT 장치 간의 명시적 신호를 포함하는 NAT 통과 전략은 이 문서의 범위를
+   벗어납니다. 사용 가능한 경우 이러한 기술은 문서에 설명된 기술을 보완합니다. [UNSAF]가
+   범위 내에 있습니다.
 
-   In this document, we summarize the currently known methods by which
-   applications work around the presence of NAT devices, without
-   directly altering the NAT devices.  The techniques described predate
-   BEHAVE documents ([BEH-UDP], [BEH-TCP], and [BEH-ICMP]).  The scope
-   of the document is restricted to describing currently known
-   techniques used to establish 2-way communication between endpoints of
-   an application.  Discussion of timeouts, RST processing, keepalives,
-   and so forth that concern a running session are outside the scope of
-   this document.  The scope is also restricted to describing techniques
-   for TCP- and UDP-based applications.  It is not the objective of this
-   document to provide solutions to NAT traversal problems for
-   applications in general [BEH-APP] or to a specific class of
-   applications [ICE].
+   이 문서에서는 응용 프로그램이 NAT 장치를 직접 변경하지 않고 NAT 장치를 우회하여 작동하는
+   현재 알려진 방법을 요약합니다. 설명된 기술은 BEHAVE 문서([BEH-UDP], [BEH-TCP] 및
+   [BEH-ICMP]) 이전 버전입니다. 문서의 범위는 응용 프로그램의 엔드포인트 간에 양방향 통신을
+   설정하는 데 사용되는 현재 알려진 기술을 설명하는 것으로 제한됩니다. 실행 중인 세션과 관련된
+   시간 초과, RST 처리, keepalive 등에 대한 논의는 이 문서의 범위를 벗어납니다. 또한
+   범위는 TCP 및 UDP 기반 응용 프로그램에 대한 기술을 설명하는 것으로 제한됩니다. 이 문서의
+   목적은 일반적인 애플리케이션[BEH-APP] 또는 특정 클래스의 애플리케이션[ICE]에 대한 NAT
+   통과 문제에 대한 솔루션을 제공하는 것이 아닙니다.
 
-2.  Terminology and Conventions Used
+2.  Terminology and Conventions Used (사용된 용어 및 규약)
 
-   In this document, the IP addresses 192.0.2.1, 192.0.2.128, and
-   192.0.2.254 are used as example public IP addresses [RFC3330].
-   Although these addresses are all from the same /24 network, this is a
-   limitation of the example addresses available in [RFC3330].  In
-   practice, these addresses would be on different networks.  As for the
-   notation for ports usage, all clients use ports in the range of
-   1-2000 and servers use ports in the range of 20000-21000.  NAT
-   devices use ports 30000 and above for endpoint mapping.
+   이 문서에서는 IP 주소 192.0.2.1, 192.0.2.128 및 192.0.2.254를 공용 IP 주소의
+   예로 사용합니다[RFC3330]. 이러한 주소는 모두 동일한 /24 네트워크에 있지만 이는
+   [RFC3330]에서 사용할 수 있는 예제 주소의 제한 사항입니다. 실제로 이러한 주소는 서로 다른
+   네트워크에 있습니다. 포트 사용에 대한 표기는 모든 클라이언트가 1-2000 범위의 포트를
+   사용하고 서버는 20000-21000 범위의 포트를 사용합니다. NAT 장치는 엔드포인트 매핑에 포트
+   30000 이상을 사용합니다.
 
-   Readers are urged to refer to [NAT-TERM] for information on NAT
-   taxonomy and terminology.  Unless prefixed with a NAT type or
-   explicitly stated otherwise, the term NAT, used throughout this
-   document, refers to Traditional NAT [NAT-TRAD].  Traditional NAT has
-   two variations, namely, Basic NAT and Network Address Port Translator
-   (NAPT).  Of these, NAPT is by far the most commonly deployed NAT
-   device.  NAPT allows multiple private hosts to share a single public
-   IP address simultaneously.
+   NAT 분류 및 용어에 대한 정보는 [NAT-TERM]을 참조하십시오. NAT 유형이 앞에 붙거나 달리
+   명시적으로 언급되지 않는 한, 이 문서 전체에서 사용되는 NAT라는 용어는 기존 NAT[NAT-
+   TRAD]를 나타냅니다. 기존 NAT에는 기본 NAT와 네트워크 주소 포트 변환기(NAPT)의 두 가지
+   변형이 있습니다. 이 중에서 NAPT는 가장 일반적으로 배포되는 NAT 장치입니다. NAPT를
+   사용하면 여러 사설 호스트가 단일 공인 IP 주소를 동시에 공유할 수 있습니다.
 
-   An issue of relevance to P2P applications is how the NAT behaves when
-   an internal host initiates multiple simultaneous sessions from a
-   single endpoint (private IP, private port) to multiple distinct
-   endpoints on the external network.
+   P2P 애플리케이션과 관련된 문제는 내부 호스트가 단일 엔드포인트(사설 IP, 사설 포트)에서
+   외부 네트워크의 여러 개별 엔드포인트로 여러 동시 세션을 시작할 때 NAT가 작동하는 방식입니다.
 
-   [STUN] further classifies NAT implementations using the terms "Full
-   Cone", "Restricted Cone", "Port Restricted Cone", and "Symmetric".
-   Unfortunately, this terminology has been the source of much
-   confusion.  For this reason, this document adapts terminology from
-   [BEH-UDP] to distinguish between NAT implementations.
+   [STUN]은 "Full Cone", "Restricted Cone", "Port Restricted Cone" 및
+   "Symmetric"이라는 용어를 사용하여 NAT 구현을 추가로 분류합니다. 불행하게도 이 용어는
+   많은 혼란의 원인이 되어 왔습니다. 이러한 이유로 이 문서는 NAT 구현을 구별하기 위해
+   [BEH-UDP]의 용어를 채택합니다.
 
-   Listed below are terms used throughout this document.
+   아래 목록은 이 문서 전체에서 사용되는 용어입니다.
 
 2.1.  Endpoint
 
-   An endpoint is a session-specific tuple on an end host.  An endpoint
-   may be represented differently for each IP protocol.  For example, a
-   UDP or TCP session endpoint is represented as a tuple of (IP address,
-   UDP/TCP port).
+   엔드포인트는 끝 호스트의 세션별 튜플입니다. 엔드포인트는 각 IP 프로토콜에 대해 다르게
+   표시될 수 있습니다. 예를 들어 UDP 또는 TCP 세션 엔드포인트는 (IP 주소, UDP/TCP
+   포트)의 튜플로 표시됩니다.
 
 2.2.  Endpoint Mapping
 
-   When a host in a private realm initiates an outgoing session to a
-   host in the public realm through a NAT device, the NAT device assigns
-   a public endpoint to translate the private endpoint so that
-   subsequent response packets from the external host can be received by
-   the NAT, translated, and forwarded to the private endpoint.  The
-   assignment by the NAT device to translate a private endpoint to a
-   public endpoint and vice versa is called Endpoint Mapping.  NAT uses
-   Endpoint Mapping to perform translation for the duration of the
-   session.
+   사설 영역의 호스트가 NAT 장치를 통해 공용 영역의 호스트로 나가는 세션을 시작하면 NAT 장치는
+   외부 호스트의 후속 응답 패킷을 NAT에서 수신할 수 있도록 사설 엔드포인트를 변환할 공용
+   엔드포인트를 할당하고, 번환되어 및 사설 endpoint로 전달됩니다. 사설 엔드포인트를 공용
+   엔드포인트로 또는 그 반대로 변환하기 위한 NAT 장치의 할당을 Endpoint Mapping이라고
+   합니다. NAT는 Endpoint Mapping을 사용하여 세션 기간 동안 변환을 수행합니다.
 
 2.3.  Endpoint-Independent Mapping
 
-   "Endpoint-Independent Mapping" is defined in [BEH-UDP] as follows:
+   "Endpoint-Independent Mapping"은 다음과 같이 [BEH-UDP]에서 정의됩니다:
 
-        The NAT reuses the port mapping for subsequent packets sent from
-        the same internal IP address and port (X:x) to any external IP
-        address and port.
+        NAT는 동일한 내부 IP 주소 및 포트(X:x)에서 외부 IP 주소 및 포트로 전송되는 후속
+        패킷에 대해 포트 매핑을 재사용합니다.
 
 2.4.  Endpoint-Dependent Mapping
 
-   "Endpoint-Dependent Mapping" refers to the combination of "Address-
-   Dependent Mapping" and "Address and Port-Dependent Mapping" as
-   defined in [BEH-UDP]:
+   "Endpoint-Dependent Mapping"은 [BEH-UDP]에 정의된 "Address Dependent
+   Mapping"와 "Address and Port-Dependent Mapping"의 조합을 나타냅니다.
 
    Address-Dependent Mapping
 
-        The NAT reuses the port mapping for subsequent packets sent from
-        the same internal IP address and port (X:x) to the same external
-        IP address, regardless of the external port.
+        NAT는 외부 포트에 관계없이 동일한 내부 IP 주소 및 포트(X:x)에서 동일한 외부 IP
+        주소로 전송되는 후속 패킷에 대해 포트 매핑을 재사용합니다.
 
    Address and Port-Dependent Mapping
 
-        The NAT reuses the port mapping for subsequent packets sent from
-        the same internal IP address and port (X:x) to the same external
-        IP address and port while the mapping is still active.
+        NAT는 매핑이 여전히 활성 상태인 동안 동일한 내부 IP 주소 및 포트(X:x)에서 동일한
+        외부 IP 주소 및 포트로 전송되는 후속 패킷에 대해 포트 매핑을 재사용합니다.
 
 2.5.  Endpoint-Independent Filtering
 
-   "Endpoint-Independent Filtering" is defined in [BEH-UDP] as follows:
+   "Endpoint-Independent Filtering"은 다음과 같이 [BEH-UDP]에서 정의됩니다:
 
-        The NAT filters out only packets not destined to the internal
-        address and port X:x, regardless of the external IP address and
-        port source (Z:z).  The NAT forwards any packets destined to
-        X:x.  In other words, sending packets from the internal side of
-        the NAT to any external IP address is sufficient to allow any
-        packets back to the internal endpoint.
+        NAT는 외부 IP 주소 및 포트 소스(Z:z)에 관계없이 내부 주소 및 포트 X:x로 향하지
+        않는 패킷만 필터링합니다. NAT는 X:x로 향하는 모든 패킷을 전달합니다. 즉, NAT의
+        내부에서 외부 IP 주소로 패킷을 보내는 것만으로도 모든 패킷이 내부 엔드포인트로
+        되돌아가도록 허용하기에 충분합니다.
 
-   A NAT device employing the combination of "Endpoint-Independent
-   Mapping" and "Endpoint-Independent Filtering" will accept incoming
-   traffic to a mapped public port from ANY external endpoint on the
-   public network.
+   "Endpoint-Independent Mapping"과 "Endpoint-Independent Filtering"의
+   조합을 사용하는 NAT 장치는 공용 네트워크의 모든 외부 엔드포인트에서 매핑된 공용 포트로
+   들어오는 트래픽을 허용합니다.
 
 2.6.  Endpoint-Dependent Filtering
 
-   "Endpoint-Dependent Filtering" refers to the combination of "Address-
-   Dependent Filtering" and "Address and Port-Dependent Filtering" as
-   defined in [BEH-UDP].
+   "Endpoint-Dependent Filtering"은 [BEH-UDP]에서 정의된 "Address Dependent
+   Filtering"과 "Address and Port-Dependent Filtering"의 조합을 나타냅니다.
 
    Address-Dependent Filtering
 
-        The NAT filters out packets not destined to the internal address
-        X:x.  Additionally, the NAT will filter out packets from Y:y
-        destined for the internal endpoint X:x if X:x has not sent
-        packets to Y:any previously (independently of the port used by
-        Y).  In other words, for receiving packets from a specific
-        external endpoint, it is necessary for the internal endpoint to
-        send packets first to that specific external endpoint's IP
-        address.
+        NAT는 내부 주소 X:x로 향하지 않는 패킷을 필터링합니다. 또한 NAT는 X:x가 이전에
+        Y:any로 패킷을 전송하지 않은 경우 내부 엔드포인트 X:x로 향하는 Y:y의 패킷을
+        필터링합니다(Y에서 사용하는 포트와 무관). 즉, 특정 외부 종단점으로부터 패킷을
+        수신하기 위해서는 내부 종단점이 특정 외부 종단점의 IP 주소로 먼저 패킷을 보내야
+        합니다.
 
    Address and Port-Dependent Filtering
 
-        The NAT filters out packets not destined for the internal
-        address X:x.  Additionally, the NAT will filter out packets from
-        Y:y destined for the internal endpoint X:x if X:x has not sent
-        packets to Y:y previously.  In other words, for receiving
-        packets from a specific external endpoint, it is necessary for
-        the internal endpoint to send packets first to that external
-        endpoint's IP address and port.
+        NAT는 내부 주소 X:x로 향하지 않는 패킷을 필터링합니다. 또한 NAT는 X:x가 이전에
+        Y:y로 패킷을 보내지 않은 경우 내부 엔드포인트 X:x로 향하는 Y:y의 패킷을
+        필터링합니다. 즉, 특정 외부 종단점으로부터 패킷을 받기 위해서는 내부 종단점이 먼저
+        그 외부 종단점의 IP 주소와 포트로 패킷을 보내야 합니다.
 
-   A NAT device employing "Endpoint-Dependent Filtering" will accept
-   incoming traffic to a mapped public port from only a restricted set
-   of external endpoints on the public network.
+   "Endpoint-Dependent Filtering"을 사용하는 NAT 장치는 공용 네트워크의 제한된 외부
+   엔드포인트 집합에서 매핑된 공용 포트로 들어오는 트래픽만 허용합니다.
 
-2.7.  P2P Application
+2.7.  P2P Application (P2P 애플리케이션)
 
-   A P2P application is an application that uses the same endpoint to
-   initiate outgoing sessions to peering hosts as well as accept
-   incoming sessions from peering hosts.  A P2P application may use
-   multiple endpoints for peer-to-peer communication.
+   P2P 애플리케이션은 동일한 엔드포인트를 사용하여 피어링 호스트로 나가는 세션을 시작하고
+   피어링 호스트에서 들어오는 세션을 수락하는 애플리케이션입니다. P2P 애플리케이션은 P2P
+   통신을 위해 여러 엔드포인트를 사용할 수 있습니다.
 
-2.8.  NAT-Friendly P2P Application
+2.8.  NAT-Friendly P2P Application (NAT 친화적 P2P 애플리케이션)
 
-   A NAT-friendly P2P application is a P2P application that is designed
-   to work effectively even as peering nodes are located in distinct IP
-   address realms, connected by one or more NATs.
+   NAT 친화적인 P2P 애플리케이션은 피어링 노드가 하나 이상의 NAT로 연결된 개별 IP 주소
+   영역에 있는 경우에도 효과적으로 작동하도록 설계된 P2P 애플리케이션입니다.
 
-   One common way P2P applications establish peering sessions and remain
-   NAT-friendly is by using a publicly addressable rendezvous server for
-   registration and peer discovery purposes.
+   P2P 애플리케이션이 피어링 세션을 설정하고 NAT 친화적인 상태를 유지하는 일반적인 방법 중
+   하나는 등록 및 피어 검색 목적으로 공인 주소 지정이 가능한 랑데뷰 서버를 사용하는 것입니다.
 
 2.9. Endpoint-Independent Mapping NAT (EIM-NAT)
 
-   An Endpoint-Independent Mapping NAT (EIM-NAT, for short) is a NAT
-   device employing Endpoint-Independent Mapping.  An EIM-NAT can have
-   any type of filtering behavior.  BEHAVE-compliant NAT devices are
-   good examples of EIM-NAT devices.  A NAT device employing Address-
-   Dependent Mapping is an example of a NAT device that is not EIM-NAT.
+   Endpoint-Independent Mapping NAT (EIM-NAT)는 엔드포인트 독립 매핑을 사용하는
+   NAT 장치입니다. EIM-NAT는 모든 유형의 필터링 동작을 가질 수 있습니다. BEHAVE 호환
+   NAT 장치는 EIM-NAT 장치의 좋은 예입니다. 주소 종속 매핑을 사용하는 NAT 장치는
+   EIM-NAT가 아닌 NAT 장치의 예입니다.
 
-2.10.  Hairpinning
+2.10.  Hairpinning (헤어피닝)
 
-   Hairpinning is defined in [BEH-UDP] as follows:
+   Hairpinning은 [BEH-UDP]에서 다음과 같이 정의됩니다:
 
-        If two hosts (called X1 and X2) are behind the same NAT and
-        exchanging traffic, the NAT may allocate an address on the
-        outside of the NAT for X2, called X2':x2'.  If X1 sends traffic
-        to X2':x2', it goes to the NAT, which must relay the traffic
-        from X1 to X2.  This is referred to as hairpinning.
+        두 호스트(X1 및 X2라고 함)가 동일한 NAT 뒤에 있고 트래픽을 교환하는 경우 NAT는
+        X2':x2'라고 하는 X2의 NAT 외부에 주소를 할당할 수 있습니다. X1이 트래픽을
+        X2':x2'로 보내면 트래픽은 X1에서 X2로 릴레이해야 하는 NAT로 이동합니다. 이것을
+        Hairpinning이라고 합니다.
 
-   Not all currently deployed NATs support hairpinning.
+   현재 배포된 모든 NAT가 Hairpinning을 지원하는 것은 아닙니다.
 
-3.  Techniques Used by P2P Applications to Traverse NATs
+3.  Techniques Used by P2P Applications to Traverse NATs (NAT 통과를 위해 P2P 애플리케이션에서 사용하는 기술)
 
-   This section reviews in detail the currently known techniques for
-   implementing peer-to-peer communication over existing NAT devices,
-   from the perspective of the application or protocol designer.
+   이 섹션에서는 응용 프로그램 또는 프로토콜 설계자의 관점에서 기존 NAT 장치를 통해
+   peer-to-peer 통신을 구현하기 위해 현재 알려진 기술을 자세히 검토합니다.
 
-3.1.  Relaying
+3.1.  Relaying (중계)
 
-   The most reliable, but least efficient, method of implementing peer-
-   to-peer communication in the presence of a NAT device is to make the
-   peer-to-peer communication look to the network like client/server
-   communication through relaying.  Consider the scenario in figure 1.
-   Two client hosts, A and B, have each initiated TCP or UDP connections
-   to a well-known rendezvous server S.  The Rendezvous Server S has a
-   publicly addressable IP address and is used for the purposes of
-   registration, discovery, and relay.  Hosts behind NAT register with
-   the server.  Peer hosts can discover hosts behind NATs and relay all
-   end-to-end messages using the server.  The clients reside on separate
-   private networks, and their respective NAT devices prevent either
-   client from directly initiating a connection to the other.
+   NAT 장치가 있는 상태에서 peer-to-peer 통신을 구현하는 가장 안정적이지만 가장 비효율적인
+   방법은 peer-to-peer 통신을 릴레이를 통한 클라이언트/서버 통신처럼 네트워크에 보이게
+   만드는 것입니다. 그림 1의 시나리오를 고려하십시오. 두 클라이언트 호스트 A와 B는 각각 잘
+   알려진 랑데뷰 서버 S에 대한 TCP 또는 UDP 연결을 시작했습니다. 랑데뷰 서버 S는 공인 주소
+   지정이 가능한 IP 주소를 가지며 등록, 검색 및 릴레이 목적으로 사용됩니다. NAT 뒤의 호스트는
+   서버에 등록됩니다. 피어 호스트는 NAT 뒤에 있는 호스트를 검색하고 서버를 사용하여 모든
+   end-to-end 메시지를 릴레이할 수 있습니다. 클라이언트는 별도의 사설 네트워크에 상주하며
+   각각의 NAT 장치는 클라이언트가 다른 클라이언트에 직접 연결을 시작하지 못하도록 합니다.
 
                            Registry, Discovery
                            Combined with Relay
@@ -349,35 +284,28 @@ Table of Contents
      Client A                                                 Client B
      10.0.0.1:1234                                        10.1.1.3:1234
 
-         Figure 1: Use of a Relay Server to communicate with peers
+                     그림 1: 릴레이 서버를 사용하여 피어와 통신
 
-   Instead of attempting a direct connection, the two clients can simply
-   use the server S to relay messages between them.  For example, to
-   send a message to client B, client A simply sends the message to
-   server S along its already established client/server connection, and
-   server S then sends the message on to client B using its existing
-   client/server connection with B.
+   직접 연결을 시도하는 대신 두 클라이언트는 서버 S를 사용하여 메시지를 릴레이할 수 있습니다.
+   예를 들어 클라이언트 B에게 메시지를 보내기 위해 클라이언트 A는 이미 설정된 클라이언트/서버
+   연결을 따라 서버 S로 메시지를 보내고 서버 S는 B와의 기존 클라이언트/서버 연결을 사용하여
+   클라이언트 B로 메시지를 보냅니다.
 
-   This method has the advantage that it will always work as long as
-   both clients have connectivity to the server.  The enroute NAT device
-   is not required to be EIM-NAT.  The obvious disadvantages of relaying
-   are that it consumes the server's processing power and network
-   bandwidth, and communication latency between the peering clients is
-   likely to be increased even if the server has sufficient I/O
-   bandwidth and is located correctly topology-wise.  The TURN protocol
-   [TURN] defines a method of implementing application agnostic,
-   session-oriented, packet relay in a relatively secure fashion.
+   이 방법은 두 클라이언트가 서버에 연결되어 있는 한 항상 작동한다는 장점이 있습니다. 도중
+   NAT 장치는 EIM-NAT일 필요가 없습니다. 릴레이의 명백한 단점은 서버의 처리 능력과
+   네트워크 대역폭을 소모하고 서버가 충분한 I/O 대역폭을 가지고 있고 토폴로지 측면에서 올바른
+   위치에 있더라도 피어링 클라이언트 간의 통신 대기 시간이 증가할 가능성이 있다는 것입니다.
+   TURN 프로토콜[TURN]은 상대적으로 안전한 방식으로 응용 프로그램에 구애받지 않는 세션 지향
+   패킷 릴레이를 구현하는 방법을 정의합니다.
 
-3.2.  Connection Reversal
+3.2.  Connection Reversal (연결 반전)
 
-   The following connection reversal technique for a direct
-   communication works only when one of the peers is behind a NAT device
-   and the other is not.  For example, consider the scenario in figure
-   2.  Client A is behind a NAT, but client B has a publicly addressable
-   IP address.  Rendezvous Server S has a publicly addressable IP
-   address and is used for the purposes of registration and discovery.
-   Hosts behind a NAT register their endpoints with the server.  Peer
-   hosts discover endpoints of hosts behind a NAT using the server.
+   직접 통신을 위한 다음 연결 반전 기술은 피어 중 하나가 NAT 장치 뒤에 있고 다른 하나는
+   그렇지 않은 경우에만 작동합니다. 예를 들어 그림 2의 시나리오를 고려하십시오. 클라이언트
+   A는 NAT 뒤에 있지만 클라이언트 B는 공인 주소 지정이 가능한 IP 주소를 가지고 있습니다.
+   Rendezvous Server S에는 공인 주소 지정이 가능한 IP 주소가 있으며 등록 및 검색
+   목적으로 사용됩니다. NAT 뒤의 호스트는 엔드포인트를 서버에 등록합니다. 피어 호스트는 서버를
+   사용하여 NAT 뒤에 있는 호스트의 엔드포인트를 검색합니다.
 
                           Registry and Discovery
                                  Server S
@@ -409,97 +337,72 @@ Table of Contents
      Private Client A                                 Public Client B
      10.0.0.1:1234                                    192.0.2.254:1234
 
-           Figure 2: Connection reversal using Rendezvous server
+                  그림 2: Rendezvous 서버를 사용한 연결 반전
 
-   Client A has private IP address 10.0.0.1, and the application is
-   using TCP port 1234.  This client has established a connection with
-   server S at public IP address 192.0.2.128 and port 20001.  NAT A has
-   assigned TCP port 62000, at its own public IP address 192.0.2.1, to
-   serve as the temporary public endpoint address for A's session with
-   S; therefore, server S believes that client A is at IP address
-   192.0.2.1 using port 62000.  Client B, however, has its own permanent
-   IP address, 192.0.2.254, and the application on B is accepting TCP
-   connections at port 1234.
+   클라이언트 A는 사설 IP 주소 10.0.0.1을 가지고 있으며 응용 프로그램은 TCP 포트 1234를
+   사용하고 있습니다. 이 클라이언트는 공인 IP 주소 192.0.2.128 및 포트 20001에서
+   서버 S와 연결을 설정했습니다. NAT A는 자신의 공인 IP 주소 192.0.2.1에서 TCP 포트
+   62000을 할당하여 A와 S의 세션에 대한 임시 공용 엔드포인트 주소로 사용했습니다. 따라서
+   서버 S는 클라이언트 A가 포트 62000을 사용하는 IP 주소 192.0.2.1에 있다고 믿습니다.
+   그러나 클라이언트 B는 고유한 영구 IP 주소 192.0.2.254를 가지며 B의 응용 프로그램은
+   포트 1234에서 TCP 연결을 수락합니다.
 
-   Now suppose client B wishes to establish a direct communication
-   session with client A.  B might first attempt to contact client A
-   either at the address client A believes itself to have, namely,
-   10.0.0.1:1234, or at the address of A as observed by server S,
-   namely, 192.0.2.1:62000.  In either case, the connection will fail.
-   In the first case, traffic directed to IP address 10.0.0.1 will
-   simply be dropped by the network because 10.0.0.1 is not a publicly
-   routable IP address.  In the second case, the TCP SYN request from B
-   will arrive at NAT A directed to port 62000, but NAT A will reject
-   the connection request because only outgoing connections are allowed.
+   이제 클라이언트 B가 클라이언트 A와 직접 통신 세션을 설정하려고 한다고 가정합니다. B는 먼저
+   클라이언트 A가 자신이 가지고 있다고 믿는 주소(즉, 10.0.0.1:1234) 또는 서버 S가 관찰한
+   A의 주소(즉, 192.0.2.1:62000)에서 클라이언트 A에 접속을 시도할 수 있습니다. 두 경우
+   모두 연결이 실패합니다. 첫 번째 경우 10.0.0.1은 공개적으로 라우팅할 수 있는 IP 주소가
+   아니기 때문에 IP 주소 10.0.0.1로 향하는 트래픽은 네트워크에서 단순히 삭제됩니다. 두 번째
+   경우 B의 TCP SYN 요청은 포트 62000으로 지정된 NAT A에 도착하지만 나가는 연결만
+   허용되기 때문에 NAT A는 연결 요청을 거부합니다.
 
-   After attempting and failing to establish a direct connection to A,
-   client B can use server S to relay a request to client A to initiate
-   a "reversed" connection to client B.  Client A, upon receiving this
-   relayed request through S, opens a TCP connection to client B at B's
-   public IP address and port number.  NAT A allows the connection to
-   proceed because it is originating inside the firewall, and client B
-   can receive the connection because it is not behind a NAT device.
+   A에 대한 직접 연결 설정을 시도하고 실패한 후 클라이언트 B는 서버 S를 사용하여 클라이언트
+   A에 대한 요청을 릴레이하여 클라이언트 B에 대한 "역방향" 연결을 시작할 수 있습니다.
+   클라이언트 A는 S를 통해 이 릴레이된 요청을 수신하면 B의 공인 IP 주소 및 포트 번호에서
+   클라이언트 B에 대한 TCP 연결을 엽니다. NAT A는 방화벽 내부에서 시작되기 때문에 연결
+   진행을 허용하고 클라이언트 B는 NAT 장치 뒤에 있지 않기 때문에 연결을 수신할 수 있습니다.
 
-   A variety of current peer-to-peer applications implement this
-   technique.  Its main limitation, of course, is that it only works so
-   long as only one of the communicating peers is behind a NAT device.
-   If the NAT device is EIM-NAT, the public client can contact external
-   server S to determine the specific public endpoint from which to
-   expect Client-A-originated connection and allow connections from just
-   those endpoints.  If the NAT device is EIM-NAT, the public client can
-   contact the external server S to determine the specific public
-   endpoint from which to expect connections originated by client A, and
-   allow connections from just that endpoint.  If the NAT device is not
-   EIM-NAT, the public client cannot know the specific public endpoint
-   from which to expect connections originated by client A.  In the
-   increasingly common case where both peers can be behind NATs, the
-   Connection Reversal method fails.  Connection Reversal is not a
-   general solution to the peer-to-peer connection problem.  If neither
-   a "forward" nor a "reverse" connection can be established,
-   applications often fall back to another mechanism such as relaying.
+   현재 다양한 peer-to-peer 애플리케이션이 이 기술을 구현합니다. 물론 주요 제한 사항은 통신
+   피어 중 하나만 NAT 장치 뒤에 있는 경우에만 작동한다는 것입니다. NAT 장치가 EIM-NAT인
+   경우 퍼블릭 클라이언트는 외부 서버 S에 연결하여 클라이언트-A에서 시작된 연결을 예상하고 해당
+   엔드포인트의 연결을 허용할 특정 공인 엔드포인트를 결정할 수 있습니다. NAT 장치가 EIM-NAT인
+   경우 퍼블릭 클라이언트는 외부 서버 S에 연결하여 클라이언트 A에서 시작된 연결을 예상하고 해당
+   엔드포인트로부터의 연결을 허용할 특정 공인 엔드포인트를 결정할 수 있습니다. NAT 장치가
+   EIM-NAT가 아닌 경우 퍼블릭 클라이언트는 클라이언트 A에서 시작된 연결을 예상하는 공인 퍼블릭
+   엔드포인트를 알 수 없습니다. 두 피어가 모두 NAT 뒤에 있을 수 있는 점점 더 일반적인 경우에
+   연결 반전 방법이 실패합니다. 연결 반전은 P2P 연결 문제에 대한 일반적인 해결책이 아닙니다.
+   "정방향" 또는 "역방향" 연결을 설정할 수 없는 경우 응용 프로그램은 종종 릴레이와 같은 다른
+   메커니즘으로 대체됩니다.
 
-3.3.  UDP Hole Punching
+3.3.  UDP Hole Punching (UDP 홀 펀칭)
 
-   UDP hole punching relies on the properties of EIM-NATs to allow
-   appropriately designed peer-to-peer applications to "punch holes"
-   through the NAT device(s) enroute and establish direct connectivity
-   with each other, even when both communicating hosts lie behind NAT
-   devices.  When one of the hosts is behind a NAT that is not EIM-NAT,
-   the peering host cannot predictably know the mapped endpoint to which
-   to initiate a connection.  Further, the application on the host
-   behind non-EIM-NAT would be unable to reuse an already established
-   endpoint mapping for communication with different external
-   destinations, and the hole punching technique would fail.
+   UDP 홀 펀칭은 EIM-NAT의 속성에 의존하여 적절하게 설계된 P2P 애플리케이션이 NAT 장치를
+   통해 "구멍을 뚫고" 서로 간에 직접 연결을 설정할 수 있도록 합니다. 호스트 중 하나가
+   EIM-NAT가 아닌 NAT 뒤에 있는 경우 피어링 호스트는 연결을 시작할 매핑된 엔드포인트를
+   예측할 수 없습니다. 또한 비 EIM-NAT 뒤에 있는 호스트의 애플리케이션은 다른 외부 대상과의
+   통신을 위해 이미 설정된 엔드포인트 매핑을 재사용할 수 없으며 홀 펀칭 기술이 실패합니다.
 
-   This technique was mentioned briefly in Section 5.1 of RFC 3027
-   [NAT-PROT], first described in [KEGEL], and used in some recent
-   protocols [TEREDO, ICE].  Readers may refer to Section 3.4 for
-   details on "TCP hole punching".
+   이 기술은 RFC 3027 [NAT-PROT]의 섹션 5.1에서 간략하게 언급되었으며 [KEGEL]에서
+   처음 설명되었으며 일부 최근 프로토콜 [TEREDO, ICE]에서 사용되었습니다. "TCP 홀 펀칭"에
+   대한 자세한 내용은 섹션 3.4를 참조하십시오.
 
-   We will consider two specific scenarios, and how applications are
-   designed to handle both of them gracefully.  In the first situation,
-   representing the common case, two clients desiring direct peer-to-
-   peer communication reside behind two different NATs.  In the second,
-   the two clients actually reside behind the same NAT, but do not
-   necessarily know that they do.
+   우리는 두 가지 특정 시나리오와 두 시나리오를 정상적으로 처리하도록 애플리케이션을 설계하는
+   방법을 고려할 것입니다. 일반적인 경우를 나타내는 첫 번째 상황에서 직접 P2P 통신을 원하는 두
+   클라이언트가 두 개의 서로 다른 NAT 뒤에 상주합니다. 두 번째에서 두 클라이언트는 실제로
+   동일한 NAT 뒤에 상주하지만 반드시 알 필요는 없습니다.
 
-3.3.1.  Peers behind Different NATs
+3.3.1.  Peers behind Different NATs (다른 NAT 뒤의 피어)
 
-   Consider the scenario in figure 3.  Clients A and B both have private
-   IP addresses and lie behind different NAT devices.  Rendezvous Server
-   S has a publicly addressable IP address and is used for the purposes
-   of registration, discovery, and limited relay.  Hosts behind a NAT
-   register their public endpoints with the server.  Peer hosts discover
-   the public endpoints of hosts behind a NAT using the server.  Unlike
-   in Section 3.1, peer hosts use the server to relay just connection
-   initiation control messages, instead of end-to-end messages.
+   그림 3의 시나리오를 고려하십시오. 클라이언트 A와 B는 둘 다 사설 IP 주소를 가지고 있으며
+   서로 다른 NAT 장치 뒤에 있습니다. Rendezvous Server S는 공개적으로 주소를 지정할 수
+   있는 IP 주소를 가지며 등록, 검색 및 제한된 릴레이 목적으로 사용됩니다. NAT 뒤의 호스트는
+   공인 엔드포인트를 서버에 등록합니다. 피어 호스트는 서버를 사용하여 NAT 뒤에 있는 호스트의
+   공인 엔드포인트를 검색합니다. 섹션 3.1과 달리 피어 호스트는 서버를 사용하여 종단 간 메시지
+   대신 연결 시작 제어 메시지만 중계합니다.
 
-   The peer-to-peer application running on clients A and B use UDP port
-   1234.  The rendezvous server S uses UDP port 20001.  A and B have
-   each initiated UDP communication sessions with server S, causing NAT
-   A to assign its own public UDP port 62000 for A's session with S, and
-   causing NAT B to assign its port 31000 to B's session with S,
-   respectively.
+   클라이언트 A와 B에서 실행 중인 P2P 애플리케이션은 UDP 포트 1234를 사용합니다. 랑데부
+   서버 S는 UDP 포트 20001을 사용합니다. A와 B는 각각 서버 S와의 UDP 통신 세션을
+   시작하여 NAT A가 자체 공인 UDP 포트를 할당하도록 합니다. A와 S의 세션에 대해 62000,
+   NAT B가 포트 31000을 S와 B의 세션에 각각 할당하도록 합니다.
 
                       Registry and Discovery Combined
                             with Limited Relay
@@ -532,63 +435,45 @@ Table of Contents
      Client A                                                 Client B
      10.0.0.1:1234                                        10.1.1.3:1234
 
-         Figure 3: UDP Hole Punching to set up direct connectivity
+                     그림 3: 직접 연결을 설정하기 위한 UDP 홀 펀칭
 
-   Now suppose that client A wants to establish a UDP communication
-   session directly with client B.  If A simply starts sending UDP
-   messages to B's public endpoint 192.0.2.254:31000, then NAT B will
-   typically discard these incoming messages (unless it employs
-   Endpoint-Independent Filtering), because the source address and port
-   number do not match those of S, with which the original outgoing
-   session was established.  Similarly, if B simply starts sending UDP
-   messages to A's public endpoint, then NAT A will typically discard
-   these messages.
+   이제 클라이언트 A가 클라이언트 B와 직접 UDP 통신 세션을 설정하려고 한다고 가정해
+   보겠습니다. A가 단순히 UDP 메시지를 B의 공인 엔드포인트 192.0.2.254:31000으로 보내기
+   시작하면 NAT B는 일반적으로 이러한 들어오는 메시지를 버립니다(엔드포인트 독립적 필터링을
+   사용하지 않는 한). 소스 주소와 포트 번호가 원래 나가는 세션이 설정된 S의 주소와 일치하지 않기
+   때문입니다. 마찬가지로 B가 UDP 메시지를 A의 공인 엔드포인트로 보내기 시작하면 NAT A는
+   일반적으로 이러한 메시지를 버립니다.
 
-   Suppose A starts sending UDP messages to B's public endpoint, and
-   simultaneously relays a request through server S to B, asking B to
-   start sending UDP messages to A's public endpoint.  A's outgoing
-   messages directed to B's public endpoint (192.0.2.254:31000) cause
-   EIM-NAT A to open up a new communication session between A's private
-   endpoint and B's public endpoint.  At the same time, B's messages to
-   A's public endpoint (192.0.2.1:62000) cause EIM-NAT B to open up a
-   new communication session between B's private endpoint and A's public
-   endpoint.  Once the new UDP sessions have been opened up in each
-   direction, clients A and B can communicate with each other directly
-   without further burden on the server S.  Server S, which helps with
-   relaying connection initiation requests to peer nodes behind NAT
-   devices, ends up like an "introduction" server to peer hosts.
+   A가 B의 공인 엔드포인트로 UDP 메시지를 보내기 시작하고 동시에 서버 S를 통해 B로 요청을
+   릴레이하여 B에게 A의 공인 엔드포인트로 UDP 메시지를 보내도록 요청한다고 가정합니다. B의 공인
+   엔드포인트(192.0.2.254:31000)로 향하는 A의 발신 메시지는 EIM-NAT A가 A의 사설
+   엔드포인트와 B의 공인 엔드포인트 간에 새로운 통신 세션을 열도록 합니다. 동시에 A의 공인
+   엔드포인트(192.0.2.1:62000)에 대한 B의 메시지는 EIM-NAT B가 B의 사설 엔드포인트와 A의
+   공인 엔드포인트 간에 새로운 통신 세션을 열도록 합니다. 새로운 UDP 세션이 각 방향으로 열리면
+   클라이언트 A와 B는 서버 S에 추가 부담 없이 서로 직접 통신할 수 있습니다. 피어 호스트에 대한
+   "소개" 서버와 같습니다.
 
-   The UDP hole punching technique has several useful properties.  Once
-   a direct peer-to-peer UDP connection has been established between two
-   clients behind NAT devices, either party on that connection can in
-   turn take over the role of "introducer" and help the other party
-   establish peer-to-peer connections with additional peers, minimizing
-   the load on the initial introduction server S.  The application does
-   not need to attempt to detect the kind of NAT device it is behind,
-   since the procedure above will establish peer-to-peer communication
-   channels equally well if either or both clients do not happen to be
-   behind a NAT device.  The UDP hole punching technique even works
-   automatically with multiple NATs, where one or both clients are
-   distant from the public Internet via two or more levels of address
-   translation.
+   UDP 홀 펀칭 기술에는 몇 가지 유용한 속성이 있습니다. NAT 장치 뒤에 있는 두 클라이언트
+   사이에 직접 P2P UDP 연결이 설정되면 해당 연결의 어느 쪽이든 "소개자"의 역할을 대신할 수
+   있고 상대방이 추가로 P2P 연결을 설정하도록 도울 수 있습니다. 초기 도입 서버 S의 부하를
+   최소화합니다. 애플리케이션은 뒤에 있는 NAT 장치의 종류를 감지하려고 시도할 필요가 없습니다.
+   위의 절차는 클라이언트 중 하나 또는 둘 모두가 NAT 장치 뒤에 있지 않은 경우 동등하게 
+   peer-to-peer 통신 채널을 설정하기 때문입니다. UDP 홀 펀칭 기술은 하나 또는 두 개의
+   클라이언트가 둘 이상의 주소 변환 수준을 통해 공인 인터넷에서 멀리 떨어져 있는 다중 NAT에서도
+   자동으로 작동합니다.
 
-3.3.2.  Peers behind the Same NAT
+3.3.2.  Peers behind the Same NAT (동일한 NAT 뒤에 있는 피어)
 
-   Now consider the scenario in which the two clients (probably
-   unknowingly) happen to reside behind the same EIM-NAT, and are
-   therefore located in the same private IP address space, as in figure
-   4.  A well-known Rendezvous Server S has a publicly addressable IP
-   address and is used for the purposes of registration, discovery, and
-   limited relay.  Hosts behind the NAT register with the server.  Peer
-   hosts discover hosts behind the NAT using the server and relay
-   messages using the server.  Unlike in Section 3.1, peer hosts use the
-   server to relay just control messages, instead of all end-to-end
-   messages.
+   이제 그림 4와 같이 두 클라이언트(아마도 무의식적으로)가 동일한 EIM-NAT 뒤에 상주하여 동일한
+   사설 IP 주소 공간에 있는 시나리오를 고려하십시오. 잘 알려진 Rendezvous Server S는
+   공개적으로 주소 지정이 가능한 IP 주소이며 등록, 검색 및 제한된 릴레이 목적으로 사용됩니다.
+   NAT 뒤의 호스트는 서버에 등록됩니다. 피어 호스트는 서버를 사용하여 NAT 뒤에 있는 호스트를
+   발견하고 서버를 사용하여 메시지를 릴레이합니다. 섹션 3.1과 달리 피어 호스트는 서버를 사용하여
+   모든 종단 간 메시지 대신 제어 메시지만 중계합니다.
 
-   Client A has established a UDP session with server S, to which the
-   common EIM-NAT has assigned public port number 62000.  Client B has
-   similarly established a session with S, to which the EIM-NAT has
-   assigned public port number 62001.
+   클라이언트 A는 공통 EIM-NAT가 공인 포트 번호 62000을 할당한 서버 S와 UDP 세션을
+   설정했습니다. 클라이언트 B는 유사하게 EIM-NAT가 공인 포트 번호 62001을 할당한 S와 세션을
+   설정했습니다.
 
                      Registry and Discovery Combined
                            with Limited Relay
@@ -621,64 +506,47 @@ Table of Contents
    Client A                                                   Client B
    10.0.0.1:1234                                         10.1.1.3:1234
 
-   Figure 4: Use of local and public endpoints to communicate with peers
+   그림 4: 피어와 통신하기 위한 로컬 및 공인 엔드포인트 사용
 
-   Suppose that A and B use the UDP hole punching technique as outlined
-   above to establish a communication channel using server S as an
-   introducer.  Then A and B will learn each other's public endpoints as
-   observed by server S, and start sending each other messages at those
-   public endpoints.  The two clients will be able to communicate with
-   each other this way as long as the NAT allows hosts on the internal
-   network to open translated UDP sessions with other internal hosts and
-   not just with external hosts.  This situation is referred to as
-   "Hairpinning", because packets arriving at the NAT from the private
-   network are translated and then looped back to the private network
-   rather than being passed through to the public network.
+   A와 B가 위에서 설명한 UDP 홀 펀칭 기술을 사용하여 서버 S를 소개자로 사용하여 통신 채널을
+   설정한다고 가정합니다. 그런 다음 A와 B는 서버 S에서 관찰한 대로 서로의 공인 엔드포인트를
+   학습하고 해당 공인 엔드포인트에서 서로에게 메시지를 보내기 시작합니다. 두 클라이언트는
+   NAT가 내부 네트워크의 호스트가 외부 호스트뿐만 아니라 다른 내부 호스트와 변환된 UDP 세션을
+   열 수 있도록 허용하는 한 이러한 방식으로 서로 통신할 수 있습니다. 이러한 상황을 "헤어피닝
+   (Hairpinning)"이라고 합니다. 사설망에서 NAT에 도착한 패킷이 변환된 후 공중망으로
+   전달되지 않고 사설망으로 루프백되기 때문입니다.
 
-   For example, consider P2P session-try1 above.  When A sends a UDP
-   packet to B's public endpoint, the packet initially has a source
-   endpoint of 10.0.0.1:1234 and a destination endpoint of
-   192.0.2.1:62001.  The NAT receives this packet, translates it to have
-   a source endpoint of 192.0.2.1:62000 and a destination endpoint of
-   10.1.1.3:1234, and then forwards it on to B.
+   예를 들어 위의 P2P session-try1을 고려하십시오. A가 UDP 패킷을 B의 공인 엔드포인트로
+   보낼 때 패킷은 처음에 소스 엔드포인트가 10.0.0.1:1234이고 대상 엔드포인트가
+   192.0.2.1:62001입니다. NAT는 이 패킷을 수신하고 소스 엔드포인트가
+   192.0.2.1:62000이고 대상 엔드포인트가 10.1.1.3:1234인 것으로 변환한 다음 B로
+   전달합니다.
 
-   Even if the NAT device supports hairpinning, this translation and
-   forwarding step is clearly unnecessary in this situation, and adds
-   latency to the dialog between A and B, besides burdening the NAT.
-   The solution to this problem is straightforward and is described as
-   follows.
+   NAT 장치가 헤어피닝을 지원하더라도 이 변환 및 전달 단계는 이 상황에서 분명히 불필요하며
+   NAT에 부담을 주는 것 외에도 A와 B 간의 대화에 대기 시간을 추가합니다. 이 문제에 대한
+   해결책은 간단하며 다음과 같이 설명됩니다.
 
-   When A and B initially exchange address information through the
-   Rendezvous server S, they include their own IP addresses and port
-   numbers as "observed" by themselves, as well as their public
-   endpoints as observed by S.  The clients then simultaneously start
-   sending packets to each other at each of the alternative addresses
-   they know about, and use the first address that leads to successful
-   communication.  If the two clients are behind the same NAT, as is the
-   case in figure 4 above, then the packets directed to their private
-   endpoints (as attempted using P2P session-try2) are likely to arrive
-   first, resulting in a direct communication channel not involving the
-   NAT.  If the two clients are behind different NATs, then the packets
-   directed to their private endpoints will fail to reach each other at
-   all, but the clients will hopefully establish connectivity using
-   their respective public endpoints.  It is important that these
-   packets be authenticated in some way, however, since in the case of
-   different NATs it is entirely possible for A's messages directed at
-   B's private endpoint to reach some other, unrelated node on A's
-   private network, or vice versa.
+   A와 B가 처음에 Rendezvous 서버 S를 통해 주소 정보를 교환할 때 자신이 "관찰한" IP
+   주소와 포트 번호는 물론 S가 관찰한 공인 엔드포인트도 포함합니다. 그런 다음 클라이언트는
+   동시에 각 서버에 패킷을 보내기 시작합니다. 알고 있는 각각의 대체 주소에서 다른 주소를
+   선택하고 성공적인 통신으로 연결되는 첫 번째 주소를 사용합니다. 위의 그림 4와 같이 두
+   클라이언트가 동일한 NAT 뒤에 있는 경우 사설 엔드포인트로 향하는 패킷(P2P session-try
+   를 사용하여 시도한 것처럼)이 먼저 도착할 가능성이 높으므로 NAT를 포함하지 않는 직접 통신
+   채널이 생성됩니다. 두 클라이언트가 서로 다른 NAT 뒤에 있는 경우 사설 엔드포인트로 향하는
+   패킷은 서로에게 전혀 도달하지 못하지만 클라이언트는 각자의 공인 엔드포인트를 사용하여 연결을
+   설정하기를 바랍니다. 그러나 NAT가 서로 다른 경우 B의 사설 엔드포인트로 향하는 A의 메시지가
+   A의 사설 네트워크에서 관련 없는 다른 노드에 도달하거나 그 반대의 경우가 전적으로 가능하기
+   때문에 이러한 패킷이 어떤 식으로든 인증되는 것이 중요합니다.
 
-   The [ICE] protocol employs this technique effectively, in that
-   multiple candidate endpoints (both private and public) are
-   communicated between peering end hosts during an offer/answer
-   exchange.  Endpoints that offer the most efficient end-to-end
-   connection(s) are selected eventually for end-to-end data transfer.
+   [ICE] 프로토콜은 제안/응답 교환 중에 피어링 엔드 호스트 간에 여러 후보 엔드포인트(사설 및
+   공인 모두)가 통신한다는 점에서 이 기술을 효과적으로 사용합니다. 가장 효율적인 종단 간 연결을
+   제공하는 엔드포인트는 결국 종단 간 데이터 전송을 위해 선택됩니다.
 
-3.3.3.  Peers Separated by Multiple NATs
+3.3.3.  Peers Separated by Multiple NATs (여러 NAT로 분리된 피어)
 
-   In some topologies involving multiple NAT devices, it is not possible
-   for two clients to establish an "optimal" P2P route between them
-   without specific knowledge of the topology.  Consider for example the
-   scenario in figure 5.
+   여러 NAT 장치가 포함된 일부 토폴로지에서는 두 클라이언트가 토폴로지에 대한 특정 지식 없이
+   그들 사이에 "최적" P2P 경로를 설정하는 것이 불가능합니다. 예를 들어 그림 5의 시나리오를
+   고려하십시오.
 
                      Registry and Discovery Combined
                            with Limited Relay
@@ -723,100 +591,68 @@ Table of Contents
    Client A                                                  Client B
    10.0.0.1:1234                                        10.1.1.3:1234
 
-      Figure 5: Use of Hairpinning in setting up direct communication
+      그림 5: 직접 통신 설정에서 Hairpinning 사용
 
-   Suppose NAT X is an EIM-NAT deployed by a large Internet Service
-   Provider (ISP) to multiplex many customers onto a few public IP
-   addresses, and NATs A and B are small consumer NAT gateways deployed
-   independently by two of the ISP's customers to multiplex their
-   private home networks onto their respective ISP-provided IP
-   addresses.  Only server S and NAT X have globally routable IP
-   addresses; the "public" IP addresses used by NAT A and NAT B are
-   actually private to the ISP's addressing realm, while client A's and
-   B's addresses in turn are private to the addressing realms of NATs A
-   and B, respectively.  Just as in the previous section, server S is
-   used for the purposes of registration, discovery, and limited relay.
-   Peer hosts use the server to relay connection initiation control
-   messages, instead of all end-to-end messages.
+   NAT X가 다수의 고객을 몇 개의 공용 IP 주소로 멀티플렉싱하기 위해 대규모 인터넷 서비스
+   공급자(ISP)에 의해 배포된 EIM-NAT이고 NAT A와 B가 두 ISP 고객이 독립적으로 배포한
+   소규모 소비자 NAT 게이트웨이라고 가정합니다. 사설 홈 네트워크를 각각의 ISP 제공 IP 주소에
+   연결합니다. 서버 S와 NAT X에만 전역적으로 라우팅 가능한 IP 주소가 있습니다. NAT A와
+   NAT B에서 사용하는 "공인" IP 주소는 실제로 ISP의 주소 지정 영역에 사적인 반면 클라이언트
+   A와 B의 주소는 각각 NAT A와 B의 주소 지정 영역에 사설입니다. 이전 섹션에서와 마찬가지로
+   서버 S는 등록, 검색 및 제한 릴레이 목적으로 사용됩니다. 피어 호스트는 모든 종단 간 메시지
+   대신 서버를 사용하여 연결 시작 제어 메시지를 릴레이합니다.
 
-   Now suppose clients A and B attempt to establish a direct peer-to-
-   peer UDP connection.  The optimal method would be for client A to
-   send messages to client B's public address at NAT B,
-   192.168.1.2:31000 in the ISP's addressing realm, and for client B to
-   send messages to A's public address at NAT B, namely,
-   192.168.1.1:30000.  Unfortunately, A and B have no way to learn these
-   addresses, because server S only sees the "global" public endpoints
-   of the clients, 192.0.2.1:62000 and 192.0.2.1:62001.  Even if A and B
-   had some way to learn these addresses, there is still no guarantee
-   that they would be usable because the address assignments in the
-   ISP's private addressing realm might conflict with unrelated address
-   assignments in the clients' private realms.  The clients therefore
-   have no choice but to use their global public endpoints as seen by S
-   for their P2P communication, and rely on NAT X to provide
-   hairpinning.
+   이제 클라이언트 A와 B가 직접 P2P UDP 연결을 설정하려고 시도한다고 가정합니다. 최적의
+   방법은 클라이언트 A가 ISP의 주소 지정 영역에서 NAT B에 있는 클라이언트 B의 공인 주소
+   (192.168.1.2:31000)로 메시지를 보내고 클라이언트 B가 NAT B에 있는 A의 공용 주소, 즉
+   192.168.1.1:30000로 메시지를 보내는 것입니다. 불행하게도 A와 B는 이러한 주소를 알 수
+   있는 방법이 없습니다. 왜냐하면 서버 S는 클라이언트의 "전역" 공인 엔드포인트인
+   192.0.2.1:62000 및 192.0.2.1:62001만 보기 때문입니다. A와 B가 이러한 주소를 알 수
+   있는 방법이 있더라도 ISP의 사설 주소 지정 영역의 주소 할당이 클라이언트의 사설 영역의
+   관련되지 않은 주소 할당과 충돌할 수 있기 때문에 여전히 사용할 수 있다는 보장이 없습니다.
+   따라서 클라이언트는 P2P 통신을 위해 S에서 볼 수 있는 글로벌 공인 엔드포인트를 사용하고
+   NAT X를 사용하여 Hairpinning을 제공할 수밖에 없습니다.
 
-3.4.  TCP Hole Punching
+3.4.  TCP Hole Punching (TCP 홀 펀칭)
 
-   In this section, we will discuss the "TCP hole punching" technique
-   used for establishing direct TCP connection between a pair of nodes
-   that are both behind EIM-NAT devices.  Just as with UDP hole
-   punching, TCP hole punching relies on the properties of EIM-NATs to
-   allow appropriately designed peer-to-peer applications to "punch
-   holes" through the NAT device and establish direct connectivity with
-   each other, even when both communicating hosts lie behind NAT
-   devices.  This technique is also known sometimes as "Simultaneous TCP
-   Open".
+   이 섹션에서는 EIM-NAT 장치 뒤에 있는 한 쌍의 노드 간에 직접 TCP 연결을 설정하는 데
+   사용되는 "TCP 홀 펀칭" 기술에 대해 설명합니다. UDP 홀 펀칭과 마찬가지로 TCP 홀 펀칭은
+   적절하게 설계된 P2P 애플리케이션이 NAT 장치를 통해 두 통신 호스트가 모두 NAT 장치 뒤에
+   있는 경우에도 "구멍을 뚫고" 서로 직접 연결을 설정할 수 있도록 EIM-NAT의 속성에 의존합니다.
+   이 기술은 "Simultaneous TCP Open"라고도 합니다.
 
-   Most TCP sessions start with one endpoint sending a SYN packet, to
-   which the other party responds with a SYN-ACK packet.  It is
-   permissible, however, for two endpoints to start a TCP session by
-   simultaneously sending each other SYN packets, to which each party
-   subsequently responds with a separate ACK.  This procedure is known
-   as "Simultaneous TCP Open" technique and may be found in figure 6 of
-   the original TCP specification ([TCP]).  However, "Simultaneous TCP
-   Open" is not implemented correctly on many systems, including NAT
-   devices.
+   대부분의 TCP 세션은 한 엔드포인트가 SYN 패킷을 보내는 것으로 시작하고 다른 쪽은 SYN-ACK
+   패킷으로 응답합니다. 그러나 두 엔드포인트가 동시에 서로에게 SYN 패킷을 전송하여 TCP 세션을
+   시작하는 것은 허용되며, 각 당사자는 이후에 별도의 ACK로 응답합니다. 이 절차는
+   "Simultaneous TCP Open" 기술로 알려져 있으며 원래 TCP 사양([TCP])의 그림 6에서
+   찾을 수 있습니다. 그러나 "Simultaneous TCP Open"은 NAT 장치를 포함한 많은 시스템에서
+   올바르게 구현되지 않습니다.
 
-   If a NAT device receives a TCP SYN packet from outside the private
-   network attempting to initiate an incoming TCP connection, the NAT
-   device will normally reject the connection attempt by either dropping
-   the SYN packet or sending back a TCP RST (connection reset) packet.
-   In the case of SYN timeout or connection reset, the application
-   endpoint will continue to resend a SYN packet, until the peer does
-   the same from its end.
+   NAT 장치가 들어오는 TCP 연결을 시작하려고 시도하는 사설 네트워크 외부에서 TCP SYN 패킷을
+   수신하는 경우 NAT 장치는 일반적으로 SYN 패킷을 삭제하거나 TCP RST(연결 재설정) 패킷을 다시
+   전송하여 연결 시도를 거부합니다. SYN 시간 초과 또는 연결 재설정의 경우 응용 프로그램
+   엔드포인트는 피어가 끝에서 동일한 작업을 수행할 때까지 계속해서 SYN 패킷을 다시 보냅니다.
 
-   Let us consider the case where a NAT device supports "Simultaneous
-   TCP Open" sessions.  When a SYN packet arrives with source and
-   destination endpoints that correspond to a TCP session that the NAT
-   device believes is already active, then the NAT device would allow
-   the packet to pass through.  In particular, if the NAT device has
-   just recently seen and transmitted an outgoing SYN packet with the
-   same address and port numbers, then it will consider the session
-   active and allow the incoming SYN through.  If clients A and B can
-   each initiate an outgoing TCP connection with the other client timed
-   so that each client's outgoing SYN passes through its local NAT
-   device before either SYN reaches the opposite NAT device, then a
-   working peer-to-peer TCP connection will result.
+   NAT 장치가 "Simultaneous TCP Open" 세션을 지원하는 경우를 고려해 보겠습니다. NAT
+   장치가 이미 활성화되었다고 믿는 TCP 세션에 해당하는 소스 및 대상 엔드포인트와 함께 SYN
+   패킷이 도착하면 NAT 장치는 패킷 통과를 허용합니다. 특히, NAT 장치가 최근에 동일한 주소와
+   포트 번호로 나가는 SYN 패킷을 보고 전송한 경우 세션이 활성화된 것으로 간주하고 들어오는
+   SYN을 허용합니다. 클라이언트 A와 B가 각 클라이언트의 발신 SYN이 상대 NAT 장치에 도달하기
+   전에 로컬 NAT 장치를 통과하도록 시간에 따라 다른 클라이언트와 발신 TCP 연결을 시작할 수
+   있는 경우 peer-to-peer TCP 연결이 작동합니다.
 
-   This technique may not always work reliably for the following
-   reason(s).  If either node's SYN packet arrives at the remote NAT
-   device too quickly (before the peering node had a chance to send the
-   SYN packet), then the remote NAT device may either drop the SYN
-   packet or reject the SYN with a RST packet.  This could cause the
-   local NAT device in turn to close the new NAT session immediately or
-   initiate end-of-session timeout (refer to Section 2.6 of [NAT-TERM])
-   so as to close the NAT session at the end of the timeout.  Even as
-   both peering nodes simultaneously initiate continued SYN
-   retransmission attempts, some remote NAT devices might not let the
-   incoming SYNs through if the NAT session is in an end-of-session
-   timeout state.  This in turn would prevent the TCP connection from
-   being established.
+   이 기술은 다음과 같은 이유로 항상 안정적으로 작동하지 않을 수 있습니다. 어느 한 노드의 SYN
+   패킷이 원격 NAT 장치에 너무 빨리 도착하면(피어링 노드가 SYN 패킷을 보낼 기회를 갖기 전에)
+   원격 NAT 장치는 SYN 패킷을 삭제하거나 RST 패킷으로 SYN을 거부할 수 있습니다. 이로 인해
+   로컬 NAT 장치가 새 NAT 세션을 즉시 닫거나 세션 종료 시간 초과([NAT-TERM]의 섹션 2.6
+   참조)를 시작하여 시간 초과 시 NAT 세션을 닫을 수 있습니다. 두 피어링 노드가 동시에 계속되는
+   SYN 재전송 시도를 시작하더라도 일부 원격 NAT 장치는 NAT 세션이 세션 종료 시간 초과 상태인
+   경우 들어오는 SYN을 허용하지 않을 수 있습니다. 이렇게 하면 TCP 연결이 설정되지 않습니다.
 
-   In reality, the majority of NAT devices (more than 50%) support
-   Endpoint-Independent Mapping and do not send ICMP errors or RSTs in
-   response to unsolicited incoming SYNs.  As a result, the Simultaneous
-   TCP Open technique does work across NAT devices in the majority of
-   TCP connection attempts ([P2P-NAT], [TCP-CHARACT]).
+   실제로 대부분의 NAT 장치(50% 이상)는 엔드포인트 독립적 매핑을 지원하고 원치 않는 수신
+   SYN에 대한 응답으로 ICMP 오류 또는 RST를 보내지 않습니다. 결과적으로 Simultaneous TCP
+   Open 기술은 대부분의 TCP 연결 시도([P2P-NAT], [TCP-CHARACT])에서 NAT 장치 간에
+   작동합니다.
 
 3.5.  UDP Port Number Prediction
 
