@@ -629,8 +629,8 @@ Status of This Memo
    올바르게 구현되지 않습니다.
 
    NAT 장치가 들어오는 TCP 연결을 시작하려고 시도하는 사설 네트워크 외부에서 TCP SYN 패킷을
-   수신하는 경우 NAT 장치는 일반적으로 SYN 패킷을 삭제하거나 TCP RST(연결 재설정) 패킷을 다시
-   전송하여 연결 시도를 거부합니다. SYN 시간 초과 또는 연결 재설정의 경우 응용 프로그램
+   수신하는 경우 NAT 장치는 일반적으로 SYN 패킷을 삭제하거나 TCP RST(연결 재설정) 패킷을
+   다시 전송하여 연결 시도를 거부합니다. SYN 시간 초과 또는 연결 재설정의 경우 응용 프로그램
    엔드포인트는 피어가 끝에서 동일한 작업을 수행할 때까지 계속해서 SYN 패킷을 다시 보냅니다.
 
    NAT 장치가 "Simultaneous TCP Open" 세션을 지원하는 경우를 고려해 보겠습니다. NAT
@@ -654,24 +654,18 @@ Status of This Memo
    Open 기술은 대부분의 TCP 연결 시도([P2P-NAT], [TCP-CHARACT])에서 NAT 장치 간에
    작동합니다.
 
-3.5.  UDP Port Number Prediction
+3.5.  UDP Port Number Prediction (UDP 포트 번호 예측)
 
-   A variant of the UDP hole punching technique exists that allows
-   peer-to-peer UDP sessions to be created in the presence of some NATs
-   implementing Endpoint-Dependent Mapping.  This method is sometimes
-   called the "N+1" technique [BIDIR] and is explored in detail by
-   Takeda [SYM-STUN].  The method works by analyzing the behavior of the
-   NAT and attempting to predict the public port numbers it will assign
-   to future sessions.  The public ports assigned are often predictable
-   because most NATs assign mapping ports in sequence.
+   엔드포인트 종속 매핑을 구현하는 일부 NAT가 있는 경우 P2P UDP 세션을 만들 수 있는 UDP 홀
+   펀칭 기술의 변형이 있습니다. 이 방법은 "N+1" 기법[BIDIR]이라고도 하며 Takeda
+   [SYM-STUN]가 자세히 탐구합니다. 이 방법은 NAT의 동작을 분석하고 향후 세션에 할당할 공인
+   포트 번호를 예측하는 방식으로 작동합니다. 할당된 공인 포트는 대부분의 NAT가 순서대로 매핑
+   포트를 할당하기 때문에 예측 가능한 경우가 많습니다.
 
-   Consider the scenario in figure 6.  Two clients, A and B, each behind
-   a separate NAT, have established separate UDP connections with
-   rendezvous server S.  Rendezvous server S has a publicly addressable
-   IP address and is used for the purposes of registration and
-   discovery.  Hosts behind a NAT register their endpoints with the
-   server.  Peer hosts discover endpoints of the hosts behind NAT using
-   the server.
+   그림 6의 시나리오를 고려하세요. 각각 별도의 NAT 뒤에 있는 두 클라이언트 A와 B는 랑데뷰 서버
+   S와 별도의 UDP 연결을 설정했습니다. 랑데뷰 서버 S에는 공인 주소 지정이 가능한 IP 주소가
+   있으며 등록 및 검색 목적으로 사용됩니다. NAT 뒤의 호스트는 엔드포인트를 서버에 등록합니다.
+   피어 호스트는 서버를 사용하여 NAT 뒤에 있는 호스트의 엔드포인트를 검색합니다.
 
                           Registry and Discovery
                                  Server S
@@ -706,63 +700,45 @@ Status of This Memo
      Client A                                                 Client B
      10.0.0.1:1234                                        10.1.1.3:1234
 
-        Figure 6: UDP Port Prediction to set up direct connectivity
+        그림 6: 직접 연결을 설정하기 위한 UDP 포트 예측
 
-   NAT A has assigned its UDP port 62000 to the communication session
-   between A and S, and NAT B has assigned its port 31000 to the session
-   between B and S.  By communicating with server S, A and B learn each
-   other's public endpoints as observed by S.  Client A now starts
-   sending UDP messages to port 31001 at address 192.0.2.254 (note the
-   port number increment), and client B simultaneously starts sending
-   messages to port 62001 at address 192.0.2.1.  If NATs A and B assign
-   port numbers to new sessions sequentially, and if not much time has
-   passed since the A-S and B-S sessions were initiated, then a working
-   bidirectional communication channel between A and B should result.
-   A's messages to B cause NAT A to open up a new session, to which NAT
-   A will (hopefully) assign public port number 62001, because 62001 is
-   next in sequence after the port number 62000 it previously assigned
-   to the session between A and S.  Similarly, B's messages to A will
-   cause NAT B to open a new session, to which it will (hopefully)
-   assign port number 31001.  If both clients have correctly guessed the
-   port numbers each NAT assigns to the new sessions, then a
-   bidirectional UDP communication channel will have been established.
+   NAT A는 UDP 포트 62000을 A와 S 사이의 통신 세션에 할당했고 NAT B는 포트 31000을 B와
+   S 사이의 세션에 할당했습니다. 서버 S와 통신함으로써 A와 B는 S에서 관찰한 대로 서로의 공인
+   엔드포인트를 학습합니다. 이제 클라이언트 A는 주소 192.0.2.254의 포트 31001로 UDP
+   메시지를 보내기 시작하고(포트 번호 증가에 주의) 클라이언트 B는 동시에 주소 192.0.2.1의 포트
+   62001로 메시지를 보내기 시작합니다. NAT A와 B가 순차적으로 새 세션에 포트 번호를 할당하고
+   A-S 및 B-S 세션이 시작된 후 많은 시간이 경과하지 않은 경우 A와 B 사이에 작동하는 양방향
+   통신 채널이 생성되어야 합니다. B에 대한 A의 메시지는 NAT A가 새 세션을 열도록 하며, NAT
+   A는 공인 포트 번호 62001을 할당할 것입니다. 왜냐하면 62001은 이전에 A와 S 사이의 세션에
+   할당한 포트 번호 62000 다음 순서이기 때문입니다. 마찬가지로 A에 대한 B의 메시지는 NAT B가
+   새 세션을 열도록 하며 여기에 포트 번호 31001을 할당합니다. 두 클라이언트가 각 NAT가 새
+   세션에 할당하는 포트 번호를 올바르게 추측했다면 양방향 UDP 통신 채널이 설정된 것입니다.
 
-   Clearly, there are many things that can cause this trick to fail.  If
-   the predicted port number at either NAT already happens to be in use
-   by an unrelated session, then the NAT will skip over that port number
-   and the connection attempt will fail.  If either NAT sometimes or
-   always chooses port numbers non-sequentially, then the trick will
-   fail.  If a different client behind NAT A (or B, respectively) opens
-   up a new outgoing UDP connection to any external destination after A
-   (B) establishes its connection with S but before sending its first
-   message to B (A), then the unrelated client will inadvertently
-   "steal" the desired port number.  This trick is therefore much less
-   likely to work when either NAT involved is under load.
+   분명히 이 트릭이 실패할 수 있는 많은 요인이 있습니다. 두 NAT의 예상 포트 번호가 관련 없는
+   세션에서 이미 사용 중인 경우 NAT는 해당 포트 번호를 건너뛰고 연결 시도가 실패합니다. NAT가
+   때때로 또는 항상 비순차적으로 포트 번호를 선택하면 트릭이 실패합니다. NAT A(또는 B) 뒤에
+   있는 다른 클라이언트가 A(B)가 S와 연결을 설정한 후 B(A)에 첫 번째 메시지를 보내기 전에 외부
+   대상으로 나가는 새 UDP 연결을 열면 관련 없는 클라이언트는 실수로 원하는 포트 번호를
+   "도용"합니다. 따라서 이 트릭은 관련된 NAT 중 하나가 부하 상태일 때 작동할 가능성이 훨씬
+   적습니다.
 
-   Since in practice an application implementing this trick would still
-   need to work even when one of the NATs employs Endpoint-Independent
-   Mapping, the application would need to detect beforehand what kind of
-   NAT is involved on either end and modify its behavior accordingly,
-   increasing the complexity of the algorithm and the general
-   brittleness of the network.  Finally, port number prediction has
-   little chance of working if either client is behind two or more
-   levels of NAT and the NAT(s) closest to the client employs Endpoint-
-   Dependent Mapping.
+   실제로 이 트릭을 구현하는 애플리케이션은 NAT 중 하나가 엔드포인트 Endpoint-Independent
+   매핑을 사용하는 경우에도 여전히 작동해야 하므로 애플리케이션은 어느 쪽 끝에 어떤 종류의 NAT가
+   관련되어 있는지 미리 감지하고 그에 따라 동작을 수정해야 하므로 알고리즘의 복잡성과 네트워크의
+   일반적인 취약성이 증가합니다. 마지막으로 포트 번호 예측은 클라이언트가 둘 이상의 NAT 수준 뒤에
+   있고 클라이언트에 가장 가까운 NAT가 Endpoint-Independent 매핑을 사용하는 경우 작동할
+   가능성이 거의 없습니다.
 
-3.6.  TCP Port Number Prediction
+3.6.  TCP Port Number Prediction (TCP 포트 번호 예측)
 
-   This is a variant of the "TCP Hole Punching" technique to set up
-   direct peer-to-peer TCP sessions across NATs employing Address-
-   Dependent Mapping.
+   이는 Address-Dependent 매핑을 사용하는 NAT에서 직접 P2P TCP 세션을 설정하는 "TCP 홀
+   펀칭" 기술의 변형입니다.
 
-   Unfortunately, this trick may be even more fragile and timing-
-   sensitive than the UDP port number prediction trick described
-   earlier.  First, predicting the public port a NAT would assign could
-   be wrong.  In addition, if either client's SYN arrives at the
-   opposite NAT device too quickly, then the remote NAT device may
-   reject the SYN with a RST packet, causing the local NAT device in
-   turn to close the new session and make future SYN retransmission
-   attempts using the same port numbers futile.
+   불행하게도 이 트릭은 앞에서 설명한 UDP 포트 번호 예측 트릭보다 훨씬 취약하고 타이밍에 민감할
+   수 있습니다. 첫째, NAT가 할당할 공인 포트를 예측하는 것이 잘못되었을 수 있습니다. 또한
+   클라이언트의 SYN이 상대 NAT 장치에 너무 빨리 도착하면 원격 NAT 장치가 RST 패킷으로 SYN을
+   거부할 수 있으므로 로컬 NAT 장치가 차례로 새 세션을 닫고 동일한 포트 번호를 사용하는 향후
+   SYN 재전송 시도가 무의미해집니다.
 
 4.  Recent Work on NAT Traversal
 
