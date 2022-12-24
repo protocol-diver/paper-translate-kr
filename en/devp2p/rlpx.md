@@ -1,32 +1,29 @@
-# The RLPx Transport Protocol
+# The RLPx Transport Protocol (RLPx 전송 프로토콜)
 
-This specification defines the RLPx transport protocol, a TCP-based transport protocol
-used for communication among Ethereum nodes. The protocol carries encrypted messages
-belonging to one or more 'capabilities' which are negotiated during connection
-establishment. RLPx is named after the [RLP] serialization format. The name is not an
-acronym and has no particular meaning.
+이 사양은 이더리움 노드 간의 통신에 사용되는 TCP 기반 전송 프로토콜인 RLPx 전송 프로토콜을 정의합니다. 프로토콜은
+연결 설정 중에 협상되는 하나 이상의 '기능'에 속하는 암호화된 메시지를 전달합니다. RLPx는 [RLP] 직렬화 형식의 이름을
+따서 명명되었습니다. 이름은 약어가 아니며 특별한 의미가 없습니다.
 
-The current protocol version is **5**. You can find a list of changes in past versions at
-the end of this document.
+현재 프로토콜 버전은 **5**입니다. 이 문서의 끝에서 이전 버전의 변경 사항 목록을 찾을 수 있습니다.
 
-## Notation
+## Notation (표기법)
 
 `X || Y`\
-    denotes concatenation of X and Y.\
+    X와 Y의 연결을 나타냅니다.\
 `X ^ Y`\
-    is byte-wise XOR of X and Y.\
+    X와 Y의 바이트별 XOR입니다.\
 `X[:N]`\
-    denotes an N-byte prefix of X.\
+    X의 N바이트 접두사를 나타냅니다.\
 `[X, Y, Z, ...]`\
-    denotes recursive encoding as an RLP list.\
+    재귀 인코딩을 RLP 목록으로 나타냅니다.\
 `keccak256(MESSAGE)`\
-    is the Keccak256 hash function as used by Ethereum.\
+    Ethereum에서 사용하는 Keccak256 해시 함수입니다.\
 `ecies.encrypt(PUBKEY, MESSAGE, AUTHDATA)`\
-    is the asymmetric authenticated encryption function as used by RLPx.\
-    AUTHDATA is authenticated data which is not part of the resulting ciphertext,\
-    but written to HMAC-256 before generating the message tag.\
+    RLPx에서 사용하는 비대칭 인증 암호화 기능입니다.\
+    AUTHDATA는 결과 암호문의 일부가 아닌 인증된 데이터입니다,\
+    그러나 메시지 태그를 생성하기 전에 HMAC-256에 기록됩니다.\
 `ecdh.agree(PRIVKEY, PUBKEY)`\
-    is elliptic curve Diffie-Hellman key agreement between PRIVKEY and PUBKEY.
+    PRIVKEY와 PUBKEY 간의 타원 곡선 Diffie-Hellman 키 합의입니다.
 
 ## ECIES Encryption
 
