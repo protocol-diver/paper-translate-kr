@@ -740,60 +740,46 @@ Status of This Memo
    거부할 수 있으므로 로컬 NAT 장치가 차례로 새 세션을 닫고 동일한 포트 번호를 사용하는 향후
    SYN 재전송 시도가 무의미해집니다.
 
-4.  Recent Work on NAT Traversal
+4.  Recent Work on NAT Traversal (NAT 순회에 대한 최근 작업)
 
-   [P2P-NAT] has a detailed discussion on the UDP and TCP hole punching
-   techniques for NAT traversal.  [P2P-NAT] also lists empirical results
-   from running a test program [NAT-CHECK] across a number of commercial
-   NAT devices.  The results indicate that UDP hole punching works
-   widely on more than 80% of the NAT devices, whereas TCP hole punching
-   works on just over 60% of the NAT devices tested.  The results also
-   indicate that TCP or UDP hairpinning is not yet widely available on
-   commercial NAT devices, as less than 25% of the devices passed the
-   tests ([NAT-CHECK]) for Hairpinning.  Readers may also refer to
-   [JENN-RESULT] and [SAIK-RESULT] for empirical test results in
-   classifying publicly available NAT devices.  [JENN-RESULT] provides
-   results of NAT classification using tests spanning across different
-   IP protocols.  [SAIK-RESULT] focuses exclusively on classifying NAT
-   devices by the TCP behavioral characteristics.
+   [P2P-NAT]는 NAT 순회를 위한 UDP 및 TCP 홀 펀칭 기술에 대해 자세히 설명합니다.
+   [P2P-NAT]는 또한 여러 상용 NAT 장치에서 테스트 프로그램 [NAT-CHECK]을 실행한 경험적
+   결과를 나열합니다. 결과는 UDP 홀 펀칭이 NAT 장치의 80% 이상에서 광범위하게 작동하는 반면
+   TCP 홀 펀칭은 테스트된 NAT 장치의 60% 이상에서 작동함을 나타냅니다. 결과는 또한 상용 NAT
+   장치에서 TCP 또는 UDP 헤어피닝이 아직 널리 사용되지 않는다는 것을 나타냅니다. 장치의 25%
+   미만이 헤어피닝에 대한 테스트([NAT-CHECK])를 통과했습니다. 공개적으로 사용 가능한 NAT
+   장치를 분류하는 경험적 테스트 결과는 [JENN-RESULT] 및 [SAIK-RESULT]를 참조할 수도
+   있습니다. [JENN-RESULT]는 서로 다른 IP 프로토콜에 걸친 테스트를 사용하여 NAT 분류
+   결과를 제공합니다. [SAIK-RESULT]는 TCP 동작 특성에 따라 NAT 장치를 분류하는 데에만
+   집중합니다.
 
-   [TCP-CHARACT] and [NAT-BLASTER] focus on TCP hole punching, exploring
-   and comparing several alternative approaches.  [NAT-BLASTER] takes an
-   analytical approach, analyzing different cases of observed NAT
-   behavior and ways applications might address them.  [TCP-CHARACT]
-   adopts a more empirical approach, measuring the commonality of
-   different types of NAT behavior relevant to TCP hole punching.  This
-   work finds that using more sophisticated techniques than those used
-   in [P2P-NAT], up to 88% of currently deployed NATs can support TCP
-   hole punching.
+   [TCP-CHARACT] 및 [NAT-BLASTER]는 TCP 홀 펀칭에 중점을 두고 몇 가지 대체 접근
+   방식을 탐색하고 비교합니다. [NAT-BLASTER]는 관찰된 NAT 동작의 다양한 사례와
+   애플리케이션이 이를 처리할 수 있는 방법을 분석하는 분석적 접근 방식을 취합니다.
+   [TCP-CHARACT]는 TCP 홀 펀칭과 관련된 다양한 유형의 NAT 동작의 공통성을 측정하는 보다
+   경험적인 접근 방식을 채택합니다. 이 연구는 [P2P-NAT]에서 사용된 것보다 더 정교한 기술을
+   사용하여 현재 배포된 NAT의 최대 88%가 TCP 홀 펀칭을 지원할 수 있음을 발견했습니다.
 
-   [TEREDO] is a NAT traversal service that uses relay technology to
-   connect IPv4 nodes behind NAT devices to IPv6 nodes, external to the
-   NAT devices.  [TEREDO] provides for peer communication across NAT
-   devices by tunneling packets over UDP, across the NAT device(s) to a
-   relay node.  Teredo relays act as Rendezvous servers to relay traffic
-   from private IPv4 nodes to the nodes in the external realm and vice
-   versa.
+   [TEREDO]는 릴레이 기술을 사용하여 NAT 장치 뒤의 IPv4 노드를 NAT 장치 외부의 IPv6
+   노드에 연결하는 NAT 순회 서비스입니다. [TEREDO]는 UDP를 통해 NAT 장치를 거쳐 릴레이
+   노드로 패킷을 터널링하여 NAT 장치를 통한 피어 통신을 제공합니다. Teredo 릴레이는 사설
+   IPv4 노드에서 외부 영역의 노드로 또는 그 반대로 트래픽을 릴레이하는 Rendezvous 서버
+   역할을 합니다.
 
-   [ICE] is a NAT traversal protocol for setting up media sessions
-   between peer nodes for a class of multi-media applications.  [ICE]
-   requires peering nodes to run the Simple Traversal of the UDP
-   Protocol through NAT (STUN) protocol [STUN] on the same port number
-   used to terminate media session(s).  Applications that use signaling
-   protocols such as SIP ([SIP]) may embed the NAT traversal attributes
-   for the media session within the signaling sessions and use the
-   offer/answer type of exchange between peer nodes to set up end-to-end
-   media session(s) across NAT devices.  [ICE-TCP] is an extension of
-   ICE for TCP-based media sessions.
+   [ICE]는 멀티미디어 애플리케이션 클래스의 피어 노드 간에 미디어 세션을 설정하기 위한 NAT
+   순회 프로토콜입니다. [ICE]는 피어링 노드가 미디어 세션을 종료하는 데 사용되는 동일한 포트
+   번호에서 NAT(STUN) 프로토콜[STUN]을 통해 UDP 프로토콜의 단순 순회를 실행하도록
+   요구합니다. SIP([SIP])와 같은 시그널링 프로토콜을 사용하는 애플리케이션은 시그널링 세션
+   내 미디어 세션에 대한 NAT 순회 속성을 내장하고 피어 노드 간에 교환의 제공/응답 유형을
+   사용하여 NAT 장치에서 종단간 미디어 세션을 설정할 수 있습니다. [ICE-TCP]는 TCP 기반
+   미디어 세션을 위한 ICE의 확장입니다.
 
-   A number of online gaming and media-over-IP applications, including
-   Instant Messaging applications, use the techniques described in the
-   document for peer-to-peer connection establishment.  Some
-   applications may use multiple distinct rendezvous servers for
-   registration, discovery, and relay functions for load balancing,
-   among other reasons.  For example, the well-known media-over-IP
-   application "Skype" uses a central public server for login and
-   different public servers for end-to-end relay function.
+   Instant Messaging 응용 프로그램을 포함하여 많은 온라인 게임 및 Media-over-IP 응용
+   프로그램은 피어 투 피어 연결 설정을 위해 문서에 설명된 기술을 사용합니다. 일부 애플리케이션은
+   등록, 검색, 로드 밸런싱을 위한 릴레이 기능 등을 위해 여러 개의 서로 다른 랑데부 서버를
+   사용할 수 있습니다. 예를 들어, 잘 알려진 media-over-IP 응용 프로그램 "Skype"는
+   로그인을 위해 중앙 공용 서버를 사용하고 종단 간 릴레이 기능을 위해 다른 공용 서버를
+   사용합니다.
 
 5.  Summary of Observations
 
