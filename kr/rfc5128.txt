@@ -859,103 +859,74 @@ Status of This Memo
    인증된 양방향 통신을 성공적으로 설정할 때까지 의심스러운 IP 주소라고 가정하도록 조언할 수
    있습니다.
 
-6.2.  Denial-of-Service Attacks
+6.2.  Denial-of-Service Attacks (서비스 거부 공격)
 
-   Applications and the public servers that support them must protect
-   themselves against denial-of-service attacks, and ensure that they
-   cannot be used by an attacker to mount denial-of-service attacks
-   against other targets.  To protect themselves, applications and
-   servers must avoid taking any action requiring significant local
-   processing or storage resources until authenticated two-way
-   communication is established.  To avoid being used as a tool for
-   denial-of-service attacks, applications and servers must minimize the
-   amount and rate of traffic they send to any newly discovered IP
-   address until after authenticated two-way communication is
-   established with the intended target.
+   애플리케이션과 이를 지원하는 공인 서버는 서비스 거부 공격으로부터 스스로를 보호해야 하며
+   공격자가 다른 대상에 대한 서비스 거부 공격을 수행하는 데 사용할 수 없도록 해야 합니다.
+   스스로를 보호하기 위해 애플리케이션과 서버는 인증된 양방향 통신이 설정될 때까지 중요한 로컬
+   처리 또는 스토리지 리소스가 필요한 조치를 취하지 않아야 합니다. 서비스 거부 공격의 도구로
+   사용되는 것을 방지하려면 응용 프로그램과 서버는 의도한 대상과 인증된 양방향 통신이 설정될
+   때까지 새로 검색된 IP 주소로 보내는 트래픽의 양과 속도를 최소화해야 합니다.
 
-   For example, applications that register with a public rendezvous
-   server can claim to have any private IP address, or perhaps multiple
-   IP addresses.  A well-connected host or group of hosts that can
-   collectively attract a substantial volume of connection attempts
-   (e.g., by offering to serve popular content) could mount a denial-
-   of-service attack on a target host C simply by including C's IP
-   address in its own list of IP addresses it registers with the
-   rendezvous server.  There is no way the rendezvous server can verify
-   the IP addresses, since they could well be legitimate private network
-   addresses useful to other hosts for establishing network-local
-   communication.  The application protocol must therefore be designed
-   to size- and rate-limit traffic to unverified IP addresses in order
-   to avoid the potential damage such a concentration effect could
-   cause.
+   예를 들어 공인 랑데부 서버에 등록하는 응용 프로그램은 사설 IP 주소 또는 여러 IP 주소를
+   가지고 있다고 주장할 수 있습니다. 상당한 양의 연결 시도를 집단적으로 유인할 수 있는 잘
+   연결된 호스트 또는 호스트 그룹(예: 인기 있는 콘텐츠 제공을 제공함으로써)은 대상 호스트 C에
+   단순히 C의 IP 주소를 포함함으로써 서비스 거부 공격을 실행할 수 있습니다. 랑데부 서버에
+   등록하는 자체 IP 주소 목록입니다. 랑데부 서버가 IP 주소를 확인할 수 있는 방법은 없습니다.
+   IP 주소는 다른 호스트가 네트워크-로컬 통신을 설정하는 데 유용한 합법적인 사설 네트워크 주소일
+   수 있기 때문입니다. 따라서 응용 프로그램 프로토콜은 이러한 집중 효과로 인해 발생할 수 있는
+   잠재적 손상을 방지하기 위해 확인되지 않은 IP 주소에 대한 트래픽의 크기 및 속도를 제한하도록
+   설계되어야 합니다.
 
-6.3.  Man-in-the-Middle Attacks
+6.3.  Man-in-the-Middle Attacks (중간자 공격)
 
-   Any network device on the path between a client and a public
-   rendezvous server can mount a variety of man-in-the-middle attacks by
-   pretending to be a NAT.  For example, suppose host A attempts to
-   register with rendezvous server S, but a network-snooping attacker is
-   able to observe this registration request.  The attacker could then
-   flood server S with requests that are identical to the client's
-   original request except with a modified source IP address, such as
-   the IP address of the attacker itself.  If the attacker can convince
-   the server to register the client using the attacker's IP address,
-   then the attacker can make itself an active component on the path of
-   all future traffic from the server AND other hosts to the original
-   client, even if the attacker was originally only able to snoop the
-   path from the client to the server.
+   클라이언트와 공인 랑데부 서버 사이의 경로에 있는 모든 네트워크 장치는 NAT인 것처럼 가장하여
+   다양한 중간자 공격을 탑재할 수 있습니다. 예를 들어 호스트 A가 랑데뷰 서버 S에 등록을
+   시도하지만 네트워크 스누핑 공격자가 이 등록 요청을 관찰할 수 있다고 가정합니다. 그런 다음
+   공격자는 공격자 자신의 IP 주소와 같은 수정된 소스 IP 주소를 제외하고 클라이언트의 원래 요청과
+   동일한 요청으로 서버 S를 플러딩할 수 있습니다. 공격자가 공격자의 IP 주소를 사용하여
+   클라이언트를 등록하도록 서버를 설득할 수 있는 경우 공격자는 원래 클라이언트에서 서버로의 경로만
+   스누핑할 수 있었던 경우에도 서버 및 기타 호스트에서 원래 클라이언트로의 모든 향후 트래픽
+   경로에서 자신을 활성 구성 요소로 만들 수 있습니다.
 
-   The client cannot protect itself from this attack by authenticating
-   its source IP address to the rendezvous server, because in order to
-   be NAT-friendly the application must allow intervening NATs to change
-   the source address silently.  This appears to be an inherent security
-   weakness of the NAT paradigm.  The only defense against such an
-   attack is for the client to authenticate and potentially encrypt the
-   actual content of its communication using appropriate higher-level
-   identities, so that the interposed attacker is not able to take
-   advantage of its position.  Even if all application-level
-   communication is authenticated and encrypted, however, this attack
-   could still be used as a traffic analysis tool for observing who the
-   client is communicating with.
+   클라이언트는 소스 IP 주소를 랑데부 서버에 인증하여 이 공격으로부터 자신을 보호할 수
+   없습니다. NAT 친화적이기 위해서는 응용 프로그램이 간섭하는 NAT가 소스 주소를 자동으로
+   변경하도록 허용해야 하기 때문입니다. 이것은 NAT 패러다임의 본질적인 보안 약점으로 보입니다.
+   이러한 공격에 대한 유일한 방어책은 클라이언트가 적절한 상위 수준 ID를 사용하여 통신의 실제
+   콘텐츠를 인증하고 잠재적으로 암호화하여 삽입된 공격자가 자신의 위치를 ​​이용할 수 없도록 하는
+   것입니다. 그러나 모든 애플리케이션 수준 통신이 인증되고 암호화되더라도 이 공격은 클라이언트가
+   누구와 통신하는지 관찰하기 위한 트래픽 분석 도구로 여전히 사용될 수 있습니다.
 
-6.4.  Security Impact from EIM-NAT Devices
+6.4.  Security Impact from EIM-NAT Devices (EIM-NAT 장치의 보안 영향)
 
-   Designing NAT devices to preserve endpoint identities does not weaken
-   the security provided by the NAT device.  For example, a NAT device
-   employing Endpoint-Independent Mapping and Endpoint-Dependent
-   Filtering is no more "promiscuous" than a NAT device employing
-   Endpoint-Dependent Mapping and Endpoint-Dependent Filtering.
-   Filtering incoming traffic aggressively using Endpoint-Dependent
-   Filtering while employing Endpoint-Independent Mapping allows a NAT
-   device to be friendly to applications without compromising the
-   principle of rejecting unsolicited incoming traffic.
+   엔드포인트 ID를 보존하도록 NAT 장치를 설계해도 NAT 장치가 제공하는 보안이 약화되지 않습니다.
+   예를 들어 Endpoint-Independent Mapping 및 Endpoint-Dependent Filtering을
+   사용하는 NAT 장치는 Endpoint-Dependent Mapping 및 Endpoint-Dependent
+   Filtering을 사용하는 NAT 장치보다 "무차별"하지 않습니다. Endpoint-Independent
+   Mapping을 사용하면서 Endpoint-Dependent Filtering을 사용하여 들어오는 트래픽을
+   적극적으로 필터링하면 NAT 장치가 원치 않는 들어오는 트래픽을 거부하는 원칙을 손상시키지
+   않으면서 애플리케이션에 친숙해질 수 있습니다.
 
-   Endpoint-Independent Mapping could arguably increase the
-   predictability of traffic emerging from the NAT device, by revealing
-   the relationships between different TCP/UDP sessions and hence about
-   the behavior of applications running within the enclave.  This
-   predictability could conceivably be useful to an attacker in
-   exploiting other network- or application-level vulnerabilities.  If
-   the security requirements of a particular deployment scenario are so
-   critical that such subtle information channels are of concern, then
-   perhaps the NAT device was not to have been configured to allow
-   unrestricted outgoing TCP/UDP traffic in the first place.  A NAT
-   device configured to allow communication originating from specific
-   applications at specific ports, or via tightly controlled
-   application-level gateways, may accomplish the security requirements
-   of such deployment scenarios.
+   Endpoint-Independent Mapping은 서로 다른 TCP/UDP 세션 간의 관계를 밝혀서 엔클레이브
+   내에서 실행되는 애플리케이션의 동작에 대해 NAT 장치에서 나오는 트래픽의 예측 가능성을 증가시킬
+   수 있습니다. 이러한 예측 가능성은 공격자가 다른 네트워크 또는 애플리케이션 수준의 취약점을
+   악용하는 데 유용할 수 있습니다. 특정 배포 시나리오의 보안 요구 사항이 너무 중요하여 이러한
+   미묘한 정보 채널이 문제가 되는 경우 NAT 장치가 처음부터 제한 없이 나가는 TCP/UDP 트래픽을
+   허용하도록 구성되지 않았을 수 있습니다. 특정 포트에서 또는 엄격하게 제어되는 애플리케이션 수준
+   게이트웨이를 통해 특정 애플리케이션에서 발생하는 통신을 허용하도록 구성된 NAT 장치는 이러한 배포
+   시나리오의 보안 요구 사항을 충족할 수 있습니다.
 
-7.  Acknowledgments
+7.  Acknowledgments (감사의 말)
 
-   The authors wish to thank Henrik Bergstrom, David Anderson, Christian
-   Huitema, Dan Wing, Eric Rescorla, and other BEHAVE work group members
-   for their valuable feedback on early versions of this document.  The
-   authors also wish to thank Francois Audet, Kaushik Biswas, Spencer
-   Dawkins, Bruce Lowekamp, and Brian Stucker for agreeing to be
-   technical reviewers for this document.
+   저자는 이 문서의 초기 버전에 대해 귀중한 피드백을 제공한 Henrik Bergstrom,
+   David Anderson, Christian Huitema, Dan Wing, Eric Rescorla 및 기타 BEHAVE
+   작업 그룹 구성원에게 감사를 표합니다. 저자는 또한 이 문서의 기술 검토자가 되기로 동의한
+   Francois Audet, Kaushik Biswas, Spencer Dawkins, Bruce Lowekamp 및 Brian
+   Stucker에게도 감사를 표합니다.
 
-8.  References
+8.  References (참조)
 
-8.1.  Normative References
+8.1.  Normative References (규범적 참조)
 
    [NAT-TERM]    Srisuresh, P. and M. Holdrege, "IP Network Address
                  Translator (NAT) Terminology and Considerations", RFC
@@ -969,7 +940,7 @@ Status of This Memo
                  Translation (NAT) Behavioral Requirements for Unicast
                  UDP", BCP 127, RFC 4787, January 2007.
 
-8.2.  Informative References
+8.2.  Informative References (유익한 참조)
 
    [BEH-APP]     Ford, B., Srisuresh, P., and D. Kegel, "Application
                  Design Guidelines for Traversal through Network Address
