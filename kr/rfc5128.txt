@@ -61,7 +61,7 @@ Status of This Memo
    7. Acknowledgments (감사의 말)
    8. References (참조)
       8.1. Normative References (규범적 참조)
-      8.2. Informative References (유익한 참조)
+      8.2. Informative References (유용한 참조)
 
 1.  Introduction and Scope (소개 및 범위)
 
@@ -940,7 +940,7 @@ Status of This Memo
                  Translation (NAT) Behavioral Requirements for Unicast
                  UDP", BCP 127, RFC 4787, January 2007.
 
-8.2.  Informative References (유익한 참조)
+8.2.  Informative References (유용한 참조)
 
    [BEH-APP]     Ford, B., Srisuresh, P., and D. Kegel, "Application
                  Design Guidelines for Traversal through Network Address

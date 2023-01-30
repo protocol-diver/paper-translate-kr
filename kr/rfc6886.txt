@@ -108,7 +108,7 @@ Copyright Notice
       10.1. Normative References
             (규범적 참조)
       10.2. Informative References
-            (유익한 참조)
+            (유용한 참조)
 
 1.  Introduction (소개)
 
@@ -1144,7 +1144,7 @@ Copyright Notice
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119, March 1997.
 
-10.2.  Informative References (유익한 참조)
+10.2.  Informative References (유용한 참조)
 
    [Bonjour]  Apple "Bonjour" <http://developer.apple.com/bonjour/>.
 
