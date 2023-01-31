@@ -6,12 +6,12 @@ RFC: 793
                                     
                                     
                                     
-                     TRANSMISSION CONTROL PROTOCOL
+                              전송 제어 프로토콜
                                     
                                     
                          DARPA INTERNET PROGRAM
                                     
-                         PROTOCOL SPECIFICATION
+                                프로토콜 사양
                                     
                                     
                                     
@@ -49,58 +49,71 @@ RFC: 793
                            4676 Admiralty Way
                    Marina del Rey, California  90291
                    
-                           TABLE OF CONTENTS
+                                  목차
 
-    PREFACE
+    머리말
 
-1.  INTRODUCTION
+1.  INTRODUCTION (소개)
 
-  1.1  Motivation
-  1.2  Scope
-  1.3  About This Document
-  1.4  Interfaces
-  1.5  Operation
+  1.1  Motivation (동기)
+  1.2  Scope (범위)
+  1.3  About This Document (문서 정보)
+  1.4  Interfaces (인터페이스)
+  1.5  Operation (작업)
 
-2.  PHILOSOPHY
+2.  PHILOSOPHY (철학)
 
   2.1  Elements of the Internetwork System
+       (인터네트워크 시스템 요소)
   2.2  Model of Operation
+       (운영 모델)
   2.3  The Host Environment
+       (호스트 환경)
   2.4  Interfaces
+       (인터페이스)
   2.5  Relation to Other Protocols
+       (다른 프로토콜과의 관계)
   2.6  Reliable Communication
+       (신뢰할 수 있는 통신)
   2.7  Connection Establishment and Clearing
+       (연결 설정 및 삭제)
   2.8  Data Communication
+       (데이터 통신)
   2.9  Precedence and Security
+       (우선 순위 및 보안)
   2.10 Robustness Principle
+       (견고성 원칙)
 
-3.  FUNCTIONAL SPECIFICATION
+3.  FUNCTIONAL SPECIFICATION (기능 명세)
 
   3.1  Header Format
   3.2  Terminology
   3.3  Sequence Numbers
   3.4  Establishing a connection
+       (연결 설정)
   3.5  Closing a Connection
+       (연결 종료)
   3.6  Precedence and Security
+       (우선 순위 및 보안)
   3.7  Data Communication
+       (데이터 통신)
   3.8  Interfaces
+       (인터페이스)
   3.9  Event Processing
+       (이벤트 처리)
 
-GLOSSARY
+용어 사전
 
-REFERENCES
+참조
 
-                                PREFACE
+                                 머리말
 
 
 
-This document describes the DoD Standard Transmission Control Protocol
-(TCP).  There have been nine earlier editions of the ARPA TCP
-specification on which this standard is based, and the present text
-draws heavily from them.  There have been many contributors to this work
-both in terms of concepts and in terms of text.  This edition clarifies
-several details and removes the end-of-letter buffer-size adjustments,
-and redescribes the letter mechanism as a push function.
+이 문서는 DoD 표준 전송 제어 프로토콜(TCP)에 대해 설명합니다. 이 표준의 기반이 되는 ARPA
+TCP 사양의 이전 버전은 9개였으며 현재 텍스트는 이들에서 많은 부분을 가져옵니다. 개념과 텍스트
+측면 모두에서 이 작업에 많은 기여자가 있었습니다. 이 에디션은 몇 가지 세부 사항을 명확히 하고
+문자 끝 버퍼 크기 조정을 제거하고 문자 메커니즘을 푸시 기능으로 다시 설명합니다.
 
                                                            Jon Postel
 
@@ -111,67 +124,53 @@ Replaces: RFC 761
 IENs:  129, 124, 112, 81,
 55, 44, 40, 27, 21, 5
 
-                     TRANSMISSION CONTROL PROTOCOL
+                             전송 제어 프로토콜
 
                          DARPA INTERNET PROGRAM
-                         PROTOCOL SPECIFICATION
+                               프로토콜 사양
 
 
 
-                            1.  INTRODUCTION
+                         1.  INTRODUCTION (소개)
 
-The Transmission Control Protocol (TCP) is intended for use as a highly
-reliable host-to-host protocol between hosts in packet-switched computer
-communication networks, and in interconnected systems of such networks.
+전송 제어 프로토콜(TCP)은 패킷 교환 컴퓨터 통신 네트워크와 이러한 네트워크의 상호 연결된
+시스템에서 호스트 간에 매우 안정적인 호스트 간 프로토콜로 사용하기 위한 것입니다.
 
-This document describes the functions to be performed by the
-Transmission Control Protocol, the program that implements it, and its
-interface to programs or users that require its services.
+이 문서는 전송 제어 프로토콜이 수행하는 기능, 이를 구현하는 프로그램, 서비스를 필요로 하는
+프로그램 또는 사용자에 대한 인터페이스에 대해 설명합니다.
 
-1.1.  Motivation
+1.1.  Motivation (동기)
 
-  Computer communication systems are playing an increasingly important
-  role in military, government, and civilian environments.  This
-  document focuses its attention primarily on military computer
-  communication requirements, especially robustness in the presence of
-  communication unreliability and availability in the presence of
-  congestion, but many of these problems are found in the civilian and
-  government sector as well.
+[번역자 주석]
+  - (dbadoy) DoD: Department of Defense (국방부)
 
-  As strategic and tactical computer communication networks are
-  developed and deployed, it is essential to provide means of
-  interconnecting them and to provide standard interprocess
-  communication protocols which can support a broad range of
-  applications.  In anticipation of the need for such standards, the
-  Deputy Undersecretary of Defense for Research and Engineering has
-  declared the Transmission Control Protocol (TCP) described herein to
-  be a basis for DoD-wide inter-process communication protocol
-  standardization.
+  컴퓨터 통신 시스템은 군대, 정부 및 민간 환경에서 점점 더 중요한 역할을 하고 있습니다. 이
+  문서는 주로 군용 컴퓨터 통신 요구 사항, 특히 통신 불안정성이 있는 경우의 견고성과 혼잡이
+  있는 경우의 가용성에 초점을 맞추고 있지만 이러한 문제 중 많은 부분이 민간 및 정부 부문에서도
+  발견됩니다.
 
-  TCP is a connection-oriented, end-to-end reliable protocol designed to
-  fit into a layered hierarchy of protocols which support multi-network
-  applications.  The TCP provides for reliable inter-process
-  communication between pairs of processes in host computers attached to
-  distinct but interconnected computer communication networks.  Very few
-  assumptions are made as to the reliability of the communication
-  protocols below the TCP layer.  TCP assumes it can obtain a simple,
-  potentially unreliable datagram service from the lower level
-  protocols.  In principle, the TCP should be able to operate above a
-  wide spectrum of communication systems ranging from hard-wired
-  connections to packet-switched or circuit-switched networks.
+  전략적 및 전술적 컴퓨터 통신 네트워크가 개발되고 배치됨에 따라 이를 상호 연결하는 수단을
+  제공하고 광범위한 응용 프로그램을 지원할 수 있는 표준 프로세스 간 통신 프로토콜을 제공하는
+  것이 필수적입니다. 이러한 표준의 필요성을 예상하여 국방부 연구 및 엔지니어링 차관은 여기에
+  설명된 전송 제어 프로토콜(TCP)이 DoD 전체 프로세스 간 통신 프로토콜 표준화의 기초가 될
+  것이라고 선언했습니다.
 
-  TCP is based on concepts first described by Cerf and Kahn in [1].  The
-  TCP fits into a layered protocol architecture just above a basic
-  Internet Protocol [2] which provides a way for the TCP to send and
-  receive variable-length segments of information enclosed in internet
-  datagram "envelopes".  The internet datagram provides a means for
-  addressing source and destination TCPs in different networks.  The
-  internet protocol also deals with any fragmentation or reassembly of
-  the TCP segments required to achieve transport and delivery through
-  multiple networks and interconnecting gateways.  The internet protocol
-  also carries information on the precedence, security classification
-  and compartmentation of the TCP segments, so this information can be
-  communicated end-to-end across multiple networks.
+  TCP는 다중 네트워크 응용 프로그램을 지원하는 계층화된 프로토콜 계층 구조에 적합하도록 설계된
+  연결 지향 종단 간 신뢰할 수 있는 프로토콜입니다. TCP는 별개이지만 상호 연결된 컴퓨터 통신
+  네트워크에 연결된 호스트 컴퓨터의 프로세스 쌍 간에 안정적인 프로세스 간 통신을 제공합니다.
+  TCP 계층 아래의 통신 프로토콜의 신뢰성에 대한 가정은 거의 없습니다. TCP는 하위 수준
+  프로토콜에서 간단하고 잠재적으로 신뢰할 수 없는 데이터그램 서비스를 얻을 수 있다고 가정합니다.
+  원칙적으로 TCP는 유선 연결에서 패킷 교환 또는 회선 교환 네트워크에 이르는 광범위한 통신
+  시스템에서 작동할 수 있어야 합니다.
+
+  TCP는 [1]에서 Cerf와 Kahn이 처음 설명한 개념을 기반으로 합니다. TCP는 TCP가 인터넷
+  데이터그램 "envelopes"에 포함된 정보의 가변 길이 세그먼트를 송수신하는 방법을 제공하는
+  기본 인터넷 프로토콜[2] 바로 위의 계층화된 프로토콜 아키텍처에 적합합니다. 인터넷
+  데이터그램은 서로 다른 네트워크에서 소스 및 대상 TCP의 주소를 지정하는 수단을 제공합니다.
+  인터넷 프로토콜은 또한 여러 네트워크와 상호 연결 게이트웨이를 통해 전송 및 전달을 달성하는
+  데 필요한 TCP 세그먼트의 조각화 또는 재조립을 처리합니다. 인터넷 프로토콜은 또한 TCP
+  세그먼트의 우선 순위, 보안 분류 및 구획에 대한 정보를 전달하므로 이 정보는 여러 네트워크에서
+  엔드 투 엔드로 전달될 수 있습니다.
 
                            Protocol Layering
 
@@ -185,163 +184,121 @@ interface to programs or users that require its services.
                         |communication network|
                         +---------------------+
 
-                                Figure 1
+                                그림 1
 
-  Much of this document is written in the context of TCP implementations
-  which are co-resident with higher level protocols in the host
-  computer.  Some computer systems will be connected to networks via
-  front-end computers which house the TCP and internet protocol layers,
-  as well as network specific software.  The TCP specification describes
-  an interface to the higher level protocols which appears to be
-  implementable even for the front-end case, as long as a suitable
-  host-to-front end protocol is implemented.
+  이 문서의 대부분은 호스트 컴퓨터에서 더 높은 수준의 프로토콜과 함께 상주하는 TCP 구현의
+  맥락에서 작성되었습니다. 일부 컴퓨터 시스템은 TCP 및 인터넷 프로토콜 계층과 네트워크별
+  소프트웨어를 수용하는 프런트 엔드 컴퓨터를 통해 네트워크에 연결됩니다. TCP 사양은 적절한
+  호스트-프론트 엔드 프로토콜이 구현되는 한 프런트 엔드 경우에도 구현 가능한 것으로 보이는 상위
+  수준 프로토콜에 대한 인터페이스를 설명합니다.
 
-1.2.  Scope
+1.2.  Scope (범위)
 
-  The TCP is intended to provide a reliable process-to-process
-  communication service in a multinetwork environment.  The TCP is
-  intended to be a host-to-host protocol in common use in multiple
-  networks.
+  TCP는 다중 네트워크 환경에서 안정적인 프로세스 간 통신 서비스를 제공하기 위한 것입니다.
+  TCP는 여러 네트워크에서 일반적으로 사용되는 호스트 간 프로토콜입니다.
 
-1.3.  About this Document
+1.3.  About this Document (문서 정보)
 
-  This document represents a specification of the behavior required of
-  any TCP implementation, both in its interactions with higher level
-  protocols and in its interactions with other TCPs.  The rest of this
-  section offers a very brief view of the protocol interfaces and
-  operation.  Section 2 summarizes the philosophical basis for the TCP
-  design.  Section 3 offers both a detailed description of the actions
-  required of TCP when various events occur (arrival of new segments,
-  user calls, errors, etc.) and the details of the formats of TCP
-  segments.
+  이 문서는 상위 수준 프로토콜과의 상호 작용 및 다른 TCP와의 상호 작용 모두에서 TCP 구현에
+  필요한 동작 사양을 나타냅니다. 이 섹션의 나머지 부분에서는 프로토콜 인터페이스 및 작업에 대한
+  매우 간략한 보기를 제공합니다. 섹션 2에서는 TCP 설계의 철학적 기반을 요약합니다. 섹션
+  3에서는 다양한 이벤트(새 세그먼트 도착, 사용자 호출, 오류 등)가 발생할 때 TCP에 필요한
+  조치에 대한 자세한 설명과 TCP 세그먼트의 형식에 대한 세부 정보를 모두 제공합니다.
 
-1.4.  Interfaces
+1.4.  Interfaces (인터페이스)
 
-  The TCP interfaces on one side to user or application processes and on
-  the other side to a lower level protocol such as Internet Protocol.
+  TCP는 한쪽에서 사용자 또는 응용 프로그램 프로세스에 연결하고 다른 쪽에서 인터넷 프로토콜과
+  같은 하위 수준 프로토콜에 연결합니다.
 
-  The interface between an application process and the TCP is
-  illustrated in reasonable detail.  This interface consists of a set of
-  calls much like the calls an operating system provides to an
-  application process for manipulating files.  For example, there are
-  calls to open and close connections and to send and receive data on
-  established connections.  It is also expected that the TCP can
-  asynchronously communicate with application programs.  Although
-  considerable freedom is permitted to TCP implementors to design
-  interfaces which are appropriate to a particular operating system
-  environment, a minimum functionality is required at the TCP/user
-  interface for any valid implementation.
+  애플리케이션 프로세스와 TCP 사이의 인터페이스는 합리적으로 자세히 설명되어 있습니다. 이
+  인터페이스는 운영 체제가 파일 조작을 위해 응용 프로그램 프로세스에 제공하는 호출과 매우 유사한
+  일련의 호출로 구성됩니다. 예를 들어 연결을 열고 닫고 설정된 연결에서 데이터를 보내고 받는
+  호출이 있습니다. 또한 TCP가 애플리케이션 프로그램과 비동기식으로 통신할 수 있을 것으로
+  예상됩니다. 특정 운영 체제 환경에 적합한 인터페이스를 설계하기 위해 TCP 구현자에게 상당한
+  자유가 허용되지만 유효한 구현을 위해 TCP/사용자 인터페이스에는 최소한의 기능이 필요합니다.
 
-  The interface between TCP and lower level protocol is essentially
-  unspecified except that it is assumed there is a mechanism whereby the
-  two levels can asynchronously pass information to each other.
-  Typically, one expects the lower level protocol to specify this
-  interface.  TCP is designed to work in a very general environment of
-  interconnected networks.  The lower level protocol which is assumed
-  throughout this document is the Internet Protocol [2].
+  TCP와 하위 수준 프로토콜 간의 인터페이스는 기본적으로 두 수준이 서로 정보를 비동기적으로
+  전달할 수 있는 메커니즘이 있다고 가정하는 것을 제외하고는 지정되지 않습니다. 일반적으로 이
+  인터페이스를 지정하는 하위 수준 프로토콜을 기대합니다. TCP는 상호 연결된 네트워크의 매우
+  일반적인 환경에서 작동하도록 설계되었습니다. 이 문서 전체에서 가정되는 하위 수준 프로토콜은
+  Internet Protocol[2]입니다.
 
-1.5.  Operation
+1.5.  Operation (작업)
 
-  As noted above, the primary purpose of the TCP is to provide reliable,
-  securable logical circuit or connection service between pairs of
-  processes.  To provide this service on top of a less reliable internet
-  communication system requires facilities in the following areas:
+  위에서 언급한 바와 같이 TCP의 주요 목적은 신뢰할 수 있고 안전한 논리 회로 또는 프로세스 쌍
+  간의 연결 서비스를 제공하는 것입니다. 신뢰성이 낮은 인터넷 통신 시스템 위에서 이 서비스를
+  제공하려면 다음 영역의 시설이 필요합니다:
 
-    Basic Data Transfer
-    Reliability
-    Flow Control
-    Multiplexing
-    Connections
-    Precedence and Security
+    Basic Data Transfer (기본 데이터 전송)
+    Reliability (신뢰성)
+    Flow Control (흐름 제어)
+    Multiplexing (다중화)
+    Connections (연결)
+    Precedence and Security (우선 순위 및 보안)
 
-  The basic operation of the TCP in each of these areas is described in
-  the following paragraphs.
+  이러한 각 영역에서 TCP의 기본 작동은 다음 단락에 설명되어 있습니다.
 
-  Basic Data Transfer:
+  Basic Data Transfer (기본 데이터 전송):
 
-    The TCP is able to transfer a continuous stream of octets in each
-    direction between its users by packaging some number of octets into
-    segments for transmission through the internet system.  In general,
-    the TCPs decide when to block and forward data at their own
-    convenience.
+    TCP는 인터넷 시스템을 통한 전송을 위해 몇 개의 옥텟을 세그먼트로 패키징하여 사용자 간에
+    각 방향으로 연속적인 옥텟 스트림을 전송할 수 있습니다. 일반적으로 TCP는 자신의 편의에
+    따라 데이터를 차단하고 전달할 시기를 결정합니다.
 
-    Sometimes users need to be sure that all the data they have
-    submitted to the TCP has been transmitted.  For this purpose a push
-    function is defined.  To assure that data submitted to a TCP is
-    actually transmitted the sending user indicates that it should be
-    pushed through to the receiving user.  A push causes the TCPs to
-    promptly forward and deliver data up to that point to the receiver.
-    The exact push point might not be visible to the receiving user and
-    the push function does not supply a record boundary marker.
+    때때로 사용자는 TCP에 제출한 모든 데이터가 전송되었는지 확인해야 합니다. 이를 위해 푸시
+    기능이 정의됩니다. TCP에 제출된 데이터가 실제로 전송되도록 하기 위해 보내는 사용자는
+    데이터를 받는 사용자에게 푸시해야 함을 나타냅니다. 푸시는 TCP가 해당 지점까지의 데이터를
+    수신자에게 즉시 전달하고 전달하도록 합니다. 정확한 푸시 지점은 수신 사용자에게 표시되지
+    않을 수 있으며 푸시 기능은 레코드 경계 마커를 제공하지 않습니다.
 
-  Reliability:
+  Reliability (신뢰성):
 
-    The TCP must recover from data that is damaged, lost, duplicated, or
-    delivered out of order by the internet communication system.  This
-    is achieved by assigning a sequence number to each octet
-    transmitted, and requiring a positive acknowledgment (ACK) from the
-    receiving TCP.  If the ACK is not received within a timeout
-    interval, the data is retransmitted.  At the receiver, the sequence
-    numbers are used to correctly order segments that may be received
-    out of order and to eliminate duplicates.  Damage is handled by
-    adding a checksum to each segment transmitted, checking it at the
-    receiver, and discarding damaged segments.
+    TCP는 인터넷 통신 시스템에 의해 손상, 손실, 복제 또는 순서 없이 전달된 데이터로부터
+    복구해야 합니다. 이는 전송된 각 옥텟에 시퀀스 번호를 할당하고 수신 TCP에서 긍정적인
+    승인(ACK)을 요구함으로써 달성됩니다. 시간 초과 간격 내에 ACK를 받지 못하면 데이터가
+    다시 전송됩니다. 수신기에서 시퀀스 번호는 잘못된 순서로 수신될 수 있는 세그먼트를 올바르게
+    정렬하고 중복을 제거하는 데 사용됩니다. 손상은 전송된 각 세그먼트에 체크섬을 추가하고
+    수신자에서 확인하고 손상된 세그먼트를 버리는 방식으로 처리됩니다.
 
-    As long as the TCPs continue to function properly and the internet
-    system does not become completely partitioned, no transmission
-    errors will affect the correct delivery of data.  TCP recovers from
-    internet communication system errors.
+    TCP가 계속 제대로 작동하고 인터넷 시스템이 완전히 분할되지 않는 한 전송 오류는 올바른
+    데이터 전달에 영향을 미치지 않습니다. TCP는 인터넷 통신 시스템 오류에서 복구합니다.
 
-  Flow Control:
+  Flow Control (흐름 제어):
 
-    TCP provides a means for the receiver to govern the amount of data
-    sent by the sender.  This is achieved by returning a "window" with
-    every ACK indicating a range of acceptable sequence numbers beyond
-    the last segment successfully received.  The window indicates an
-    allowed number of octets that the sender may transmit before
-    receiving further permission.
+    TCP는 수신자가 발신자가 보낸 데이터의 양을 제어할 수 있는 수단을 제공합니다. 이는
+    성공적으로 수신된 마지막 세그먼트를 넘어 허용 가능한 시퀀스 번호의 범위를 나타내는 모든
+    ACK와 함께 "window"를 반환함으로써 달성됩니다. window는 발신자가 추가 허가를 받기
+    전에 전송할 수 있는 허용된 옥텟 수를 나타냅니다.
 
-  Multiplexing:
+  Multiplexing (다중화):
 
-    To allow for many processes within a single Host to use TCP
-    communication facilities simultaneously, the TCP provides a set of
-    addresses or ports within each host.  Concatenated with the network
-    and host addresses from the internet communication layer, this forms
-    a socket.  A pair of sockets uniquely identifies each connection.
-    That is, a socket may be simultaneously used in multiple
-    connections.
+    단일 호스트 내의 많은 프로세스가 동시에 TCP 통신 기능을 사용할 수 있도록 하기 위해
+    TCP는 각 호스트 내에 일련의 주소 또는 포트를 제공합니다. 인터넷 통신 계층의 네트워크 및
+    호스트 주소와 연결되어 소켓을 형성합니다. 소켓 쌍은 각 연결을 고유하게 식별합니다. 즉,
+    하나의 소켓을 여러 연결에서 동시에 사용할 수 있습니다.
 
-    The binding of ports to processes is handled independently by each
-    Host.  However, it proves useful to attach frequently used processes
-    (e.g., a "logger" or timesharing service) to fixed sockets which are
-    made known to the public.  These services can then be accessed
-    through the known addresses.  Establishing and learning the port
-    addresses of other processes may involve more dynamic mechanisms.
+    프로세스에 대한 포트 바인딩은 각 호스트에서 독립적으로 처리됩니다. 그러나 대중에게 알려진
+    고정 소켓에 자주 사용되는 프로세스(예: "logger" 또는 시분할 서비스)를 연결하는 것이
+    유용합니다. 그런 다음 알려진 주소를 통해 이러한 서비스에 액세스할 수 있습니다. 다른
+    프로세스의 포트 주소를 설정하고 학습하려면 보다 동적인 메커니즘이 필요할 수 있습니다.
 
-  Connections:
+  Connections (연결):
 
-    The reliability and flow control mechanisms described above require
-    that TCPs initialize and maintain certain status information for
-    each data stream.  The combination of this information, including
-    sockets, sequence numbers, and window sizes, is called a connection.
-    Each connection is uniquely specified by a pair of sockets
-    identifying its two sides.
+    위에서 설명한 안정성 및 흐름 제어 메커니즘은 TCP가 각 데이터 스트림에 대한 특정 상태
+    정보를 초기화하고 유지 관리할 것을 요구합니다. 소켓, 시퀀스 번호 및 window 크기가
+    포함된 이 정보의 조합을 연결(connection)이라고 합니다. 각 연결은 양쪽을 식별하는
+    한 쌍의 소켓으로 고유하게 지정됩니다.
 
-    When two processes wish to communicate, their TCP's must first
-    establish a connection (initialize the status information on each
-    side).  When their communication is complete, the connection is
-    terminated or closed to free the resources for other uses.
+    두 프로세스가 통신하려면 TCP가 먼저 연결을 설정해야 합니다(양쪽에서 상태 정보 초기화).
+    통신이 완료되면 연결이 종료되거나 종료되어 리소스를 다른 용도로 사용할 수 있습니다.
 
-    Since connections must be established between unreliable hosts and
-    over the unreliable internet communication system, a handshake
-    mechanism with clock-based sequence numbers is used to avoid
-    erroneous initialization of connections.
+    신뢰할 수 없는 호스트 간에 그리고 신뢰할 수 없는 인터넷 통신 시스템을 통해 연결을
+    설정해야 하므로 잘못된 연결 초기화를 방지하기 위해 시계-기반 시퀀스 번호가 있는
+    핸드셰이크 메커니즘이 사용됩니다.
 
-  Precedence and Security:
+  Precedence and Security (우선 순위 및 보안):
 
-    The users of TCP may indicate the security and precedence of their
-    communication.  Provision is made for default values to be used when
-    these features are not needed.
+    TCP 사용자는 통신의 보안 및 우선 순위를 나타낼 수 있습니다. 이러한 기능이 필요하지 않을
+    때 사용할 기본값이 제공됩니다.
 
                              2.  PHILOSOPHY
 

@@ -21,6 +21,7 @@
    - [ ] [RFC793](https://github.com/protocol-diver/rfc-translate-kr/blob/main/kr/rfc793.txt) - Transmission Control Protocol
    - [ ] [RFC3550](https://github.com/protocol-diver/rfc-translate-kr/blob/main/kr/rfc3550.txt) - RTP: A Transport Protocol for Real-Time Applications
    - [x] [RFC6886](https://github.com/protocol-diver/rfc-translate-kr/blob/main/kr/rfc6886.txt) - NAT Port Mapping Protocol (NAT-PMP)
+   - [ ] [RFC9293]() - Transmission Control Protocol
    - [x] [devp2p/eth](https://github.com/protocol-diver/paper-translate-kr/blob/main/kr/devp2p/caps/eth.md) - Etheruem devp2p eth procotol
    - [ ] [devp2p/rlpx](https://github.com/protocol-diver/paper-translate-kr/blob/main/kr/devp2p/rlpx.md) - Etheruem devp2p rlpx procotol
 
