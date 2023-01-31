@@ -300,117 +300,91 @@ IENs:  129, 124, 112, 81,
     TCP 사용자는 통신의 보안 및 우선 순위를 나타낼 수 있습니다. 이러한 기능이 필요하지 않을
     때 사용할 기본값이 제공됩니다.
 
-                             2.  PHILOSOPHY
+                             2.  PHILOSOPHY (철학)
 
-2.1.  Elements of the Internetwork System
+2.1.  Elements of the Internetwork System (인터네트워크 시스템 요소)
 
-  The internetwork environment consists of hosts connected to networks
-  which are in turn interconnected via gateways.  It is assumed here
-  that the networks may be either local networks (e.g., the ETHERNET) or
-  large networks (e.g., the ARPANET), but in any case are based on
-  packet switching technology.  The active agents that produce and
-  consume messages are processes.  Various levels of protocols in the
-  networks, the gateways, and the hosts support an interprocess
-  communication system that provides two-way data flow on logical
-  connections between process ports.
+  인터네트워크 환경은 게이트웨이를 통해 상호 연결된 네트워크에 연결된 호스트로 구성됩니다.
+  여기서 네트워크는 로컬 네트워크(예: ETHERNET) 또는 대규모 네트워크(예: ARPANET)일 수
+  있지만 어떤 경우든 패킷 교환 기술을 기반으로 한다고 가정합니다. 메시지를 생성하고 소비하는
+  활성 에이전트는 프로세스입니다. 네트워크, 게이트웨이 및 호스트의 다양한 수준의 프로토콜은
+  프로세스 포트 간의 논리적 연결에서 양방향 데이터 흐름을 제공하는 프로세스 간 통신 시스템을
+  지원합니다.
 
-  The term packet is used generically here to mean the data of one
-  transaction between a host and its network.  The format of data blocks
-  exchanged within the a network will generally not be of concern to us.
+  여기서 패킷이라는 용어는 일반적으로 호스트와 해당 네트워크 간의 하나의 트랜잭션 데이터를
+  의미하는 데 사용됩니다. 네트워크 내에서 교환되는 데이터 블록의 형식은 일반적으로 우리에게
+  중요하지 않습니다.
 
-  Hosts are computers attached to a network, and from the communication
-  network's point of view, are the sources and destinations of packets.
-  Processes are viewed as the active elements in host computers (in
-  accordance with the fairly common definition of a process as a program
-  in execution).  Even terminals and files or other I/O devices are
-  viewed as communicating with each other through the use of processes.
-  Thus, all communication is viewed as inter-process communication.
+  호스트는 네트워크에 연결된 컴퓨터이며 통신 네트워크의 관점에서 보면 패킷의 소스와 목적지입니다.
+  프로세스는 호스트 컴퓨터에서 활성 요소로 간주됩니다(프로세스를 실행 중인 프로그램으로 정의하는
+  일반적인 정의에 따름). 터미널과 파일 또는 기타 I/O 장치도 프로세스를 사용하여 서로 통신하는
+  것으로 간주됩니다. 따라서 모든 통신은 프로세스 간 통신으로 간주됩니다.
 
-  Since a process may need to distinguish among several communication
-  streams between itself and another process (or processes), we imagine
-  that each process may have a number of ports through which it
-  communicates with the ports of other processes.
+  프로세스는 자신과 다른 프로세스(또는 프로세스) 사이의 여러 통신 스트림을 구별해야 할 수
+  있으므로 각 프로세스에는 다른 프로세스의 포트와 통신하는 데 사용되는 여러 포트가 있을 수
+  있다고 가정합니다.
 
-2.2.  Model of Operation
+2.2.  Model of Operation (운영 모델)
 
-  Processes transmit data by calling on the TCP and passing buffers of
-  data as arguments.  The TCP packages the data from these buffers into
-  segments and calls on the internet module to transmit each segment to
-  the destination TCP.  The receiving TCP places the data from a segment
-  into the receiving user's buffer and notifies the receiving user.  The
-  TCPs include control information in the segments which they use to
-  ensure reliable ordered data transmission.
+  프로세스는 TCP를 호출하고 데이터 버퍼를 인수로 전달하여 데이터를 전송합니다. TCP는 이러한
+  버퍼의 데이터를 세그먼트로 패키징하고 인터넷 모듈을 호출하여 각 세그먼트를 대상 TCP로
+  전송합니다. 수신 TCP는 세그먼트의 데이터를 수신 사용자의 버퍼에 놓고 수신 사용자에게
+  알립니다. TCP는 신뢰할 수 있는 주문 데이터 전송을 보장하기 위해 사용하는 세그먼트에 제어
+  정보를 포함합니다.
 
-  The model of internet communication is that there is an internet
-  protocol module associated with each TCP which provides an interface
-  to the local network.  This internet module packages TCP segments
-  inside internet datagrams and routes these datagrams to a destination
-  internet module or intermediate gateway.  To transmit the datagram
-  through the local network, it is embedded in a local network packet.
+  인터넷 통신 모델은 로컬 네트워크에 인터페이스를 제공하는 각 TCP와 연결된 인터넷 프로토콜
+  모듈이 있다는 것입니다. 이 인터넷 모듈은 인터넷 데이터그램 내부의 TCP 세그먼트를 패키징하고
+  이러한 데이터그램을 대상 인터넷 모듈 또는 중간 게이트웨이로 라우팅합니다. 로컬 네트워크를
+  통해 데이터그램을 전송하기 위해 로컬 네트워크 패킷에 포함됩니다.
 
-  The packet switches may perform further packaging, fragmentation, or
-  other operations to achieve the delivery of the local packet to the
-  destination internet module.
+  패킷 스위치는 로컬 패킷을 목적지 인터넷 모듈로 전달하기 위해 추가 패키징, 단편화 또는 기타
+  작업을 수행할 수 있습니다.
 
-  At a gateway between networks, the internet datagram is "unwrapped"
-  from its local packet and examined to determine through which network
-  the internet datagram should travel next.  The internet datagram is
-  then "wrapped" in a local packet suitable to the next network and
-  routed to the next gateway, or to the final destination.
+  네트워크 사이의 게이트웨이에서 인터넷 데이터그램은 로컬 패킷에서 "unwrapped"되고 인터넷
+  데이터그램이 다음에 이동해야 하는 네트워크를 결정하기 위해 검사됩니다. 그런 다음 인터넷
+  데이터그램은 다음 네트워크에 적합한 로컬 패킷으로 "wrapped"되어 다음 게이트웨이 또는 최종
+  목적지로 라우팅됩니다.
 
-  A gateway is permitted to break up an internet datagram into smaller
-  internet datagram fragments if this is necessary for transmission
-  through the next network.  To do this, the gateway produces a set of
-  internet datagrams; each carrying a fragment.  Fragments may be
-  further broken into smaller fragments at subsequent gateways.  The
-  internet datagram fragment format is designed so that the destination
-  internet module can reassemble fragments into internet datagrams.
+  게이트웨이는 다음 네트워크를 통한 전송에 필요한 경우 인터넷 데이터그램을 더 작은 인터넷
+  데이터그램 조각으로 분해할 수 있습니다. 이를 위해 게이트웨이는 일련의 인터넷 데이터그램을
+  생성합니다; 각각 조각을 적재하고 있는. 프래그먼트는 후속 게이트웨이에서 더 작은 조각으로 더
+  세분화될 수 있습니다. 인터넷 데이터그램 조각 형식은 대상 인터넷 모듈이 조각을 인터넷
+  데이터그램으로 재조립할 수 있도록 설계되었습니다.
 
-  A destination internet module unwraps the segment from the datagram
-  (after reassembling the datagram, if necessary) and passes it to the
-  destination TCP.
+  대상 인터넷 모듈은 데이터그램에서 세그먼트를 풀고(필요한 경우 데이터그램을 재조립한 후)
+  대상 TCP로 전달합니다.
 
-  This simple model of the operation glosses over many details.  One
-  important feature is the type of service.  This provides information
-  to the gateway (or internet module) to guide it in selecting the
-  service parameters to be used in traversing the next network.
-  Included in the type of service information is the precedence of the
-  datagram.  Datagrams may also carry security information to permit
-  host and gateways that operate in multilevel secure environments to
-  properly segregate datagrams for security considerations.
+  이 간단한 작업 모델은 많은 세부 사항을 얼버무립니다. 중요한 기능 중 하나는 서비스
+  유형입니다. 이는 게이트웨이(또는 인터넷 모듈)에 정보를 제공하여 다음 네트워크 통과에 사용할
+  서비스 매개변수를 선택하도록 안내합니다. 서비스 정보 유형에는 데이터그램의 우선 순위가
+  포함됩니다. 데이터그램은 또한 보안 고려 사항과 데이터그램을 적절하게 분리하기 위해 다단계
+  보안 환경에서 작동하는 호스트 및 게이트웨이를 허용하는 보안 정보를 전달할 수 있습니다.
 
-2.3.  The Host Environment
+2.3.  The Host Environment (호스트 환경)
 
-  The TCP is assumed to be a module in an operating system.  The users
-  access the TCP much like they would access the file system.  The TCP
-  may call on other operating system functions, for example, to manage
-  data structures.  The actual interface to the network is assumed to be
-  controlled by a device driver module.  The TCP does not call on the
-  network device driver directly, but rather calls on the internet
-  datagram protocol module which may in turn call on the device driver.
+  TCP는 운영 체제의 모듈로 간주됩니다. 사용자는 파일 시스템에 액세스하는 것처럼 TCP에
+  액세스합니다. TCP는 예를 들어 데이터 구조를 관리하기 위해 다른 운영 체제 기능을 호출할 수
+  있습니다. 네트워크에 대한 실제 인터페이스는 장치 드라이버 모듈에 의해 제어되는 것으로
+  가정합니다. TCP는 네트워크 장치 드라이버를 직접 호출하지 않고 오히려 장치 드라이버를 호출할
+  수 있는 인터넷 데이터그램 프로토콜 모듈을 호출합니다.
 
-  The mechanisms of TCP do not preclude implementation of the TCP in a
-  front-end processor.  However, in such an implementation, a
-  host-to-front-end protocol must provide the functionality to support
-  the type of TCP-user interface described in this document.
+  TCP 메커니즘은 프런트 엔드 프로세서에서 TCP 구현을 배제하지 않습니다. 그러나 이러한
+  구현에서 호스트-프론트 엔드 프로토콜은 이 문서에 설명된 TCP 사용자 인터페이스 유형을
+  지원하는 기능을 제공해야 합니다.
 
-2.4.  Interfaces
+2.4.  Interfaces (인터페이스)
 
-  The TCP/user interface provides for calls made by the user on the TCP
-  to OPEN or CLOSE a connection, to SEND or RECEIVE data, or to obtain
-  STATUS about a connection.  These calls are like other calls from user
-  programs on the operating system, for example, the calls to open, read
-  from, and close a file.
+  TCP/사용자 인터페이스는 연결을 열거나 닫거나, 데이터를 보내거나 받거나, 연결에 대한
+  STATUS를 얻기 위해 TCP에서 사용자가 만든 호출을 제공합니다. 이러한 호출은 예를 들어 파일
+  열기, 읽기 및 닫기 호출과 같이 운영 체제의 사용자 프로그램에서 발생하는 다른 호출과 같습니다.
 
-  The TCP/internet interface provides calls to send and receive
-  datagrams addressed to TCP modules in hosts anywhere in the internet
-  system.  These calls have parameters for passing the address, type of
-  service, precedence, security, and other control information.
+  TCP/인터넷 인터페이스는 인터넷 시스템의 호스트에 있는 TCP 모듈로 지정된 데이터그램을
+  송수신하기 위한 호출을 제공합니다. 이러한 호출에는 주소, 서비스 유형, 우선 순위, 보안 및
+  기타 제어 정보를 전달하기 위한 매개 변수가 있습니다.
 
-2.5.  Relation to Other Protocols
+2.5.  Relation to Other Protocols (다른 프로토콜과의 관계)
 
-  The following diagram illustrates the place of the TCP in the protocol
-  hierarchy:
+  다음 다이어그램은 프로토콜 계층에서 TCP의 위치를 ​​보여줍니다:
 
                                     
        +------+ +-----+ +-----+       +-----+                    
@@ -431,130 +405,99 @@ IENs:  129, 124, 112, 81,
 
                          Protocol Relationships
 
-                               Figure 2.
+                                 그림 2.
 
-  It is expected that the TCP will be able to support higher level
-  protocols efficiently.  It should be easy to interface higher level
-  protocols like the ARPANET Telnet or AUTODIN II THP to the TCP.
+  TCP가 더 높은 수준의 프로토콜을 효율적으로 지원할 수 있을 것으로 예상됩니다. ARPANET
+  Telnet 또는 AUTODIN II THP와 같은 상위 수준 프로토콜을 TCP에 쉽게 인터페이스할 수
+  있어야 합니다.
 
-2.6.  Reliable Communication
+2.6.  Reliable Communication (신뢰할 수 있는 통신)
 
-  A stream of data sent on a TCP connection is delivered reliably and in
-  order at the destination.
+[번역자 주석]
+  - (dbadoy) acknowledgment는 ack로 표현합니다.
 
-  Transmission is made reliable via the use of sequence numbers and
-  acknowledgments.  Conceptually, each octet of data is assigned a
-  sequence number.  The sequence number of the first octet of data in a
-  segment is transmitted with that segment and is called the segment
-  sequence number.  Segments also carry an acknowledgment number which
-  is the sequence number of the next expected data octet of
-  transmissions in the reverse direction.  When the TCP transmits a
-  segment containing data, it puts a copy on a retransmission queue and
-  starts a timer; when the acknowledgment for that data is received, the
-  segment is deleted from the queue.  If the acknowledgment is not
-  received before the timer runs out, the segment is retransmitted.
+  TCP 연결에서 전송된 데이터 스트림은 대상에서 순서대로 안정적으로 전달됩니다.
 
-  An acknowledgment by TCP does not guarantee that the data has been
-  delivered to the end user, but only that the receiving TCP has taken
-  the responsibility to do so.
+  전송은 시퀀스 번호와 ack(acknowledgments)를 사용하여 안정적으로 이루어집니다.
+  개념적으로 데이터의 각 옥텟에는 시퀀스 번호가 할당됩니다. 세그먼트에 있는 데이터의 첫 번째
+  옥텟의 시퀀스 번호는 해당 세그먼트와 함께 전송되며 세그먼트 시퀀스 번호라고 합니다.
+  세그먼트는 또한 역방향 전송의 다음 예상 데이터 옥텟의 시퀀스 번호인 ack 번호를 전달합니다.
+  TCP가 데이터가 포함된 세그먼트를 전송할 때 복사본을 재전송 대기열에 넣고 타이머를
+  시작합니다. 해당 데이터에 대한 ack를 받으면 세그먼트가 대기열에서 삭제됩니다. 타이머가
+  종료되기 전에 ack가 수신되지 않으면 세그먼트가 재전송됩니다.
 
-  To govern the flow of data between TCPs, a flow control mechanism is
-  employed.  The receiving TCP reports a "window" to the sending TCP.
-  This window specifies the number of octets, starting with the
-  acknowledgment number, that the receiving TCP is currently prepared to
-  receive.
+  TCP의 ack는 데이터가 최종 사용자에게 전달되었음을 보장하지 않으며 수신 TCP가 이에 대한
+  책임을 졌다는 것을 의미할 뿐입니다.
 
-2.7.  Connection Establishment and Clearing
+  TCP 사이의 데이터 흐름을 제어하기 위해 흐름 제어 메커니즘이 사용됩니다. 수신 TCP는 송신
+  TCP에 "window"을 보고합니다. window는 ack 번호로 시작하여 수신 TCP가 현재 수신할
+  준비가 된 옥텟 수를 지정합니다.
 
-  To identify the separate data streams that a TCP may handle, the TCP
-  provides a port identifier.  Since port identifiers are selected
-  independently by each TCP they might not be unique.  To provide for
-  unique addresses within each TCP, we concatenate an internet address
-  identifying the TCP with a port identifier to create a socket which
-  will be unique throughout all networks connected together.
+2.7.  Connection Establishment and Clearing (연결 설정 및 삭제)
 
-  A connection is fully specified by the pair of sockets at the ends.  A
-  local socket may participate in many connections to different foreign
-  sockets.  A connection can be used to carry data in both directions,
-  that is, it is "full duplex".
+  TCP가 처리할 수 있는 별도의 데이터 스트림을 식별하기 위해 TCP는 포트 식별자를 제공합니다.
+  포트 식별자는 각 TCP에 의해 독립적으로 선택되므로 고유하지 않을 수 있습니다. 각 TCP
+  내에서 고유한 주소를 제공하기 위해 TCP를 식별하는 인터넷 주소를 포트 식별자와 연결하여 함께
+  연결된 모든 네트워크에서 고유한 소켓을 만듭니다.
 
-  TCPs are free to associate ports with processes however they choose.
-  However, several basic concepts are necessary in any implementation.
-  There must be well-known sockets which the TCP associates only with
-  the "appropriate" processes by some means.  We envision that processes
-  may "own" ports, and that processes can initiate connections only on
-  the ports they own.  (Means for implementing ownership is a local
-  issue, but we envision a Request Port user command, or a method of
-  uniquely allocating a group of ports to a given process, e.g., by
-  associating the high order bits of a port name with a given process.)
+  연결은 끝에 있는 한 쌍의 소켓으로 완전히 지정됩니다. 로컬 소켓은 다른 외부 소켓에 대한 많은
+  연결에 참여할 수 있습니다. 연결은 양방향으로 데이터를 전달하는 데 사용할 수 있습니다. 즉,
+  "전이중"입니다.
 
-  A connection is specified in the OPEN call by the local port and
-  foreign socket arguments.  In return, the TCP supplies a (short) local
-  connection name by which the user refers to the connection in
-  subsequent calls.  There are several things that must be remembered
-  about a connection.  To store this information we imagine that there
-  is a data structure called a Transmission Control Block (TCB).  One
-  implementation strategy would have the local connection name be a
-  pointer to the TCB for this connection.  The OPEN call also specifies
-  whether the connection establishment is to be actively pursued, or to
-  be passively waited for.
+  TCP는 선택에 따라 포트를 프로세스와 자유롭게 연결할 수 있습니다. 그러나 모든 구현에는 몇
+  가지 기본 개념이 필요합니다. TCP가 어떤 방식으로든 "적절한" 프로세스와만 연관시키는 잘
+  알려진 소켓이 있어야 합니다. 우리는 프로세스가 포트를 "소유"할 수 있고 프로세스가 소유한
+  포트에서만 연결을 시작할 수 있다고 생각합니다. (소유권을 구현하는 수단은 로컬 문제이지만
+  요청 포트 사용자 명령 또는 주어진 프로세스에 포트 그룹을 고유하게 할당하는 방법(예: 포트
+  이름의 상위 비트를 주어진 프로세스와 연결)을 구상합니다.)
 
-  A passive OPEN request means that the process wants to accept incoming
-  connection requests rather than attempting to initiate a connection.
-  Often the process requesting a passive OPEN will accept a connection
-  request from any caller.  In this case a foreign socket of all zeros
-  is used to denote an unspecified socket.  Unspecified foreign sockets
-  are allowed only on passive OPENs.
+  연결은 로컬 포트 ​​및 외부 소켓 인수에 의해 OPEN 호출에서 지정됩니다. 그 대가로 TCP는
+  사용자가 후속 호출에서 연결을 참조하는 (짧은) 로컬 연결 이름을 제공합니다. 연결에 대해
+  기억해야 할 몇 가지 사항이 있습니다. 이 정보를 저장하기 위해 TCB(Transmission
+  Control Block)라는 데이터 구조가 있다고 가정합니다. 구현 전략 중 하나는 로컬 연결
+  이름이 이 연결에 대한 TCB에 대한 포인터가 되도록 하는 것입니다. OPEN 호출은 또한 연결
+  설정을 능동적으로 추구할지 또는 수동적으로 기다릴지 여부를 지정합니다.
 
-  A service process that wished to provide services for unknown other
-  processes would issue a passive OPEN request with an unspecified
-  foreign socket.  Then a connection could be made with any process that
-  requested a connection to this local socket.  It would help if this
-  local socket were known to be associated with this service.
+  Passive OPEN 요청은 프로세스가 연결을 시작하려고 시도하는 대신 들어오는
+  연결 요청을 수락하려고 함을 의미합니다. 종종 Passive OPEN을 요청하는 프로세스는 모든
+  호출자의 연결 요청을 수락합니다. 이 경우 모두 0인 외부 소켓이 지정되지 않은 소켓을
+  나타내는 데 사용됩니다. 지정되지 않은 외부 소켓은 Passive OPEN에서만 허용됩니다.
 
-  Well-known sockets are a convenient mechanism for a priori associating
-  a socket address with a standard service.  For instance, the
-  "Telnet-Server" process is permanently assigned to a particular
-  socket, and other sockets are reserved for File Transfer, Remote Job
-  Entry, Text Generator, Echoer, and Sink processes (the last three
-  being for test purposes).  A socket address might be reserved for
-  access to a "Look-Up" service which would return the specific socket
-  at which a newly created service would be provided.  The concept of a
-  well-known socket is part of the TCP specification, but the assignment
-  of sockets to services is outside this specification.  (See [4].)
+  알 수 없는 다른 프로세스에 서비스를 제공하려는 서비스 프로세스는 지정되지 않은 외부 소켓을
+  사용하여 Passive OPEN 요청을 발행합니다. 그런 다음 이 로컬 소켓에 대한 연결을 요청한
+  모든 프로세스와 연결할 수 있습니다. 이 로컬 소켓이 이 서비스와 연관되어 있는 것으로 알려져
+  있다면 도움이 될 것입니다.
 
-  Processes can issue passive OPENs and wait for matching active OPENs
-  from other processes and be informed by the TCP when connections have
-  been established.  Two processes which issue active OPENs to each
-  other at the same time will be correctly connected.  This flexibility
-  is critical for the support of distributed computing in which
-  components act asynchronously with respect to each other.
+  Well-known 소켓은 소켓 주소를 표준 서비스와 연관시키는 선험적인 메커니즘입니다. 예를 들어,
+  "Telnet-Server" 프로세스는 특정 소켓에 영구적으로 할당되고 다른 소켓은 파일 전송, 원격
+  작업 항목, 텍스트 생성기, Echoer 및 싱크 프로세스(마지막 3개는 테스트용임)용으로
+  예약됩니다. 새로 생성된 서비스가 제공될 특정 소켓을 반환하는 "Look-Up" 서비스에 대한
+  액세스를 위해 소켓 주소를 예약할 수 있습니다. Well-known 소켓의 개념은 TCP 사양의
+  일부이지만 서비스에 대한 소켓 할당은 이 사양의 범위를 벗어납니다. ([4] 참조.)
 
-  There are two principal cases for matching the sockets in the local
-  passive OPENs and an foreign active OPENs.  In the first case, the
-  local passive OPENs has fully specified the foreign socket.  In this
-  case, the match must be exact.  In the second case, the local passive
-  OPENs has left the foreign socket unspecified.  In this case, any
-  foreign socket is acceptable as long as the local sockets match.
-  Other possibilities include partially restricted matches.
+  프로세스는 Passive OPEN을 발행하고 다른 프로세스에서 일치하는 Active OPEN을 기다릴 수
+  있으며 연결이 설정되면 TCP에서 알립니다. 동시에 서로에게 Active OPEN을 발행하는 두
+  프로세스가 올바르게 연결됩니다. 이러한 유연성은 구성 요소가 서로에 대해 비동기적으로 작동하는
+  분산 컴퓨팅 지원에 매우 중요합니다.
 
-  If there are several pending passive OPENs (recorded in TCBs) with the
-  same local socket, an foreign active OPEN will be matched to a TCB
-  with the specific foreign socket in the foreign active OPEN, if such a
-  TCB exists, before selecting a TCB with an unspecified foreign socket.
+  로컬 Passive OPEN과 외부 Active OPEN의 소켓을 일치시키는 두 가지 주요 사례가
+  있습니다. 첫 번째 경우 로컬 Passive OPEN이 외부 소켓을 완전히 지정했습니다. 이 경우 일치
+  항목이 정확해야 합니다. 두 번째 경우에는 로컬 Passive OPEN이 외부 소켓을 지정하지 않은
+  상태로 둡니다. 이 경우 로컬 소켓이 일치하는 한 모든 외부 소켓이 허용됩니다. 다른 가능성에는
+  부분적으로 제한된 일치가 포함됩니다.
 
-  The procedures to establish connections utilize the synchronize (SYN)
-  control flag and involves an exchange of three messages.  This
-  exchange has been termed a three-way hand shake [3].
+  동일한 로컬 소켓을 사용하여 보류 중인 Passive OPEN(TCB에 기록됨)이 여러 개 있는 경우,
+  외부 Acitve OPEN은 지정되지 않은 외부 소켓이 있는 TCB를 선택하기 전에 해당 TCB가 존재하는
+  경우 외부 Active OPEN의 특정 외부 소켓이 있는 TCB와 일치합니다.
 
-  A connection is initiated by the rendezvous of an arriving segment
-  containing a SYN and a waiting TCB entry each created by a user OPEN
-  command.  The matching of local and foreign sockets determines when a
-  connection has been initiated.  The connection becomes "established"
-  when sequence numbers have been synchronized in both directions.
+  연결을 설정하는 절차는 동기화(SYN) 제어 플래그를 활용하고 세 가지 메시지 교환을 포함합니다.
+  이 교환을 3-way hand shake라고 합니다[3].
 
-  The clearing of a connection also involves the exchange of segments,
-  in this case carrying the FIN control flag.
+  사용자 OPEN 명령에 의해 각각 생성된 SYN 및 대기 TCB 항목을 포함하는 도착 세그먼트의
+  랑데부에 의해 연결이 시작됩니다. 로컬 및 외부 소켓의 일치에 따라 연결이 시작된 시기가
+  결정됩니다. 시퀀스 번호가 양방향으로 동기화되면 연결이 "설정(established)"됩니다.
+
+  연결 해제에는 세그먼트 교환도 포함되며, 이 경우에는 FIN 제어 플래그를 전달합니다.
 
 2.8.  Data Communication
 
