@@ -12,13 +12,13 @@
 # 목록
 
 ### Network
-   - [ ] [RFC793](https://github.com/protocol-diver/rfc-translate-kr/blob/main/kr/rfc793.txt) - Transmission Control Protocol
    - [x] [RFC894](https://github.com/protocol-diver/rfc-translate-kr/blob/main/kr/rfc894.txt) - A Standard for the Transmission of IP Datagrams over Ethernet Networks (이더넷 네트워크를 통한 IP 데이터그램 전송 표준)
    - [x] [RFC1918](https://github.com/protocol-diver/rfc-translate-kr/blob/main/kr/rfc1918.txt) - Address Allocation for Private Internets (사설 네트워크를 위한 주소 할당)
    - [ ] [RFC4193](https://github.com/protocol-diver/rfc-translate-kr/blob/main/kr/rfc4193.txt) - Unique Local IPv6 Unicast Addresses
    - [x] [RFC5128](https://github.com/protocol-diver/rfc-translate-kr/blob/main/kr/rfc5128.txt) - State of Peer-to-Peer (P2P) Communication across Network Address Translators (NATs)
 
 ### Protocol
+   - [ ] [RFC793](https://github.com/protocol-diver/rfc-translate-kr/blob/main/kr/rfc793.txt) - Transmission Control Protocol
    - [ ] [RFC3550](https://github.com/protocol-diver/rfc-translate-kr/blob/main/kr/rfc3550.txt) - RTP: A Transport Protocol for Real-Time Applications
    - [x] [RFC6886](https://github.com/protocol-diver/rfc-translate-kr/blob/main/kr/rfc6886.txt) - NAT Port Mapping Protocol (NAT-PMP)
    - [x] [devp2p/eth](https://github.com/protocol-diver/paper-translate-kr/blob/main/kr/devp2p/caps/eth.md) - Etheruem devp2p eth procotol
