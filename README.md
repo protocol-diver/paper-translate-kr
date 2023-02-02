@@ -14,7 +14,6 @@
 ### Network
    - [x] [RFC894](https://github.com/protocol-diver/rfc-translate-kr/blob/main/kr/rfc894.txt) - A Standard for the Transmission of IP Datagrams over Ethernet Networks (이더넷 네트워크를 통한 IP 데이터그램 전송 표준)
    - [x] [RFC1918](https://github.com/protocol-diver/rfc-translate-kr/blob/main/kr/rfc1918.txt) - Address Allocation for Private Internets (사설 네트워크를 위한 주소 할당)
-   - [ ] [RFC4193](https://github.com/protocol-diver/rfc-translate-kr/blob/main/kr/rfc4193.txt) - Unique Local IPv6 Unicast Addresses
    - [x] [RFC5128](https://github.com/protocol-diver/rfc-translate-kr/blob/main/kr/rfc5128.txt) - State of Peer-to-Peer (P2P) Communication across Network Address Translators (NATs)
 
 ### Protocol
