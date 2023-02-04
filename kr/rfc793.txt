@@ -727,151 +727,130 @@ IENs:  129, 124, 112, 81,
     TCP 헤더 패딩은 TCP 헤더가 끝나고 데이터가 32비트 경계에서 시작되도록 하는 데
     사용됩니다. 패딩은 0으로 구성됩니다.
 
-3.2.  Terminology
+3.2.  Terminology (용어)
 
-  Before we can discuss very much about the operation of the TCP we need
-  to introduce some detailed terminology.  The maintenance of a TCP
-  connection requires the remembering of several variables.  We conceive
-  of these variables being stored in a connection record called a
-  Transmission Control Block or TCB.  Among the variables stored in the
-  TCB are the local and remote socket numbers, the security and
-  precedence of the connection, pointers to the user's send and receive
-  buffers, pointers to the retransmit queue and to the current segment.
-  In addition several variables relating to the send and receive
-  sequence numbers are stored in the TCB.
+  TCP 작동에 대해 많은 논의를 하기 전에 몇 가지 자세한 용어를 소개해야 합니다. TCP 연결을
+  유지하려면 여러 변수를 기억해야 합니다. 우리는 이러한 변수가 전송 제어 블록(TCB)이라는 연결
+  레코드에 저장된다고 상상합니다. TCB에 저장된 변수 중에는 로컬 및 원격 소켓 번호, 연결의 보안
+  및 우선 순위, 사용자의 송신 및 수신 버퍼에 대한 포인터, 재전송 큐 및 현재 세그먼트에 대한
+  포인터가 있습니다. 또한 송신 및 수신 시퀀스 번호와 관련된 여러 변수가 TCB에 저장됩니다.
 
-    Send Sequence Variables
+    Send Sequence Variables (시퀀스 변수 전송)
 
-      SND.UNA - send unacknowledged
-      SND.NXT - send next
-      SND.WND - send window
-      SND.UP  - send urgent pointer
-      SND.WL1 - segment sequence number used for last window update
-      SND.WL2 - segment acknowledgment number used for last window
-                update
-      ISS     - initial send sequence number
+      SND.UNA - unacknowledged 전송
+      SND.NXT - next 전송
+      SND.WND - window 전송
+      SND.UP  - urgent pointer 전송
+      SND.WL1 - 마지막 window 업데이트에 사용된 세그먼트 시퀀스 번호
+      SND.WL2 - 마지막 window 업데이트에 사용된 세그먼트 acknowledged 번호
+      ISS     - 초기 전송 시퀀스 번호
 
-    Receive Sequence Variables
+    Receive Sequence Variables (시퀀스 변수 수신)
 
-      RCV.NXT - receive next
-      RCV.WND - receive window
-      RCV.UP  - receive urgent pointer
-      IRS     - initial receive sequence number
+      RCV.NXT - next 수신
+      RCV.WND - window 수신
+      RCV.UP  - urgent pointer 수신
+      IRS     - 초기 수신 시퀀스 번호
 
-  The following diagrams may help to relate some of these variables to
-  the sequence space.
+  다음 다이어그램은 이러한 변수 중 일부를 시퀀스 공간과 관련시키는 데 도움이 될 수 있습니다.
 
-  Send Sequence Space
+  Send Sequence Space (시퀀스 공간 전송)
 
                    1         2          3          4      
               ----------|----------|----------|---------- 
                      SND.UNA    SND.NXT    SND.UNA        
                                           +SND.WND        
 
-        1 - old sequence numbers which have been acknowledged  
-        2 - sequence numbers of unacknowledged data            
-        3 - sequence numbers allowed for new data transmission 
-        4 - future sequence numbers which are not yet allowed  
+        1 - 확인된 이전 시퀀스 번호
+        2 - unacknowledged 데이터의 시퀀스 번호
+        3 - 새로운 데이터 전송에 허용되는 시퀀스 번호
+        4 - 아직 허용되지 않은 미래 시퀀스 번호
 
-                          Send Sequence Space
+                              시퀀스 공간 전송
 
-                               Figure 4.
+                                 그림 4.
     
     
 
-  The send window is the portion of the sequence space labeled 3 in
-  figure 4.
+  Window 전송은 그림 4에서 3으로 표시된 시퀀스 공간의 일부입니다.
 
-  Receive Sequence Space
+
+  Receive Sequence Space (시퀀스 공간 수신)
 
                        1          2          3      
                    ----------|----------|---------- 
                           RCV.NXT    RCV.NXT        
                                     +RCV.WND        
 
-        1 - old sequence numbers which have been acknowledged  
-        2 - sequence numbers allowed for new reception         
-        3 - future sequence numbers which are not yet allowed  
+        1 - acknowledged 받은 이전 시퀀스 번호
+        2 - 새로운 수신에 허용되는 시퀀스 번호
+        3 - 아직 허용되지 않은 미래 시퀀스 번호
 
-                         Receive Sequence Space
+                               시퀀스 공간 수신
 
-                               Figure 5.
+                                   그림 5.
     
     
 
-  The receive window is the portion of the sequence space labeled 2 in
-  figure 5.
+  Window 수신은 그림 5에서 2로 표시된 시퀀스 공간의 일부입니다.
 
-  There are also some variables used frequently in the discussion that
-  take their values from the fields of the current segment.
+  현재 세그먼트의 필드에서 값을 가져오는 토론에서 자주 사용되는 일부 변수도 있습니다.
 
-    Current Segment Variables
+    Current Segment Variables (현재 세그먼트 변수)
 
-      SEG.SEQ - segment sequence number
-      SEG.ACK - segment acknowledgment number
-      SEG.LEN - segment length
-      SEG.WND - segment window
-      SEG.UP  - segment urgent pointer
-      SEG.PRC - segment precedence value
+      SEG.SEQ - 세그먼트 시퀀스 번호
+      SEG.ACK - 세그먼트 acknowledgment 번호
+      SEG.LEN - 세그먼트 길이
+      SEG.WND - 세그먼트 window
+      SEG.UP  - 세그먼트 urgent pointer
+      SEG.PRC - 세그먼트 우선 순위 값
 
-  A connection progresses through a series of states during its
-  lifetime.  The states are:  LISTEN, SYN-SENT, SYN-RECEIVED,
+  연결은 수명 동안 일련의 상태를 통해 진행됩니다. 상태는 LISTEN, SYN-SENT, SYN-RECEIVED,
   ESTABLISHED, FIN-WAIT-1, FIN-WAIT-2, CLOSE-WAIT, CLOSING, LAST-ACK,
-  TIME-WAIT, and the fictional state CLOSED.  CLOSED is fictional
-  because it represents the state when there is no TCB, and therefore,
-  no connection.  Briefly the meanings of the states are:
+  TIME-WAIT 및 가상 상태 CLOSED입니다. CLOSED는 TCB가 없고 따라서 연결이 없는 상태를
+  나타내므로 허구입니다. 상태에 대한 간단한 의미는 다음과 같습니다:
 
-    LISTEN - represents waiting for a connection request from any remote
-    TCP and port.
+    LISTEN - 원격 TCP 및 포트에서 연결 요청을 기다리는 것을 나타냅니다.
 
-    SYN-SENT - represents waiting for a matching connection request
-    after having sent a connection request.
+    SYN-SENT - 연결 요청을 보낸 후 일치하는 연결 요청을 기다리는 것을 나타냅니다.
 
-    SYN-RECEIVED - represents waiting for a confirming connection
-    request acknowledgment after having both received and sent a
-    connection request.
+    SYN-RECEIVED - 연결 요청을 수신하고 보낸 후 확인 연결 요청 확인을 기다리는 것을
+    나타냅니다.
 
-    ESTABLISHED - represents an open connection, data received can be
-    delivered to the user.  The normal state for the data transfer phase
-    of the connection.
+    ESTABLISHED - 열린 연결을 나타내며 수신된 데이터를 사용자에게 전달할 수 있습니다.
+    연결의 데이터 전송 단계에 대한 정상 상태입니다.
 
-    FIN-WAIT-1 - represents waiting for a connection termination request
-    from the remote TCP, or an acknowledgment of the connection
-    termination request previously sent.
+    FIN-WAIT-1 - 원격 TCP의 연결 종료 요청을 기다리거나 이전에 보낸 연결 종료 요청에 대한
+    확인을 나타냅니다.
 
-    FIN-WAIT-2 - represents waiting for a connection termination request
-    from the remote TCP.
+    FIN-WAIT-2 - 원격 TCP의 연결 종료 요청을 기다리는 것을 나타냅니다.
 
-    CLOSE-WAIT - represents waiting for a connection termination request
-    from the local user.
+    CLOSE-WAIT - 로컬 사용자의 연결 종료 요청을 기다리는 것을 나타냅니다.
 
-    CLOSING - represents waiting for a connection termination request
-    acknowledgment from the remote TCP.
+    CLOSING - 원격 TCP의 연결 종료 요청 승인을 기다리는 것을 나타냅니다.
 
-    LAST-ACK - represents waiting for an acknowledgment of the
-    connection termination request previously sent to the remote TCP
-    (which includes an acknowledgment of its connection termination
-    request).
+    LAST-ACK - 이전에 원격 TCP로 전송된 연결 종료 요청에 대한 확인(연결 종료 요청에 대한
+    확인 포함)을 기다리는 것을 나타냅니다.
 
-    TIME-WAIT - represents waiting for enough time to pass to be sure
-    the remote TCP received the acknowledgment of its connection
-    termination request.
+    TIME-WAIT - 원격 TCP가 연결 종료 요청에 대한 승인을 받았는지 확인하기 위해 충분한 시간을
+    기다리는 것을 나타냅니다.
 
-    CLOSED - represents no connection state at all.
+    CLOSED - 연결 상태가 전혀 없음을 나타냅니다.
 
+  ## ? ? ? ? ? ##
   A TCP connection progresses from one state to another in response to
   events.  The events are the user calls, OPEN, SEND, RECEIVE, CLOSE,
   ABORT, and STATUS; the incoming segments, particularly those
   containing the SYN, ACK, RST and FIN flags; and timeouts.
+  TCP 연결은 이벤트에 대한 응답으로 한 상태에서 다른 상태로 진행됩니다. 이벤트란 사용자 호출하는
+  OPEN, SEND, RECEIVE, CLOSE, ABORT 및 STATUS입니다; 들어오는 세그먼트, 특히 SYN,
+  ACK, RST 및 FIN 플래그을 포함하는; 그리고 타임아웃.
 
-  The state diagram in figure 6 illustrates only state changes, together
-  with the causing events and resulting actions, but addresses neither
-  error conditions nor actions which are not connected with state
-  changes.  In a later section, more detail is offered with respect to
-  the reaction of the TCP to events.
+  그림 6의 상태 다이어그램은 원인 이벤트 및 결과 작업과 함께 상태 변경만 보여주지만 상태 변경과
+  연결되지 않은 오류 조건이나 작업은 다루지 않습니다. 이후 섹션에서 이벤트에 대한 TCP의 반응과
+  관련하여 더 자세한 내용이 제공됩니다.
 
-  NOTE BENE:  this diagram is only a summary and must not be taken as
-  the total specification.
+  NOTE BENE:  이 다이어그램은 요약일 뿐이며 전체 사양으로 간주해서는 안 됩니다.
                                     
                               +---------+ ---------\      active OPEN  
                               |  CLOSED |            \    -----------  
@@ -918,102 +897,85 @@ IENs:  129, 124, 112, 81,
      ------------------------>|TIME WAIT|------------------>| CLOSED  |
                               +---------+                   +---------+
 
-                      TCP Connection State Diagram
-                               Figure 6.
+                          TCP 연결 상태 다이어그램
+                                 그림 6.
 
-3.3.  Sequence Numbers
+3.3.  Sequence Numbers (시퀀스 번호)
 
-  A fundamental notion in the design is that every octet of data sent
-  over a TCP connection has a sequence number.  Since every octet is
-  sequenced, each of them can be acknowledged.  The acknowledgment
-  mechanism employed is cumulative so that an acknowledgment of sequence
-  number X indicates that all octets up to but not including X have been
-  received.  This mechanism allows for straight-forward duplicate
-  detection in the presence of retransmission.  Numbering of octets
-  within a segment is that the first data octet immediately following
-  the header is the lowest numbered, and the following octets are
-  numbered consecutively.
+  설계의 기본 개념은 TCP 연결을 통해 전송되는 모든 데이터 옥텟에 시퀀스 번호가 있다는 것입니다.
+  모든 옥텟이 시퀀싱되기 때문에 각 옥텟을 확인할 수 있습니다. 채택된 acknowledgment
+  메커니즘은 누적되므로 시퀀스 번호 X의 acknowledgment은 X를 제외한 모든 옥텟이 수신되었음을
+  나타냅니다. 이 메커니즘은 재전송이 있을 때 간단한 중복 감지를 허용합니다. 세그먼트 내 옥텟의
+  번호 매기기는 헤더 바로 다음의 첫 번째 데이터 옥텟이 가장 낮은 번호가 매겨지고 다음 옥텟이
+  연속적으로 번호가 매겨지는 것입니다.
 
-  It is essential to remember that the actual sequence number space is
-  finite, though very large.  This space ranges from 0 to 2**32 - 1.
-  Since the space is finite, all arithmetic dealing with sequence
-  numbers must be performed modulo 2**32.  This unsigned arithmetic
-  preserves the relationship of sequence numbers as they cycle from
-  2**32 - 1 to 0 again.  There are some subtleties to computer modulo
-  arithmetic, so great care should be taken in programming the
-  comparison of such values.  The symbol "=<" means "less than or equal"
-  (modulo 2**32).
+  실제 시퀀스 번호 공간은 매우 크지만 유한하다는 점을 기억하는 것이 중요합니다. 이 공간의 범위는
+  0에서 2**32 - 1까지입니다. 공간이 유한하기 때문에 시퀀스 번호를 다루는 모든 산술은 모듈러
+  2**32로 수행되어야 합니다. 이 부호 없는 산술은 2**32 - 1에서 0으로 다시 순환할 때 시퀀스
+  번호의 관계를 유지합니다. 컴퓨터 모듈러 산술에는 약간의 미묘함이 있으므로 이러한 값의 비교를
+  프로그래밍할 때 상당한 주의를 기울여야 합니다. "=<" 기호는 "작거나 같음"(모듈러 2**32)을
+  의미합니다.
 
-  The typical kinds of sequence number comparisons which the TCP must
-  perform include:
+  TCP가 수행해야 하는 일반적인 시퀀스 번호 비교 유형은 다음과 같습니다:
 
-    (a)  Determining that an acknowledgment refers to some sequence
-         number sent but not yet acknowledged.
+    (a)  acknowledgment가 전송되었지만 아직 승인(acknowledged)되지 않은 일부 시퀀스
+         번호를 참조하는지 확인합니다.
 
-    (b)  Determining that all sequence numbers occupied by a segment
-         have been acknowledged (e.g., to remove the segment from a
-         retransmission queue).
+    (b)  세그먼트가 점유한 모든 시퀀스 번호가 승인되었는지 확인(예: 재전송 대기열에서 세그먼트
+         제거)
 
-    (c)  Determining that an incoming segment contains sequence numbers
-         which are expected (i.e., that the segment "overlaps" the
-         receive window).
+    (c)  들어오는 세그먼트에 예상되는 시퀀스 번호가 포함되어 있는지 확인(즉, 세그먼트가 수신
+         window와 "겹침")
 
-  In response to sending data the TCP will receive acknowledgments.  The
-  following comparisons are needed to process the acknowledgments.
+  데이터 전송에 대한 응답으로 TCP는 acknowledgment를 받습니다. acknowledgment를
+  처리하려면 다음과 같은 비교가 필요합니다.
 
-    SND.UNA = oldest unacknowledged sequence number
+    SND.UNA = 가장 오래된 unacknowledged 시퀀스 번호
 
-    SND.NXT = next sequence number to be sent
+    SND.NXT = 다음 보낼 시퀀스 번호
 
-    SEG.ACK = acknowledgment from the receiving TCP (next sequence
-              number expected by the receiving TCP)
+    SEG.ACK = 수신 TCP의 acknowledgment(수신 TCP가 예상하는 다음 시퀀스 번호)
 
-    SEG.SEQ = first sequence number of a segment
+    SEG.SEQ = 세그먼트의 첫 번째 시퀀스 번호
 
-    SEG.LEN = the number of octets occupied by the data in the segment
-              (counting SYN and FIN)
+    SEG.LEN = 세그먼트의 데이터가 차지하는 옥텟 수(SYN 및 FIN 계산)
 
-    SEG.SEQ+SEG.LEN-1 = last sequence number of a segment
+    SEG.SEQ+SEG.LEN-1 = 세그먼트의 마지막 시퀀스 번호
 
-  A new acknowledgment (called an "acceptable ack"), is one for which
-  the inequality below holds:
+  새로운 acknowledgment("acceptable ack"이라고 함)는 다음과 같은 부등식을
+  유지하는 것입니다:
 
     SND.UNA < SEG.ACK =< SND.NXT
 
-  A segment on the retransmission queue is fully acknowledged if the sum
-  of its sequence number and length is less or equal than the
-  acknowledgment value in the incoming segment.
+  재전송 대기열의 세그먼트는 시퀀스 번호와 길이의 합이 수신 세그먼트의 acknowledgment 값보다
+  작거나 같으면 완전히 확인된 것입니다.
 
-  When data is received the following comparisons are needed:
+  데이터가 수신되면 다음 비교가 필요합니다:
 
-    RCV.NXT = next sequence number expected on an incoming segments, and
-        is the left or lower edge of the receive window
+    RCV.NXT = 들어오는 세그먼트에서 예상되는 다음 시퀀스 번호이며 수신 window의 왼쪽 또는
+        아래쪽 가장자리입니다.
 
-    RCV.NXT+RCV.WND-1 = last sequence number expected on an incoming
-        segment, and is the right or upper edge of the receive window
+    RCV.NXT+RCV.WND-1 = 들어오는 세그먼트에서 예상되는 마지막 시퀀스 번호이며 수신
+        window의 오른쪽 또는 위쪽 가장자리입니다.
 
-    SEG.SEQ = first sequence number occupied by the incoming segment
+    SEG.SEQ = 들어오는 세그먼트가 차지하는 첫 번째 시퀀스 번호
 
-    SEG.SEQ+SEG.LEN-1 = last sequence number occupied by the incoming
-        segment
+    SEG.SEQ+SEG.LEN-1 = 들어오는 세그먼트가 차지하는 마지막 시퀀스 번호
 
-  A segment is judged to occupy a portion of valid receive sequence
-  space if
+  다음과 같은 경우 세그먼트가 유효한 수신 시퀀스 공간의 일부를 차지하는 것으로 판단됩니다
 
     RCV.NXT =< SEG.SEQ < RCV.NXT+RCV.WND
 
-  or
+  또는
 
     RCV.NXT =< SEG.SEQ+SEG.LEN-1 < RCV.NXT+RCV.WND
 
-  The first part of this test checks to see if the beginning of the
-  segment falls in the window, the second part of the test checks to see
-  if the end of the segment falls in the window; if the segment passes
-  either part of the test it contains data in the window.
+  이 테스트의 첫 번째 부분은 세그먼트의 시작 부분이 window에 속하는지 확인하고 테스트의 두 번째
+  부분은 세그먼트의 끝이 window에 속하는지 확인합니다. 세그먼트가 테스트의 어느 한 부분을
+  통과하면 window에 데이터가 포함됩니다.
 
-  Actually, it is a little more complicated than this.  Due to zero
-  windows and zero length segments, we have four cases for the
-  acceptability of an incoming segment:
+  실제로는 이것보다 조금 더 복잡합니다. zero window와 길이가 0인 세그먼트로 인해 들어오는
+  세그먼트의 허용 가능성에 대한 네 가지 경우가 있습니다:
 
     Segment Receive  Test
     Length  Window
@@ -1028,201 +990,142 @@ IENs:  129, 124, 112, 81,
       >0      >0     RCV.NXT =< SEG.SEQ < RCV.NXT+RCV.WND
                   or RCV.NXT =< SEG.SEQ+SEG.LEN-1 < RCV.NXT+RCV.WND
 
-  Note that when the receive window is zero no segments should be
-  acceptable except ACK segments.  Thus, it is be possible for a TCP to
-  maintain a zero receive window while transmitting data and receiving
-  ACKs.  However, even when the receive window is zero, a TCP must
-  process the RST and URG fields of all incoming segments.
+  수신 window가 0이면 ACK 세그먼트를 제외하고 어떤 세그먼트도 허용되지 않아야 합니다. 따라서
+  TCP가 데이터를 전송하고 ACK를 수신하는 동안 수신 window을 0으로 유지하는 것이 가능합니다.
+  그러나 수신 window가 0인 경우에도 TCP는 들어오는 모든 세그먼트의 RST 및 URG 필드를
+  처리해야 합니다.
 
-  We have taken advantage of the numbering scheme to protect certain
-  control information as well.  This is achieved by implicitly including
-  some control flags in the sequence space so they can be retransmitted
-  and acknowledged without confusion (i.e., one and only one copy of the
-  control will be acted upon).  Control information is not physically
-  carried in the segment data space.  Consequently, we must adopt rules
-  for implicitly assigning sequence numbers to control.  The SYN and FIN
-  are the only controls requiring this protection, and these controls
-  are used only at connection opening and closing.  For sequence number
-  purposes, the SYN is considered to occur before the first actual data
-  octet of the segment in which it occurs, while the FIN is considered
-  to occur after the last actual data octet in a segment in which it
-  occurs.  The segment length (SEG.LEN) includes both data and sequence
-  space occupying controls.  When a SYN is present then SEG.SEQ is the
-  sequence number of the SYN.
+  또한 특정 제어 정보를 보호하기 위해 번호 매기기 체계를 활용했습니다. 이는 시퀀스 공간에 일부
+  제어 플래그를 암시적으로 포함하여 혼동 없이 재전송 및 승인될 수 있도록 함으로써 달성됩니다(즉,
+  하나의 컨트롤 사본만 실행됨). 제어 정보는 세그먼트 데이터 공간에 물리적으로 전달되지 않습니다.
+  결과적으로 컨트롤에 암시적으로 시퀀스 번호를 할당하는 규칙을 채택해야 합니다. SYN 및 FIN은
+  이러한 보호가 필요한 유일한 컨트롤이며 이러한 컨트롤은 연결을 열고 닫을 때만 사용됩니다. 시퀀스
+  번호를 위해 SYN은 발생하는 세그먼트의 첫 번째 실제 데이터 옥텟 이전에 발생하는 것으로 간주되는
+  반면 FIN은 발생하는 세그먼트의 마지막 실제 데이터 옥텟 이후에 발생하는 것으로 간주됩니다.
+  세그먼트 길이(SEG.LEN)에는 컨트롤을 차지하는 데이터 및 시퀀스 공간이 모두 포함됩니다. SYN이
+  있는 경우 SEG.SEQ는 SYN의 시퀀스 번호입니다.
 
-  Initial Sequence Number Selection
+  Initial Sequence Number Selection (초기 시퀀스 번호 선택)
 
-  The protocol places no restriction on a particular connection being
-  used over and over again.  A connection is defined by a pair of
-  sockets.  New instances of a connection will be referred to as
-  incarnations of the connection.  The problem that arises from this is
-  -- "how does the TCP identify duplicate segments from previous
-  incarnations of the connection?"  This problem becomes apparent if the
-  connection is being opened and closed in quick succession, or if the
-  connection breaks with loss of memory and is then reestablished.
+  프로토콜은 반복해서 사용되는 특정 연결에 제한을 두지 않습니다. 연결은 한 쌍의 소켓으로
+  정의됩니다. 연결의 새 인스턴스를 연결의 실현(incarnations)이라고 지칭할 것 입니다. 여기서
+  발생하는 문제는 -- "어떻게 TCP가 연결의 이전 실현에서 중복 세그먼트를 식별할 것인가?"
+  입니다. 이 문제는 연결이 빠르게 연속적으로 열리고 닫히거나 메모리 손실로 인해 연결이 끊어졌다가
+  다시 설정되는 경우 명백해집니다.
 
-  To avoid confusion we must prevent segments from one incarnation of a
-  connection from being used while the same sequence numbers may still
-  be present in the network from an earlier incarnation.  We want to
-  assure this, even if a TCP crashes and loses all knowledge of the
-  sequence numbers it has been using.  When new connections are created,
-  an initial sequence number (ISN) generator is employed which selects a
-  new 32 bit ISN.  The generator is bound to a (possibly fictitious) 32
-  bit clock whose low order bit is incremented roughly every 4
-  microseconds.  Thus, the ISN cycles approximately every 4.55 hours.
-  Since we assume that segments will stay in the network no more than
-  the Maximum Segment Lifetime (MSL) and that the MSL is less than 4.55
-  hours we can reasonably assume that ISN's will be unique.
+  혼동을 피하기 위해 이전 실현에서 네트워크에 동일한 시퀀스 번호가 여전히 존재할 수 있는 동안
+  연결의 한 실현에서 세그먼트가 사용되는 것을 방지해야 합니다. TCP가 충돌하여 사용하고 있는
+  시퀀스 번호에 대한 모든 정보를 잃어버리더라도 이를 보장하고자 합니다. 새 연결이 생성되면
+  새로운 32비트 ISN을 선택하는 초기 시퀀스 번호(ISN = Initial Sequence Number)
+  생성기가 사용됩니다. 생성기는 하위 비트가 약 4마이크로초마다 증가하는 (아마도 가상의) 32비트
+  클럭에 바인딩됩니다. 따라서 ISN은 약 4.55시간마다 순환합니다. 세그먼트가 최대 세그먼트 수명
+  (MSL = Maximum Segment Lifetime) 이하로 네트워크에 유지되고 MSL이 4.55시간
+  미만이라고 가정하므로 ISN이 고유할 것이라고 합리적으로 가정할 수 있습니다.
 
-  For each connection there is a send sequence number and a receive
-  sequence number.  The initial send sequence number (ISS) is chosen by
-  the data sending TCP, and the initial receive sequence number (IRS) is
-  learned during the connection establishing procedure.
+  각 연결에는 송신 시퀀스 번호와 수신 시퀀스 번호가 있습니다. 초기 전송 시퀀스 번호(ISS =
+  Initial Send Sequence number)는 데이터 전송 TCP에 의해 선택되고 초기 수신 시퀀스
+  번호 (IRS = Initial Receive Sequence number)는 연결 설정 절차 중에 학습됩니다.
 
-  For a connection to be established or initialized, the two TCPs must
-  synchronize on each other's initial sequence numbers.  This is done in
-  an exchange of connection establishing segments carrying a control bit
-  called "SYN" (for synchronize) and the initial sequence numbers.  As a
-  shorthand, segments carrying the SYN bit are also called "SYNs".
-  Hence, the solution requires a suitable mechanism for picking an
-  initial sequence number and a slightly involved handshake to exchange
-  the ISN's.
+  연결을 설정하거나 초기화하려면 두 TCP가 서로의 초기 시퀀스 번호를 동기화해야 합니다. 이것은
+  "SYN"(동기화용)이라는 제어 비트와 초기 시퀀스 번호를 전달하는 연결 설정 세그먼트의 교환에서
+  수행됩니다. 간단히 말해서 SYN 비트를 전달하는 세그먼트를 "SYN"이라고도 합니다. 따라서
+  솔루션에는 초기 시퀀스 번호를 선택하기 위한 적절한 메커니즘과 ISN을 교환하기 위해 약간 관련된
+  핸드셰이크가 필요합니다.
 
-  The synchronization requires each side to send it's own initial
-  sequence number and to receive a confirmation of it in acknowledgment
-  from the other side.  Each side must also receive the other side's
-  initial sequence number and send a confirming acknowledgment.
+  동기화를 위해서는 각 측이 자신의 초기 시퀀스 번호를 전송하고 상대방의 acknowledgment을
+  수신해야 합니다. 각 측은 또한 상대방의 초기 시퀀스 번호를 수신하고 확인 acknowledgment를
+  보내야 합니다.
 
-    1) A --> B  SYN my sequence number is X
-    2) A <-- B  ACK your sequence number is X
-    3) A <-- B  SYN my sequence number is Y
-    4) A --> B  ACK your sequence number is Y
+    1) A --> B  SYN 내 시퀀스 번호는 X입니다.
+    2) A <-- B  ACK 당신의 시퀀스 번호는 X입니다.
+    3) A <-- B  SYN 내 시퀀스 번호는 Y입니다.
+    4) A --> B  ACK 당신의 시퀀스 번호는 Y입니다.
 
-  Because steps 2 and 3 can be combined in a single message this is
-  called the three way (or three message) handshake.
+  2단계와 3단계를 단일 메시지로 결합할 수 있기 때문에 이를 3방향(또는 3개의 메시지)
+  핸드셰이크라고 합니다.
 
-  A three way handshake is necessary because sequence numbers are not
-  tied to a global clock in the network, and TCPs may have different
-  mechanisms for picking the ISN's.  The receiver of the first SYN has
-  no way of knowing whether the segment was an old delayed one or not,
-  unless it remembers the last sequence number used on the connection
-  (which is not always possible), and so it must ask the sender to
-  verify this SYN.  The three way handshake and the advantages of a
-  clock-driven scheme are discussed in [3].
+  시퀀스 번호가 네트워크의 전역 시계에 연결되어 있지 않고 TCP가 ISN 선택을 위한 다른
+  메커니즘을 가질 수 있기 때문에 3방향 핸드셰이크가 필요합니다. 첫 번째 SYN의 수신자는 연결에
+  사용된 마지막 시퀀스 번호(항상 가능한 것은 아님)를 기억하지 않는 한 세그먼트가 이전에 지연된
+  세그먼트인지 여부를 알 방법이 없으므로 발신자에게 이 SYN을 확인하도록 요청해야 합니다. 3방향
+  핸드셰이크와 클록 기반 방식의 장점은 [3]에서 설명합니다.
 
   Knowing When to Keep Quiet
 
-  To be sure that a TCP does not create a segment that carries a
-  sequence number which may be duplicated by an old segment remaining in
-  the network, the TCP must keep quiet for a maximum segment lifetime
-  (MSL) before assigning any sequence numbers upon starting up or
-  recovering from a crash in which memory of sequence numbers in use was
-  lost.  For this specification the MSL is taken to be 2 minutes.  This
-  is an engineering choice, and may be changed if experience indicates
-  it is desirable to do so.  Note that if a TCP is reinitialized in some
-  sense, yet retains its memory of sequence numbers in use, then it need
-  not wait at all; it must only be sure to use sequence numbers larger
-  than those recently used.
+  TCP가 네트워크에 남아 있는 이전 세그먼트에 의해 복제될 수 있는 시퀀스 번호를 전달하는
+  세그먼트를 생성하지 않도록 하기 위해 TCP는 시작 시 시퀀스 번호를 할당하기 전에 최대 세그먼트
+  수명(MSL) 동안 조용히 유지하거나 사용 중인 시퀀스 번호의 메모리가 손실된 충돌에서 복구되어야
+  합니다. 이 사양의 경우 MSL은 2분으로 간주됩니다. 이는 공학적 선택이며 경험상 그렇게 하는
+  것이 바람직하다고 판단되면 변경할 수 있습니다. TCP가 어떤 의미에서 재초기화되었지만 사용 중인
+  시퀀스 번호의 메모리를 유지하는 경우 전혀 기다릴 필요가 없습니다; 최근에 사용한 시퀀스 번호보다
+  큰 시퀀스 번호만 사용해야 합니다.
 
   The TCP Quiet Time Concept
 
-    This specification provides that hosts which "crash" without
-    retaining any knowledge of the last sequence numbers transmitted on
-    each active (i.e., not closed) connection shall delay emitting any
-    TCP segments for at least the agreed Maximum Segment Lifetime (MSL)
-    in the internet system of which the host is a part.  In the
-    paragraphs below, an explanation for this specification is given.
-    TCP implementors may violate the "quiet time" restriction, but only
-    at the risk of causing some old data to be accepted as new or new
-    data rejected as old duplicated by some receivers in the internet
-    system.
+    이 사양은 각 활성(즉, 닫히지 않은) 연결에서 전송된 마지막 시퀀스 번호에 대한 지식을 보유하지
+    않고 "충돌"하는 호스트는 호스트가 속한 인터넷 시스템에서 합의된 최대 세그먼트 수명(MSL) 이상
+    동안 TCP 세그먼트 방출을 지연해야 한다고 규정합니다. 아래 단락에서 이 사양에 대한 설명이
+    제공됩니다. TCP 구현자는 "quiet time" 제한을 위반할 수 있지만 인터넷 시스템의 일부
+    수신자에 의해 오래된 데이터로 거부되거나 이전 데이터로 거부된 새로운 데이터로 일부 오래된
+    데이터가 수락될 위험이 있습니다.
 
-    TCPs consume sequence number space each time a segment is formed and
-    entered into the network output queue at a source host. The
-    duplicate detection and sequencing algorithm in the TCP protocol
-    relies on the unique binding of segment data to sequence space to
-    the extent that sequence numbers will not cycle through all 2**32
-    values before the segment data bound to those sequence numbers has
-    been delivered and acknowledged by the receiver and all duplicate
-    copies of the segments have "drained" from the internet.  Without
-    such an assumption, two distinct TCP segments could conceivably be
+    TCP는 세그먼트가 형성되어 송신자 호스트 네트워크 출력 큐에 입력될 때마다 시퀀스 번호 공간을
+    소비합니다. TCP 프로토콜의 중복 감지 및 시퀀싱 알고리즘은 해당 시퀀스 번호에 바인딩된
+    세그먼트 데이터가 전달되기 전에 시퀀스 번호가 모든 2**32 값을 순환하지 않는 범위까지 시퀀스
+    공간에 대한 세그먼트 데이터의 고유한 바인딩에 의존합니다. 수신자에 의해 확인되고 세그먼트의
+    모든 중복 사본이 인터넷에서 "배출"되었습니다. 이러한 가정 없이 두 개의 서로 다른 TCP
+    세그먼트는
 
-    assigned the same or overlapping sequence numbers, causing confusion
-    at the receiver as to which data is new and which is old.  Remember
-    that each segment is bound to as many consecutive sequence numbers
-    as there are octets of data in the segment.
+    동일하거나 겹치는 시퀀스 번호가 할당되어 수신기에서 어떤 데이터가 새 데이터이고 어떤 데이터가
+    오래된 것인지 혼동을 일으킵니다. 각 세그먼트는 세그먼트에 있는 데이터의 옥텟 수만큼 많은 연속
+    시퀀스 번호에 연결되어 있음을 기억하십시오.
 
-    Under normal conditions, TCPs keep track of the next sequence number
-    to emit and the oldest awaiting acknowledgment so as to avoid
-    mistakenly using a sequence number over before its first use has
-    been acknowledged.  This alone does not guarantee that old duplicate
-    data is drained from the net, so the sequence space has been made
-    very large to reduce the probability that a wandering duplicate will
-    cause trouble upon arrival.  At 2 megabits/sec. it takes 4.5 hours
-    to use up 2**32 octets of sequence space.  Since the maximum segment
-    lifetime in the net is not likely to exceed a few tens of seconds,
-    this is deemed ample protection for foreseeable nets, even if data
-    rates escalate to l0's of megabits/sec.  At 100 megabits/sec, the
-    cycle time is 5.4 minutes which may be a little short, but still
-    within reason.
+    정상 조건에서 TCP는 최초 사용이 acknowledgment되기 전 실수로 시퀀스 번호를 사용하는 것을
+    방지하기 위해 내보낼 다음 시퀀스 번호와 acknowledgment 대기 중인 가장 오래된 시퀀스
+    번호를 추적합니다. 이것만으로는 오래된 중복 데이터가 네트워크에서 유출된다는 보장이 없으므로
+    떠돌아다니는 중복 데이터가 도착 시 문제를 일으킬 가능성을 줄이기 위해 시퀀스 공간을 매우 크게
+    만들었습니다. 2메가비트/초. 시퀀스 공간의 2**32 옥텟을 사용하는 데 4.5시간이 걸립니다.
+    네트워크의 최대 세그먼트 수명은 수십 초를 초과하지 않을 것이므로 데이터 속도가 수십
+    메가비트/초로 상승하더라도 예측 가능한 네트워크에 대한 충분한 보호로 간주됩니다.
+    100메가비트/초에서 주기 시간은 5.4분으로 약간 짧을 수 있지만 여전히 타당합니다.
 
-    The basic duplicate detection and sequencing algorithm in TCP can be
-    defeated, however, if a source TCP does not have any memory of the
-    sequence numbers it last used on a given connection. For example, if
-    the TCP were to start all connections with sequence number 0, then
-    upon crashing and restarting, a TCP might re-form an earlier
-    connection (possibly after half-open connection resolution) and emit
-    packets with sequence numbers identical to or overlapping with
-    packets still in the network which were emitted on an earlier
-    incarnation of the same connection.  In the absence of knowledge
-    about the sequence numbers used on a particular connection, the TCP
-    specification recommends that the source delay for MSL seconds
-    before emitting segments on the connection, to allow time for
-    segments from the earlier connection incarnation to drain from the
-    system.
+    TCP의 기본 중복 감지 및 시퀀싱 알고리즘은 원본 TCP에 지정된 연결에서 마지막으로 사용된 시퀀스
+    번호의 메모리가 없는 경우 실패할 수 있습니다. 예를 들어, TCP가 시퀀스 번호 0으로 모든 연결을
+    시작하는 경우 충돌 및 재시작 시 TCP는 이전 연결을 다시 형성하고(아마도 반쯤 열린 연결 해결 후)
+    시퀀스 번호가 동일하거나 겹치는 패킷을 내보낼 수 있습니다. 동일한 연결의 이전 화신에서 방출된
+    패킷이 여전히 네트워크에 있습니다. 특정 연결에 사용된 시퀀스 번호에 대한 지식이 없는 경우 TCP
+    사양은 연결에서 세그먼트를 방출하기 전에 MSL 초 동안 소스 지연을 권장하여 이전 연결 구현의
+    세그먼트가 시스템에서 배출될 시간을 허용합니다.
 
-    Even hosts which can remember the time of day and used it to select
-    initial sequence number values are not immune from this problem
-    (i.e., even if time of day is used to select an initial sequence
-    number for each new connection incarnation).
+    하루 중 시간을 기억할 수 있고 이를 사용하여 초기 시퀀스 번호 값을 선택하는 호스트도 이 문제에서
+    면역되지 않습니다(즉, 시간을 사용하여 각각의 새로운 연결 구현에 대한 초기 시퀀스 번호를 선택하는
+    경우에도).
 
-    Suppose, for example, that a connection is opened starting with
-    sequence number S.  Suppose that this connection is not used much
-    and that eventually the initial sequence number function (ISN(t))
-    takes on a value equal to the sequence number, say S1, of the last
-    segment sent by this TCP on a particular connection.  Now suppose,
-    at this instant, the host crashes, recovers, and establishes a new
-    incarnation of the connection. The initial sequence number chosen is
-    S1 = ISN(t) -- last used sequence number on old incarnation of
-    connection!  If the recovery occurs quickly enough, any old
-    duplicates in the net bearing sequence numbers in the neighborhood
-    of S1 may arrive and be treated as new packets by the receiver of
-    the new incarnation of the connection.
+    예를 들어 시퀀스 번호 S로 시작하는 연결이 열린다고 가정합니다. 이 연결이 많이 사용되지 않고 결국
+    초기 시퀀스 번호 함수(ISN(t))가 특정 연결에서 이 TCP가 보낸 마지막 세그먼트의 S1과 같은
+    시퀀스 번호와 같은 값을 갖는다고 가정합니다. 이제 이 순간에 호스트가 충돌, 복구 및 연결의 새로운
+    실현(incarnation)을 설정한다고 가정합니다. 선택된 초기 시퀀스 번호는 S1 = ISN(t)입니다 --
+    이전 연결의 실현에서 마지막으로 사용된 시퀀스 번호입니다! 복구가 충분히 빨리 발생하면 S1 근처에
+    있는 net bearing 시퀀스 번호의 이전 중복이 도착할 수 있으며 연결의 새로운 실현 수신자에 의해
+    새 패킷으로 처리될 수 있습니다.
 
-    The problem is that the recovering host may not know for how long it
-    crashed nor does it know whether there are still old duplicates in
-    the system from earlier connection incarnations.
+    문제는 복구 중인 호스트가 얼마나 오래 충돌했는지 알 수 없으며 이전 연결의 실현에서 시스템에 여전히
+    오래된 복제본이 있는지 여부를 알 수 없다는 것입니다.
 
-    One way to deal with this problem is to deliberately delay emitting
-    segments for one MSL after recovery from a crash- this is the "quite
-    time" specification.  Hosts which prefer to avoid waiting are
-    willing to risk possible confusion of old and new packets at a given
-    destination may choose not to wait for the "quite time".
-    Implementors may provide TCP users with the ability to select on a
-    connection by connection basis whether to wait after a crash, or may
-    informally implement the "quite time" for all connections.
-    Obviously, even where a user selects to "wait," this is not
-    necessary after the host has been "up" for at least MSL seconds.
+    이 문제를 처리하는 한 가지 방법은 충돌에서 복구한 후 하나의 MSL에 대한 세그먼트 방출을
+    의도적으로 지연시키는 것입니다. 이것이 "quite time" 사양입니다. 대기를 피하는 것을 선호하는
+    호스트는 주어진 대상에서 이전 패킷과 새 패킷의 가능한 혼동 위험을 감수하고 "quite time"을
+    기다리지 않기로 선택할 수 있습니다. 구현자는 TCP 사용자에게 충돌 후 대기할지 여부를 연결별로
+    선택할 수 있는 기능을 제공하거나 모든 연결에 대해 비공식적으로 "quite time"을 구현할 수
+    있습니다. 분명히 사용자가 "wait"를 선택한 경우에도 호스트가 최소한 MSL 초 동안 "up" 한
+    후에는 이것이 필요하지 않습니다.
 
-    To summarize: every segment emitted occupies one or more sequence
-    numbers in the sequence space, the numbers occupied by a segment are
-    "busy" or "in use" until MSL seconds have passed, upon crashing a
-    block of space-time is occupied by the octets of the last emitted
-    segment, if a new connection is started too soon and uses any of the
-    sequence numbers in the space-time footprint of the last segment of
-    the previous connection incarnation, there is a potential sequence
-    number overlap area which could cause confusion at the receiver.
-
+    요약: 방출된 모든 세그먼트는 시퀀스 공간에서 하나 이상의 시퀀스 번호를 차지하며, 세그먼트가
+    차지하는 번호는 MSL 초가 지날 때까지 "busy" 또는 "in use"이고, 새 연결이 너무 빨리
+    시작되고 이전 연결의 실현이 마지막 세그먼트의 시공간 풋프린트에 있는 시퀀스 번호를 사용하는
+    경우 크래시 시 시공간 블록이 마지막 방출된 세그먼트의 옥텟에 의해 점유됩니다. 수신기에서
+    혼동을 일으킬 수 있는 잠재적인 시퀀스 번호 중복 영역이 있습니다.
+    
 3.4.  Establishing a connection
 
   The "three-way handshake" is the procedure used to establish a
