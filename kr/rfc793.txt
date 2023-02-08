@@ -1084,13 +1084,13 @@ IENs:  129, 124, 112, 81,
     메가비트/초로 상승하더라도 예측 가능한 네트워크에 대한 충분한 보호로 간주됩니다.
     100메가비트/초에서 주기 시간은 5.4분으로 약간 짧을 수 있지만 여전히 타당합니다.
 
-    TCP의 기본 중복 감지 및 시퀀싱 알고리즘은 원본 TCP에 지정된 연결에서 마지막으로 사용된 시퀀스
-    번호의 메모리가 없는 경우 실패할 수 있습니다. 예를 들어, TCP가 시퀀스 번호 0으로 모든 연결을
-    시작하는 경우 충돌 및 재시작 시 TCP는 이전 연결을 다시 형성하고(아마도 반쯤 열린 연결 해결 후)
-    시퀀스 번호가 동일하거나 겹치는 패킷을 내보낼 수 있습니다. 동일한 연결의 이전 화신에서 방출된
-    패킷이 여전히 네트워크에 있습니다. 특정 연결에 사용된 시퀀스 번호에 대한 지식이 없는 경우 TCP
-    사양은 연결에서 세그먼트를 방출하기 전에 MSL 초 동안 소스 지연을 권장하여 이전 연결 구현의
-    세그먼트가 시스템에서 배출될 시간을 허용합니다.
+    TCP의 기본 중복 감지 및 시퀀싱 알고리즘은 원본 TCP에 지정된 연결에서 마지막으로 사용된
+    시퀀스 번호의 메모리가 없는 경우 실패할 수 있습니다. 예를 들어, TCP가 시퀀스 번호 0으로 모든
+    연결을 시작하는 경우 충돌 및 재시작 시 TCP는 이전 연결을 다시 형성하고(아마도 반쯤 열린 연결
+    해결 후) 시퀀스 번호가 동일하거나 겹치는 패킷을 내보낼 수 있습니다. 동일한 연결의 이전 화신에서
+    방출된 패킷이 여전히 네트워크에 있습니다. 특정 연결에 사용된 시퀀스 번호에 대한 지식이 없는
+    경우 TCP 사양은 연결에서 세그먼트를 방출하기 전에 MSL 초 동안 소스 지연을 권장하여 이전 연결
+    구현의 세그먼트가 시스템에서 배출될 시간을 허용합니다.
 
     하루 중 시간을 기억할 수 있고 이를 사용하여 초기 시퀀스 번호 값을 선택하는 호스트도 이 문제에서
     면역되지 않습니다(즉, 시간을 사용하여 각각의 새로운 연결 구현에 대한 초기 시퀀스 번호를 선택하는
@@ -1121,42 +1121,29 @@ IENs:  129, 124, 112, 81,
     경우 크래시 시 시공간 블록이 마지막 방출된 세그먼트의 옥텟에 의해 점유됩니다. 수신기에서
     혼동을 일으킬 수 있는 잠재적인 시퀀스 번호 중복 영역이 있습니다.
     
-3.4.  Establishing a connection
+3.4.  Establishing a connection (연결 설정)
 
-  The "three-way handshake" is the procedure used to establish a
-  connection.  This procedure normally is initiated by one TCP and
-  responded to by another TCP.  The procedure also works if two TCP
-  simultaneously initiate the procedure.  When simultaneous attempt
-  occurs, each TCP receives a "SYN" segment which carries no
-  acknowledgment after it has sent a "SYN".  Of course, the arrival of
-  an old duplicate "SYN" segment can potentially make it appear, to the
-  recipient, that a simultaneous connection initiation is in progress.
-  Proper use of "reset" segments can disambiguate these cases.
+  "3방향 핸드셰이크"는 연결을 설정하는 데 사용되는 절차입니다. 이 절차는 일반적으로 하나의 TCP에 의해
+  시작되고 다른 TCP에 의해 응답됩니다. 이 절차는 두 개의 TCP가 동시에 절차를 시작하는 경우에도
+  작동합니다. 동시 시도가 발생하면 각 TCP는 "SYN"을 보낸 후 승인을 전달하지 않는 "SYN" 세그먼트를
+  받습니다. 물론 오래된 복제 "SYN" 세그먼트가 도착하면 동시 연결 시작이 진행 중인 것처럼 수신자에게
+  잠재적으로 나타날 수 있습니다. "reset" 세그먼트를 적절히 사용하면 이러한 경우를 명확하게 구분할 수
+  있습니다.
 
-  Several examples of connection initiation follow.  Although these
-  examples do not show connection synchronization using data-carrying
-  segments, this is perfectly legitimate, so long as the receiving TCP
-  doesn't deliver the data to the user until it is clear the data is
-  valid (i.e., the data must be buffered at the receiver until the
-  connection reaches the ESTABLISHED state).  The three-way handshake
-  reduces the possibility of false connections.  It is the
-  implementation of a trade-off between memory and messages to provide
-  information for this checking.
+  연결 시작의 몇 가지 예는 다음과 같습니다. 이 예에서는 데이터 운반 세그먼트를 사용하는 연결 동기화를
+  보여주지 않지만 수신 TCP가 데이터가 유효하다는 것이 명확해질 때까지 사용자에게 데이터를 전달하지 않는
+  한 이것은 완벽하게 합법적입니다(즉, 데이터는 연결이 ESTABLISHED 상태에 도달할 때까지 수신기에서
+  버퍼링되어야 합니다). 3방향 핸드셰이크는 잘못된 연결의 가능성을 줄입니다. 이 확인을 위한 정보를
+  제공하기 위해 메모리와 메시지 간의 균형을 구현합니다.
 
-  The simplest three-way handshake is shown in figure 7 below.  The
-  figures should be interpreted in the following way.  Each line is
-  numbered for reference purposes.  Right arrows (-->) indicate
-  departure of a TCP segment from TCP A to TCP B, or arrival of a
-  segment at B from A.  Left arrows (<--), indicate the reverse.
-  Ellipsis (...) indicates a segment which is still in the network
-  (delayed).  An "XXX" indicates a segment which is lost or rejected.
-  Comments appear in parentheses.  TCP states represent the state AFTER
-  the departure or arrival of the segment (whose contents are shown in
-  the center of each line).  Segment contents are shown in abbreviated
-  form, with sequence number, control flags, and ACK field.  Other
-  fields such as window, addresses, lengths, and text have been left out
-  in the interest of clarity.
-
+  가장 간단한 3방향 핸드셰이크는 아래 그림 7에 나와 있습니다. 수치는 다음과 같이 해석되어야 합니다. 각
+  줄은 참조용으로 번호가 매겨져 있습니다. 오른쪽 화살표(-->)는 TCP A에서 TCP B로의 TCP 세그먼트
+  출발 또는 A에서 B의 세그먼트 도착을 나타냅니다. 왼쪽 화살표(<--)는 그 반대를 나타냅니다.
+  말줄임표(...)는 아직 네트워크에 있는(지연된) 세그먼트를 나타냅니다. "XXX"는 손실되거나 거부된
+  세그먼트를 나타냅니다. 설명은 괄호 안에 표시됩니다. TCP 상태는 세그먼트의 출발 또는 도착 이후의
+  상태를 나타냅니다(각 라인의 중앙에 내용이 표시됨). 세그먼트 내용은 시퀀스 번호, 제어 플래그 및 ACK
+  필드와 함께 약식으로 표시됩니다. window, 주소, 길이 및 텍스트와 같은 다른 필드는 명확성을 위해
+  제외되었습니다.
   
 
       TCP A                                                TCP B
@@ -1171,27 +1158,21 @@ IENs:  129, 124, 112, 81,
 
   5.  ESTABLISHED --> <SEQ=101><ACK=301><CTL=ACK><DATA> --> ESTABLISHED
 
-          Basic 3-Way Handshake for Connection Synchronization
+                     연결 동기화를 위한 기본 3방향 핸드셰이크
 
-                                Figure 7.
+                                  그림 7.
 
-  In line 2 of figure 7, TCP A begins by sending a SYN segment
-  indicating that it will use sequence numbers starting with sequence
-  number 100.  In line 3, TCP B sends a SYN and acknowledges the SYN it
-  received from TCP A.  Note that the acknowledgment field indicates TCP
-  B is now expecting to hear sequence 101, acknowledging the SYN which
-  occupied sequence 100.
+  그림 7의 라인 2에서 TCP A는 시퀀스 번호 100으로 시작하는 시퀀스 번호를 사용할 것임을 나타내는
+  SYN 세그먼트를 보내는 것으로 시작합니다. 라인 3에서 TCP B는 SYN을 보내고 TCP A로부터 받은
+  SYN을 승인합니다. acknowledgment 필드는 TCP B가 이제 시퀀스 100을 점유한 SYN을 승인하여
+  시퀀스 101을 수신할 것으로 예상하고 있음을 나타냅니다.
 
-  At line 4, TCP A responds with an empty segment containing an ACK for
-  TCP B's SYN; and in line 5, TCP A sends some data.  Note that the
-  sequence number of the segment in line 5 is the same as in line 4
-  because the ACK does not occupy sequence number space (if it did, we
-  would wind up ACKing ACK's!).
+  4행에서 TCP A는 TCP B의 SYN에 대한 ACK를 포함하는 빈 세그먼트로 응답합니다. 5번째 줄에서
+  TCP A는 일부 데이터를 보냅니다. ACK가 시퀀스 번호 공간을 차지하지 않기 때문에 라인 5에 있는
+  세그먼트의 시퀀스 번호는 라인 4와 동일합니다(만약 그렇다면 ACK를 ACK하는 것입니다!).
 
-  Simultaneous initiation is only slightly more complex, as is shown in
-  figure 8.  Each TCP cycles from CLOSED to SYN-SENT to SYN-RECEIVED to
-  ESTABLISHED.
-
+  동시 시작은 그림 8에 표시된 것처럼 약간 더 복잡할 뿐입니다. 각 TCP는 CLOSED에서 SYN-SENT,
+  SYN-RECEIVED, ESTABLISHED로 순환합니다.
   
 
       TCP A                                            TCP B
@@ -1210,19 +1191,16 @@ IENs:  129, 124, 112, 81,
 
   7.               ... <SEQ=101><ACK=301><CTL=ACK>     --> ESTABLISHED
 
-                Simultaneous Connection Synchronization
+                              동시 연결 동기화
 
-                               Figure 8.
+                                 그림 8.
 
-  The principle reason for the three-way handshake is to prevent old
-  duplicate connection initiations from causing confusion.  To deal with
-  this, a special control message, reset, has been devised.  If the
-  receiving TCP is in a  non-synchronized state (i.e., SYN-SENT,
-  SYN-RECEIVED), it returns to LISTEN on receiving an acceptable reset.
-  If the TCP is in one of the synchronized states (ESTABLISHED,
-  FIN-WAIT-1, FIN-WAIT-2, CLOSE-WAIT, CLOSING, LAST-ACK, TIME-WAIT), it
-  aborts the connection and informs its user.  We discuss this latter
-  case under "half-open" connections below.
+  3방향 핸드셰이크의 주된 이유는 오래된 중복 연결 시작으로 인해 혼란이 발생하지 않도록 하기 위함입니다.
+  이를 처리하기 위해 특별한 제어 메시지인 reset이 고안되었습니다. 수신 TCP가 동기화되지 않은 상태
+  (즉, SYN-SENT, SYN-RECEIVED)에 있는 경우 허용 가능한 재설정을 수신하면 LISTEN으로
+  돌아갑니다. TCP가 동기화된 상태(ESTABLISHED, FIN-WAIT-1, FIN-WAIT-2, CLOSE-WAIT,
+  CLOSING, LAST-ACK, TIME-WAIT) 중 하나에 있으면 연결을 중단하고 사용자에게 알립니다. 이
+  후자의 경우는 아래의 "half-open" 연결에서 논의합니다.
 
       TCP A                                                TCP B
 
@@ -1243,51 +1221,36 @@ IENs:  129, 124, 112, 81,
 
   8.  ESTABLISHED --> <SEQ=101><ACK=401><CTL=ACK>      --> ESTABLISHED
 
-                    Recovery from Old Duplicate SYN
+                           이전 중복 SYN에서 복구
 
-                               Figure 9.
+                                 그림 9.
 
-  As a simple example of recovery from old duplicates, consider
-  figure 9.  At line 3, an old duplicate SYN arrives at TCP B.  TCP B
-  cannot tell that this is an old duplicate, so it responds normally
-  (line 4).  TCP A detects that the ACK field is incorrect and returns a
-  RST (reset) with its SEQ field selected to make the segment
-  believable.  TCP B, on receiving the RST, returns to the LISTEN state.
-  When the original SYN (pun intended) finally arrives at line 6, the
-  synchronization proceeds normally.  If the SYN at line 6 had arrived
-  before the RST, a more complex exchange might have occurred with RST's
-  sent in both directions.
+  오래된 중복에서 복구하는 간단한 예로 그림 9를 살펴보십시오. 3행에서 오래된 중복 SYN이 TCP B에
+  도착합니다. TCP B는 이것이 오래된 중복임을 알 수 없으므로 정상적으로 응답합니다(4행). TCP A는
+  ACK 필드가 잘못되었음을 감지하고 세그먼트를 믿을 수 있도록 선택한 SEQ 필드와 함께 RST(reset)를
+  반환합니다. RST를 수신한 TCP B는 LISTEN 상태로 돌아갑니다. 원래 SYN(말장난 의도)이 마침내
+  6행에 도착하면 동기화가 정상적으로 진행됩니다. 6행의 SYN이 RST보다 먼저 도착했다면 양방향으로
+  전송된 RST와 함께 더 복잡한 교환이 발생했을 수 있습니다.
 
-  Half-Open Connections and Other Anomalies
+  Half-Open Connections and Other Anomalies (Half-Open 및 기타 이상 현상)
 
-  An established connection is said to be  "half-open" if one of the
-  TCPs has closed or aborted the connection at its end without the
-  knowledge of the other, or if the two ends of the connection have
-  become desynchronized owing to a crash that resulted in loss of
-  memory.  Such connections will automatically become reset if an
-  attempt is made to send data in either direction.  However, half-open
-  connections are expected to be unusual, and the recovery procedure is
-  mildly involved.
+  설정된 연결은 TCP 중 하나가 다른 TCP에 대한 지식 없이 끝에서 연결을 닫거나 중단한 경우나 충돌로
+  인한 메모리 손실 때문에 연결의 두 끝이 비동기화된 경우를 "half-open"이라고 합니다. 이러한 연결은
+  어느 방향으로든 데이터를 보내려고 하면 자동으로 재설정됩니다. 그러나 half-open 연결은 일반적이지
+  않을 것으로 예상되며 복구 절차가 약간 포함됩니다.
 
-  If at site A the connection no longer exists, then an attempt by the
-  user at site B to send any data on it will result in the site B TCP
-  receiving a reset control message.  Such a message indicates to the
-  site B TCP that something is wrong, and it is expected to abort the
-  connection.
+  사이트 A에 연결이 더 이상 존재하지 않는 경우 사이트 B의 사용자가 데이터를 보내려고 시도하면 사이트 B
+  TCP가 reset 제어 메시지를 수신하게 됩니다. 이러한 메시지는 사이트 B TCP에 무언가 잘못되었음을
+  알리고 연결을 중단할 것으로 예상됩니다.
 
-  Assume that two user processes A and B are communicating with one
-  another when a crash occurs causing loss of memory to A's TCP.
-  Depending on the operating system supporting A's TCP, it is likely
-  that some error recovery mechanism exists.  When the TCP is up again,
-  A is likely to start again from the beginning or from a recovery
-  point.  As a result, A will probably try to OPEN the connection again
-  or try to SEND on the connection it believes open.  In the latter
-  case, it receives the error message "connection not open" from the
-  local (A's) TCP.  In an attempt to establish the connection, A's TCP
-  will send a segment containing SYN.  This scenario leads to the
-  example shown in figure 10.  After TCP A crashes, the user attempts to
-  re-open the connection.  TCP B, in the meantime, thinks the connection
-  is open.
+  충돌이 발생하여 A의 TCP에 대한 메모리 손실이 발생했을 때 두 사용자 프로세스 A와 B가 서로 통신하고
+  있다고 가정합니다. A의 TCP를 지원하는 운영 체제에 따라 일부 오류 복구 메커니즘이 존재할 수 있습니다.
+  TCP가 다시 가동되면 A는 처음부터 또는 복구 지점에서 다시 시작할 가능성이 높습니다. 결과적으로 A는
+  아마도 연결을 다시 OPEN하려고 시도하거나 열려 있다고 믿는 연결에서 SEND를 시도할 것입니다. 후자의
+  경우 로컬(A)의 TCP로부터 "connection not open"이라는 오류 메시지를 수신합니다. 연결을
+  설정하려는 시도에서 A의 TCP는 SYN이 포함된 세그먼트를 보냅니다. 이 시나리오는 그림 10에 표시된
+  예제로 이어집니다. TCP A 충돌 후 사용자는 연결을 다시 열려고 시도합니다. 그 동안 TCP B는 연결이
+  열려 있다고 생각합니다.
 
   
 
@@ -1307,25 +1270,20 @@ IENs:  129, 124, 112, 81,
 
   7.  SYN-SENT --> <SEQ=400><CTL=SYN>              -->
 
-                     Half-Open Connection Discovery
+                            Half-Open 연결 검색
 
-                               Figure 10.
+                                  그림 10.
 
-  When the SYN arrives at line 3, TCP B, being in a synchronized state,
-  and the incoming segment outside the window, responds with an
-  acknowledgment indicating what sequence it next expects to hear (ACK
-  100).  TCP A sees that this segment does not acknowledge anything it
-  sent and, being unsynchronized, sends a reset (RST) because it has
-  detected a half-open connection.  TCP B aborts at line 5.  TCP A will
-  continue to try to establish the connection; the problem is now
-  reduced to the basic 3-way handshake of figure 7.
+  SYN이 라인 3에 도착하면 동기화된 상태에 있는 TCP B와 윈도우 외부의 들어오는 세그먼트는 다음에 어떤
+  시퀀스를 들을 것으로 예상하는지(ACK 100) 나타내는 acknowledgment으로 응답합니다. TCP A는 이
+  세그먼트가 자신이 보낸 어떤 것도 승인하지 않는 것을 확인하고 동기화되지 않은 상태에서 half-open
+  연결을 감지했기 때문에 reset(RST)을 보냅니다. TCP B는 5행에서 중단됩니다. TCP A는 계속해서 연결
+  설정을 시도합니다; 문제는 이제 그림 7의 기본 3방향 핸드셰이크로 축소되었습니다.
 
-  An interesting alternative case occurs when TCP A crashes and TCP B
-  tries to send data on what it thinks is a synchronized connection.
-  This is illustrated in figure 11.  In this case, the data arriving at
-  TCP A from TCP B (line 2) is unacceptable because no such connection
-  exists, so TCP A sends a RST.  The RST is acceptable so TCP B
-  processes it and aborts the connection.
+  흥미로운 대안 사례는 TCP A가 충돌하고 TCP B가 동기화된 연결이라고 생각하는 데이터를 보내려고 할 때
+  발생합니다. 이것은 그림 11에 설명되어 있습니다. 이 경우 TCP B에서 TCP A로 도착하는 데이터(라인
+  2)는 그러한 연결이 존재하지 않기 때문에 허용되지 않으므로 TCP A는 RST를 보냅니다. RST가 허용되므로
+  TCP B가 이를 처리하고 연결을 중단합니다.
 
   
 
@@ -1337,15 +1295,14 @@ IENs:  129, 124, 112, 81,
 
   3.          --> <SEQ=100><CTL=RST>                   --> (ABORT!!)
 
-           Active Side Causes Half-Open Connection Discovery
+                     Active 측에서 Half-Open 연결 검색 
 
-                               Figure 11.
+                                  그림 11.
 
-  In figure 12, we find the two TCPs A and B with passive connections
-  waiting for SYN.  An old duplicate arriving at TCP B (line 2) stirs B
-  into action.  A SYN-ACK is returned (line 3) and causes TCP A to
-  generate a RST (the ACK in line 3 is not acceptable).  TCP B accepts
-  the reset and returns to its passive LISTEN state.
+  그림 12에서 수동 연결이 SYN을 기다리는 두 개의 TCP A와 B를 볼 수 있습니다. TCP B(라인 2)에
+  도착한 오래된 복제본은 B를 행동으로 몰아넣습니다. SYN-ACK가 반환되고(라인 3) TCP A가 RST를
+  생성하도록 합니다(라인 3의 ACK는 허용되지 않음). TCP B는 재설정을 수락하고 Passive LISTEN
+  상태로 돌아갑니다.
 
   
 
@@ -1361,87 +1318,63 @@ IENs:  129, 124, 112, 81,
 
   5.  LISTEN                                        LISTEN
 
-       Old Duplicate SYN Initiates a Reset on two Passive Sockets
+              오래된 중복 SYN이 2개의 Passive 소켓에서 재설정을 시작함
 
-                               Figure 12.
+                                 그림 12.
 
-  A variety of other cases are possible, all of which are accounted for
-  by the following rules for RST generation and processing.
+  다양한 다른 경우가 가능하며 모두 RST 생성 및 처리에 대한 다음 규칙에 의해 설명됩니다.
 
-  Reset Generation
+  Reset Generation (Reset 생성)
 
-  As a general rule, reset (RST) must be sent whenever a segment arrives
-  which apparently is not intended for the current connection.  A reset
-  must not be sent if it is not clear that this is the case.
+  일반적으로 재설정(RST)은 현재 연결을 위한 것이 아닌 것으로 보이는 세그먼트가 도착할 때마다
+  전송되어야 합니다. 이것이 사실인지 확실하지 않은 경우 reset을 보내서는 안 됩니다.
 
-  There are three groups of states:
+  세 가지 상태 그룹이 있습니다:
 
-    1.  If the connection does not exist (CLOSED) then a reset is sent
-    in response to any incoming segment except another reset.  In
-    particular, SYNs addressed to a non-existent connection are rejected
-    by this means.
+    1.  연결이 존재하지 않는 경우(CLOSED) 다른 reset을 제외한 수신 세그먼트에 대한 응답으로
+    reset이 전송됩니다. 특히, 존재하지 않는 연결로 주소 지정된 SYN은 이 방법으로 거부됩니다.
 
-    If the incoming segment has an ACK field, the reset takes its
-    sequence number from the ACK field of the segment, otherwise the
-    reset has sequence number zero and the ACK field is set to the sum
-    of the sequence number and segment length of the incoming segment.
-    The connection remains in the CLOSED state.
+    수신 세그먼트에 ACK 필드가 있는 경우 reset은 세그먼트의 ACK 필드에서 시퀀스 번호를 가져오고,
+    그렇지 않으면 reset의 시퀀스 번호는 0이고 ACK 필드는 수신 세그먼트의 시퀀스 번호와 세그먼트
+    길이의 합으로 설정됩니다. 연결은 CLOSED 상태로 유지됩니다.
 
-    2.  If the connection is in any non-synchronized state (LISTEN,
-    SYN-SENT, SYN-RECEIVED), and the incoming segment acknowledges
-    something not yet sent (the segment carries an unacceptable ACK), or
-    if an incoming segment has a security level or compartment which
-    does not exactly match the level and compartment requested for the
-    connection, a reset is sent.
+    2.  연결이 동기화되지 않은 상태(LISTEN, SYN-SENT, SYN-RECEIVED)에 있고 수신 세그먼트가
+    아직 전송되지 않은 것을 승인하거나(세그먼트가 허용할 수 없는 ACK를 전달함) 수신 세그먼트에 보안
+    수준이 있거나 연결에 대해 요청된 구획 및 레벨과 정확히 일치하지 않는 구획이 있는 경우 reset이
+    전송됩니다.
 
-    If our SYN has not been acknowledged and the precedence level of the
-    incoming segment is higher than the precedence level requested then
-    either raise the local precedence level (if allowed by the user and
-    the system) or send a reset; or if the precedence level of the
-    incoming segment is lower than the precedence level requested then
-    continue as if the precedence matched exactly (if the remote TCP
-    cannot raise the precedence level to match ours this will be
-    detected in the next segment it sends, and the connection will be
-    terminated then).  If our SYN has been acknowledged (perhaps in this
-    incoming segment) the precedence level of the incoming segment must
-    match the local precedence level exactly, if it does not a reset
-    must be sent.
+    SYN이 확인되지 않고 들어오는 세그먼트의 우선 순위 수준이 요청된 우선 순위 수준보다 높으면 로컬 우선
+    순위 수준을 높이거나(사용자와 시스템에서 허용하는 경우) reset을 보냅니다. 또는 들어오는 세그먼트의
+    우선 순위 수준이 요청된 우선 순위 수준보다 낮으면 우선 순위가 정확히 일치하는 것처럼 계속합니다(원격
+    TCP가 우리와 일치하도록 우선 순위 수준을 올릴 수 없는 경우 이것은 전송하는 다음 세그먼트에서
+    감지되고 그러면 연결이 종료됩니다.) SYN이 승인된 경우(아마도 이 수신 세그먼트에서) 수신 세그먼트의
+    우선 순위 수준은 로컬 우선 순위 수준과 정확히 일치해야 하며 그렇지 않은 경우 reset을 전송해야
+    합니다.
 
-    If the incoming segment has an ACK field, the reset takes its
-    sequence number from the ACK field of the segment, otherwise the
-    reset has sequence number zero and the ACK field is set to the sum
-    of the sequence number and segment length of the incoming segment.
-    The connection remains in the same state.
+    수신 세그먼트에 ACK 필드가 있는 경우 reset은 세그먼트의 ACK 필드에서 시퀀스 번호를 가져오고,
+    그렇지 않으면 reset의 시퀀스 번호는 0이고 ACK 필드는 수신 세그먼트의 시퀀스 번호와 세그먼트 길이의
+    합으로 설정됩니다. 연결은 동일한 상태로 유지됩니다.
 
-    3.  If the connection is in a synchronized state (ESTABLISHED,
-    FIN-WAIT-1, FIN-WAIT-2, CLOSE-WAIT, CLOSING, LAST-ACK, TIME-WAIT),
-    any unacceptable segment (out of window sequence number or
-    unacceptible acknowledgment number) must elicit only an empty
-    acknowledgment segment containing the current send-sequence number
-    and an acknowledgment indicating the next sequence number expected
-    to be received, and the connection remains in the same state.
+    3.  연결이 동기화된 상태(ESTABLISHED, FIN-WAIT-1, FIN-WAIT-2, CLOSE-WAIT, CLOSING,
+    LAST-ACK, TIME-WAIT)인 경우 허용되지 않는 세그먼트(윈도우 시퀀스 번호 밖 또는 허용되지 않는
+    acknowledgment 번호)는 현재 전송 시퀀스 번호와 수신될 것으로 예상되는 다음 시퀀스 번호를
+    나타내는 acknowledgment를 포함하는 빈 acknowledgment 세그먼트만 이끌어내야 하며 연결은
+    동일한 상태로 유지됩니다.
 
-    If an incoming segment has a security level, or compartment, or
-    precedence which does not exactly match the level, and compartment,
-    and precedence requested for the connection,a reset is sent and
-    connection goes to the CLOSED state.  The reset takes its sequence
-    number from the ACK field of the incoming segment.
+    들어오는 세그먼트에 연결에 대해 요청된 수준, 구획 및 우선 순위와 정확히 일치하지 않는 보안 수준,
+    구획 또는 우선 순위가 있는 경우 reset이 전송되고 연결이 CLOSED 상태로 전환됩니다. reset은
+    들어오는 세그먼트의 ACK 필드에서 시퀀스 번호를 가져옵니다.
 
-  Reset Processing
+  Reset Processing (Reset 처리)
 
-  In all states except SYN-SENT, all reset (RST) segments are validated
-  by checking their SEQ-fields.  A reset is valid if its sequence number
-  is in the window.  In the SYN-SENT state (a RST received in response
-  to an initial SYN), the RST is acceptable if the ACK field
-  acknowledges the SYN.
+  SYN-SENT를 제외한 모든 상태에서 모든 reset(RST) 세그먼트는 SEQ 필드를 확인하여 확인됩니다.
+  시퀀스 번호가 window에 있으면 reset이 유효합니다. SYN-SENT 상태(초기 SYN에 대한 응답으로 수신된
+  RST)에서 ACK 필드가 SYN을 승인하면 RST가 허용됩니다.
 
-  The receiver of a RST first validates it, then changes state.  If the
-  receiver was in the LISTEN state, it ignores it.  If the receiver was
-  in SYN-RECEIVED state and had previously been in the LISTEN state,
-  then the receiver returns to the LISTEN state, otherwise the receiver
-  aborts the connection and goes to the CLOSED state.  If the receiver
-  was in any other state, it aborts the connection and advises the user
-  and goes to the CLOSED state.
+  RST의 수신자는 먼저 유효성을 검사한 다음 상태를 변경합니다. 수신자가 LISTEN 상태에 있으면 무시합니다.
+  수신자가 SYN-RECEIVED 상태이고 이전에 LISTEN 상태였다면 수신자는 LISTEN 상태로 돌아가고, 그렇지
+  않으면 수신자는 연결을 중단하고 CLOSED 상태로 이동합니다. 수신자가 다른 상태에 있으면 연결을 중단하고
+  사용자에게 알리고 CLOSED 상태로 이동합니다.
 
 3.5.  Closing a Connection
 
