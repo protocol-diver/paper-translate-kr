@@ -1382,61 +1382,50 @@ IENs:  129, 124, 112, 81,
   상태로 돌아가고, 그렇지 않으면 수신자는 연결을 중단하고 CLOSED 상태로 이동합니다. 수신자가
   다른 상태에 있으면 연결을 중단하고 사용자에게 알리고 CLOSED 상태로 이동합니다.
 
-3.5.  Closing a Connection
+3.5.  Closing a Connection (연결 종료)
 
-  CLOSE is an operation meaning "I have no more data to send."  The
-  notion of closing a full-duplex connection is subject to ambiguous
-  interpretation, of course, since it may not be obvious how to treat
-  the receiving side of the connection.  We have chosen to treat CLOSE
-  in a simplex fashion.  The user who CLOSEs may continue to RECEIVE
-  until he is told that the other side has CLOSED also.  Thus, a program
-  could initiate several SENDs followed by a CLOSE, and then continue to
-  RECEIVE until signaled that a RECEIVE failed because the other side
-  has CLOSED.  We assume that the TCP will signal a user, even if no
-  RECEIVEs are outstanding, that the other side has closed, so the user
-  can terminate his side gracefully.  A TCP will reliably deliver all
-  buffers SENT before the connection was CLOSED so a user who expects no
-  data in return need only wait to hear the connection was CLOSED
-  successfully to know that all his data was received at the destination
-  TCP.  Users must keep reading connections they close for sending until
-  the TCP says no more data.
+  CLOSE는 "더 이상 보낼 데이터가 없습니다."라는 의미의 작업입니다. 물론 전이중 연결을
+  닫는다는 개념은 연결의 수신측을 처리하는 방법이 명확하지 않을 수 있으므로 모호하게 해석될 수
+  있습니다. 우리는 단순 방식으로 CLOSE를 처리하기로 선택했습니다. CLOSE하는 사용자는
+  상대방도 CLOSED라는 말을 들을 때까지 계속 수신할 수 있습니다. 따라서 프로그램은 CLOSE에
+  이어 여러 SEND를 시작한 다음 상대방이 CLOSED로 인해 RECEIVE가 실패했다는 신호를 받을
+  때까지 RECEIVE를 계속할 수 있습니다. 우리는 TCP가 사용자에게 미결 RECEIVE가 없더라도
+  다른 쪽이 닫혔다는 신호를 보내 사용자가 자신의 쪽을 정상적으로 종료할 수 있다고 가정합니다.
+  TCP는 연결이 닫히기 전에 전송된 모든 버퍼를 안정적으로 전달할 것이므로 데이터가 반환되지 않을
+  것으로 예상하는 사용자는 연결이 성공적으로 닫혔다는 소식을 듣고 대상 TCP에서 모든 데이터가
+  수신되었음을 알기만 하면 됩니다. 사용자는 TCP가 더 이상 데이터가 없다고 말할 때까지 전송을
+  위해 닫은 연결을 계속 읽어야 합니다.
 
-  There are essentially three cases:
+  기보적으로 세 가지 경우가 있습니다:
 
-    1) The user initiates by telling the TCP to CLOSE the connection
+    1) 사용자는 TCP에 연결을 닫으라고 지시하여 시작
 
-    2) The remote TCP initiates by sending a FIN control signal
+    2) 원격 TCP는 FIN 제어 신호를 전송하여 시작
 
-    3) Both users CLOSE simultaneously
+    3) 두 사용자가 동시에 CLOSE
 
-  Case 1:  Local user initiates the close
+  Case 1:  로컬 사용자가 닫기 시작
 
-    In this case, a FIN segment can be constructed and placed on the
-    outgoing segment queue.  No further SENDs from the user will be
-    accepted by the TCP, and it enters the FIN-WAIT-1 state.  RECEIVEs
-    are allowed in this state.  All segments preceding and including FIN
-    will be retransmitted until acknowledged.  When the other TCP has
-    both acknowledged the FIN and sent a FIN of its own, the first TCP
-    can ACK this FIN.  Note that a TCP receiving a FIN will ACK but not
-    send its own FIN until its user has CLOSED the connection also.
+    이 경우 FIN 세그먼트를 생성하여 나가는 세그먼트 대기열에 배치할 수 있습니다. 사용자의 더
+    이상의 SEND는 TCP에 의해 수락되지 않으며 FIN-WAIT-1 상태로 들어갑니다. 이 상태에서는
+    RECEIVE가 허용됩니다. FIN 이전 및 FIN을 포함하는 모든 세그먼트는 확인될 때까지
+    재전송됩니다. 다른 TCP가 FIN을 승인하고 자신의 FIN을 보낸 경우 첫 번째 TCP는 이
+    FIN을 ACK할 수 있습니다. FIN을 수신하는 TCP는 ACK하지만 사용자가 연결을 닫을 때까지
+    자신의 FIN을 보내지 않습니다.
 
-  Case 2:  TCP receives a FIN from the network
+  Case 2:  TCP는 네트워크에서 FIN 수신
 
-    If an unsolicited FIN arrives from the network, the receiving TCP
-    can ACK it and tell the user that the connection is closing.  The
-    user will respond with a CLOSE, upon which the TCP can send a FIN to
-    the other TCP after sending any remaining data.  The TCP then waits
-    until its own FIN is acknowledged whereupon it deletes the
-    connection.  If an ACK is not forthcoming, after the user timeout
-    the connection is aborted and the user is told.
+    요청하지 않은 FIN이 네트워크에서 도착하면 수신 TCP는 이를 ACK하고 사용자에게 연결이
+    닫히고 있음을 알릴 수 있습니다. 사용자는 TCP가 나머지 데이터를 보낸 후 다른 TCP에
+    FIN을 보낼 수 있는 CLOSE로 응답합니다. 그런 다음 TCP는 자신의 FIN이 승인될 때까지
+    기다렸다가 연결을 삭제합니다. ACK가 나오지 않으면 사용자 시간 초과 후 연결이 중단되고
+    사용자에게 알립니다.
 
-  Case 3:  both users close simultaneously
+  Case 3:  두 사용자가 동시에 CLOSE
 
-    A simultaneous CLOSE by users at both ends of a connection causes
-    FIN segments to be exchanged.  When all segments preceding the FINs
-    have been processed and acknowledged, each TCP can ACK the FIN it
-    has received.  Both will, upon receiving these ACKs, delete the
-    connection.
+    연결의 양쪽 끝에서 사용자가 동시에 CLOSE하면 FIN 세그먼트가 교환됩니다. FIN 앞에 있는
+    모든 세그먼트가 처리되고 확인되면 각 TCP는 수신한 FIN을 ACK할 수 있습니다. 둘 다 이러한
+    ACK를 수신하면 연결을 삭제합니다.
 
       TCP A                                                TCP B
 
@@ -1455,9 +1444,9 @@ IENs:  129, 124, 112, 81,
   6.  (2 MSL)
       CLOSED                                                      
 
-                         Normal Close Sequence
+                            정상적인 닫기 시퀀스
 
-                               Figure 13.
+                                 그림 13.
 
   
 
@@ -1478,257 +1467,190 @@ IENs:  129, 124, 112, 81,
       (2 MSL)                                              (2 MSL)
       CLOSED                                               CLOSED
 
-                      Simultaneous Close Sequence
+                              동시 닫기 시퀀스
 
-                               Figure 14.
+                                 그림 14.
 
-3.6.  Precedence and Security
+3.6.  Precedence and Security (우선 순위 및 보안)
 
-  The intent is that connection be allowed only between ports operating
-  with exactly the same security and compartment values and at the
-  higher of the precedence level requested by the two ports.
+  의도는 정확히 동일한 보안 및 구획 값으로 작동하고 두 포트에서 요청한 우선 순위 수준보다 높은
+  우선 순위 수준에서 작동하는 포트 간에만 연결이 허용되도록 하는 것입니다.
 
-  The precedence and security parameters used in TCP are exactly those
-  defined in the Internet Protocol (IP) [2].  Throughout this TCP
-  specification the term "security/compartment" is intended to indicate
-  the security parameters used in IP including security, compartment,
-  user group, and handling restriction.
+  TCP에서 사용되는 우선 순위 및 보안 매개변수는 인터넷 프로토콜(IP)[2]에 정의된 것과 정확히
+  일치합니다. 이 TCP 사양 전체에서 "보안/구획"이라는 용어는 보안, 구획, 사용자 그룹 및 처리
+  제한을 포함하여 IP에서 사용되는 보안 매개변수를 나타내기 위한 것입니다.
 
-  A connection attempt with mismatched security/compartment values or a
-  lower precedence value must be rejected by sending a reset.  Rejecting
-  a connection due to too low a precedence only occurs after an
-  acknowledgment of the SYN has been received.
+  보안/구획 값이 일치하지 않거나 우선 순위 값이 낮은 연결 시도는 재설정을 전송하여 거부해야
+  합니다. 너무 낮은 우선 순위로 인한 연결 거부는 SYN 승인을 받은 후에만 발생합니다.
 
-  Note that TCP modules which operate only at the default value of
-  precedence will still have to check the precedence of incoming
-  segments and possibly raise the precedence level they use on the
-  connection.
+  우선 순위의 기본값에서만 작동하는 TCP 모듈은 들어오는 세그먼트의 우선 순위를 확인하고
+  가능하면 연결에서 사용하는 우선 순위 수준을 높여야 합니다.
 
-  The security paramaters may be used even in a non-secure environment
-  (the values would indicate unclassified data), thus hosts in
-  non-secure environments must be prepared to receive the security
-  parameters, though they need not send them.
+  보안 매개변수는 비보안 환경에서도 사용할 수 있으므로(값은 분류되지 않은 데이터를 나타냄)
+  비보안 환경의 호스트는 보안 매개변수를 보낼 필요는 없지만 수신할 준비가 되어 있어야 합니다.
 
-3.7.  Data Communication
+3.7.  Data Communication (데이터 통신)
 
-  Once the connection is established data is communicated by the
-  exchange of segments.  Because segments may be lost due to errors
-  (checksum test failure), or network congestion, TCP uses
-  retransmission (after a timeout) to ensure delivery of every segment.
-  Duplicate segments may arrive due to network or TCP retransmission.
-  As discussed in the section on sequence numbers the TCP performs
-  certain tests on the sequence and acknowledgment numbers in the
-  segments to verify their acceptability.
+  연결이 설정되면 세그먼트 교환을 통해 데이터가 전달됩니다. 오류(체크섬 테스트 실패) 또는
+  네트워크 정체로 인해 세그먼트가 손실될 수 있으므로 TCP는 모든 세그먼트의 전달을 보장하기
+  위해 재전송(시간 초과 후)을 사용합니다. 네트워크 또는 TCP 재전송으로 인해 중복 세그먼트가
+  도착할 수 있습니다. 시퀀스 번호 섹션에서 설명한 것처럼 TCP는 세그먼트의 시퀀스 및 승인
+  번호에 대한 특정 테스트를 수행하여 허용 여부를 확인합니다.
 
-  The sender of data keeps track of the next sequence number to use in
-  the variable SND.NXT.  The receiver of data keeps track of the next
-  sequence number to expect in the variable RCV.NXT.  The sender of data
-  keeps track of the oldest unacknowledged sequence number in the
-  variable SND.UNA.  If the data flow is momentarily idle and all data
-  sent has been acknowledged then the three variables will be equal.
+  데이터 송신자는 변수 SND.NXT에서 사용할 다음 시퀀스 번호를 추적합니다. 데이터 수신자는 변수
+  RCV.NXT에서 예상할 다음 시퀀스 번호를 추적합니다. 데이터 송신자는 변수 SND.UNA에서
+  승인되지 않은 가장 오래된 시퀀스 번호를 추적합니다. 데이터 흐름이 일시적으로 유휴 상태이고
+  전송된 모든 데이터가 승인된 경우 세 변수는 동일합니다.
 
-  When the sender creates a segment and transmits it the sender advances
-  SND.NXT.  When the receiver accepts a segment it advances RCV.NXT and
-  sends an acknowledgment.  When the data sender receives an
-  acknowledgment it advances SND.UNA.  The extent to which the values of
-  these variables differ is a measure of the delay in the communication.
-  The amount by which the variables are advanced is the length of the
-  data in the segment.  Note that once in the ESTABLISHED state all
-  segments must carry current acknowledgment information.
+  송신자가 세그먼트를 생성하고 전송하면 송신자는 SND.NXT를 진행합니다. 수신기가 세그먼트를
+  수락하면 RCV.NXT를 진행하고 acknowledgment를 보냅니다. 데이터 송신자가
+  acknowledgment를 받으면 SND.UNA로 진행합니다. 이러한 변수의 값이 다른 정도는 통신
+  지연의 척도입니다. 변수가 진행되는 양은 세그먼트의 데이터 길이입니다. 일단 ESTABLISHED
+  상태가 되면 모든 세그먼트는 현재 acknowledgment 정보를 전달해야 합니다.
 
-  The CLOSE user call implies a push function, as does the FIN control
-  flag in an incoming segment.
+  CLOSE 사용자 호출은 들어오는 세그먼트의 FIN 제어 플래그와 마찬가지로 푸시 기능을 의미합니다.
 
-  Retransmission Timeout
+  Retransmission Timeout 재전송 시간 초과
 
-  Because of the variability of the networks that compose an
-  internetwork system and the wide range of uses of TCP connections the
-  retransmission timeout must be dynamically determined.  One procedure
-  for determining a retransmission time out is given here as an
-  illustration.
+  인터네트워크 시스템을 구성하는 네트워크의 가변성과 TCP 연결의 광범위한 사용으로 인해 재전송
+  제한 시간은 동적으로 결정되어야 합니다. 재전송 타임아웃을 결정하기 위한 한 가지 절차가 여기에
+  예시로 제공됩니다.
 
-    An Example Retransmission Timeout Procedure
+    재전송 시간 초과 절차의 예
 
-      Measure the elapsed time between sending a data octet with a
-      particular sequence number and receiving an acknowledgment that
-      covers that sequence number (segments sent do not have to match
-      segments received).  This measured elapsed time is the Round Trip
-      Time (RTT).  Next compute a Smoothed Round Trip Time (SRTT) as:
+      특정 시퀀스 번호가 있는 데이터 옥텟 전송과 해당 시퀀스 번호를 포함하는
+      acknowledgment 수신 사이의 경과 시간을 측정합니다(전송된 세그먼트가 수신된
+      세그먼트와 일치할 필요는 없음). 이 측정된 경과 시간은 왕복 시간(Round Trip Time)
+      입니다. 다음으로 SRTT(Smoothed Round Trip Time)를 다음과 같이 계산합니다:
 
         SRTT = ( ALPHA * SRTT ) + ((1-ALPHA) * RTT)
 
-      and based on this, compute the retransmission timeout (RTO) as:
+      이를 기반으로 다음과 같이 재전송 제한 시간(RTO)을 계산합니다:
 
         RTO = min[UBOUND,max[LBOUND,(BETA*SRTT)]]
 
-      where UBOUND is an upper bound on the timeout (e.g., 1 minute),
-      LBOUND is a lower bound on the timeout (e.g., 1 second), ALPHA is
-      a smoothing factor (e.g., .8 to .9), and BETA is a delay variance
-      factor (e.g., 1.3 to 2.0).
+      여기서 UBOUND는 타임아웃의 상한값(예: 1분), LBOUND는 타임아웃의 하한값(예: 1초),
+      ALPHA는 스무딩 계수(예: .8 ~ .9), BETA는 지연 분산 계수(예: 1.3~2.0).
 
-  The Communication of Urgent Information
+  긴급 정보 전달
 
-  The objective of the TCP urgent mechanism is to allow the sending user
-  to stimulate the receiving user to accept some urgent data and to
-  permit the receiving TCP to indicate to the receiving user when all
-  the currently known urgent data has been received by the user.
+  TCP 긴급 메커니즘의 목적은 송신 사용자가 수신 사용자가 일부 긴급 데이터를 수락하도록
+  자극하고 수신 TCP가 현재 알려진 모든 긴급 데이터가 사용자에 의해 수신되었을 때 수신
+  사용자에게 알리도록 허용하는 것입니다.
 
-  This mechanism permits a point in the data stream to be designated as
-  the end of urgent information.  Whenever this point is in advance of
-  the receive sequence number (RCV.NXT) at the receiving TCP, that TCP
-  must tell the user to go into "urgent mode"; when the receive sequence
-  number catches up to the urgent pointer, the TCP must tell user to go
-  into "normal mode".  If the urgent pointer is updated while the user
-  is in "urgent mode", the update will be invisible to the user.
+  이 메커니즘을 통해 데이터 스트림의 한 지점을 긴급 정보의 끝으로 지정할 수 있습니다. 이
+  지점이 수신 TCP에서 수신 시퀀스 번호(RCV.NXT)보다 앞설 때마다 해당 TCP는 사용자에게
+  "urgent mode"로 들어가라고 알려야 합니다. 수신 시퀀스 번호가 긴급 포인터를 따라잡을 때
+  TCP는 사용자에게 "normal mode"로 들어가라고 알려야 합니다. 사용자가 "urgent mode"에
+  있는 동안 긴급 포인터가 업데이트되면 업데이트가 사용자에게 표시되지 않습니다.
 
-  The method employs a urgent field which is carried in all segments
-  transmitted.  The URG control flag indicates that the urgent field is
-  meaningful and must be added to the segment sequence number to yield
-  the urgent pointer.  The absence of this flag indicates that there is
-  no urgent data outstanding.
+  이 방법은 전송된 모든 세그먼트에서 전달되는 긴급 필드를 사용합니다. URG 제어 플래그는 긴급
+  필드가 의미가 있으며 긴급 포인터를 생성하기 위해 세그먼트 시퀀스 번호에 추가되어야 함을
+  나타냅니다. 이 플래그가 없으면 미해결 긴급 데이터가 없음을 나타냅니다.
 
-  To send an urgent indication the user must also send at least one data
-  octet.  If the sending user also indicates a push, timely delivery of
-  the urgent information to the destination process is enhanced.
+  긴급 표시를 보내려면 사용자는 최소한 하나의 데이터 옥텟도 보내야 합니다. 보내는 사용자도
+  푸시를 표시하면 긴급한 정보를 대상 프로세스에 적시에 전달하는 기능이 향상됩니다.
 
-  Managing the Window
+  윈도우 관리
 
-  The window sent in each segment indicates the range of sequence
-  numbers the sender of the window (the data receiver) is currently
-  prepared to accept.  There is an assumption that this is related to
-  the currently available data buffer space available for this
-  connection.
+  각 세그먼트에서 전송된 윈도우는 윈도우를 보낸 사람(데이터 수신자)이 현재 수락할 준비가
+  된 시퀀스 번호의 범위를 나타냅니다. 이것이 이 연결에 사용 가능한 현재 사용 가능한 데이터
+  버퍼 공간과 관련이 있다는 가정이 있습니다.
 
-  Indicating a large window encourages transmissions.  If more data
-  arrives than can be accepted, it will be discarded.  This will result
-  in excessive retransmissions, adding unnecessarily to the load on the
-  network and the TCPs.  Indicating a small window may restrict the
-  transmission of data to the point of introducing a round trip delay
-  between each new segment transmitted.
+  큰 윈도우를 표시하면 전송이 촉진됩니다. 허용할 수 있는 것보다 더 많은 데이터가 도착하면
+  폐기됩니다. 이로 인해 과도한 재전송이 발생하여 네트워크 및 TCP에 불필요하게 부하가
+  추가됩니다. 작은 윈도우를 표시하면 전송되는 각각의 새로운 세그먼트 사이에 왕복 지연을
+  도입하는 지점까지 데이터 전송을 제한할 수 있습니다.
 
-  The mechanisms provided allow a TCP to advertise a large window and to
-  subsequently advertise a much smaller window without having accepted
-  that much data.  This, so called "shrinking the window," is strongly
-  discouraged.  The robustness principle dictates that TCPs will not
-  shrink the window themselves, but will be prepared for such behavior
-  on the part of other TCPs.
+  제공되는 메커니즘을 통해 TCP는 큰 윈도우를 광고하고 이후에 많은 데이터를 수락하지 않고도
+  훨씬 작은 윈도우를 광고할 수 있습니다. 소위 "shrinking the window"라고 하는 이
+  작업은 권장되지 않습니다. 견고성 원칙에 따르면 TCP는 윈도우 자체를 축소하지 않지만 다른
+  TCP의 일부에서 이러한 동작에 대비해야 합니다.
 
-  The sending TCP must be prepared to accept from the user and send at
-  least one octet of new data even if the send window is zero.  The
-  sending TCP must regularly retransmit to the receiving TCP even when
-  the window is zero.  Two minutes is recommended for the retransmission
-  interval when the window is zero.  This retransmission is essential to
-  guarantee that when either TCP has a zero window the re-opening of the
-  window will be reliably reported to the other.
+  송신 TCP는 송신 윈도우가 0인 경우에도 사용자로부터 수락하고 적어도 한 옥텟의 새 데이터를
+  송신할 준비가 되어 있어야 합니다. 송신 TCP는 윈도우가 0인 경우에도 정기적으로 수신 TCP로
+  재전송해야 합니다. 윈도우가 0일 때 재전송 간격은 2분이 권장됩니다. 이 재전송은 두 TCP 중
+  하나에 윈도우가 없을 때 윈도우의 다시 열기가 다른 TCP에 안정적으로 보고되도록 보장하는 데
+  필수적입니다.
 
-  When the receiving TCP has a zero window and a segment arrives it must
-  still send an acknowledgment showing its next expected sequence number
-  and current window (zero).
+  수신 TCP에 0 윈도우가 있고 세그먼트가 도착하면 여전히 다음 예상 시퀀스 번호와 현재
+  윈도우(0)를 보여주는 승인을 보내야 합니다.
 
-  The sending TCP packages the data to be transmitted into segments
-  which fit the current window, and may repackage segments on the
-  retransmission queue.  Such repackaging is not required, but may be
-  helpful.
+  송신 TCP는 전송할 데이터를 현재 윈도우에 맞는 세그먼트로 패키징하고 재전송 큐에 세그먼트를
+  다시 패키징할 수 있습니다. 이러한 재포장은 필수는 아니지만 도움이 될 수 있습니다.
 
-  In a connection with a one-way data flow, the window information will
-  be carried in acknowledgment segments that all have the same sequence
-  number so there will be no way to reorder them if they arrive out of
-  order.  This is not a serious problem, but it will allow the window
-  information to be on occasion temporarily based on old reports from
-  the data receiver.  A refinement to avoid this problem is to act on
-  the window information from segments that carry the highest
-  acknowledgment number (that is segments with acknowledgment number
-  equal or greater than the highest previously received).
+  단방향 데이터 흐름과 관련하여 윈도우 정보는 모두 동일한 시퀀스 번호를 갖는
+  acknowledgment 세그먼트로 전달되므로 순서가 잘못되어 도착하면 다시 정렬할 방법이
+  없습니다. 이는 심각한 문제는 아니지만 데이터 수신기의 이전 보고서를 기반으로 일시적으로
+  윈도우 정보가 표시될 수 있습니다. 이 문제를 피하기 위한 개선은 가장 높은 acknowledgment
+  번호를 전달하는 세그먼트(즉, 이전에 수신된 가장 높은 acknowledgment 번호보다 크거나 같은
+  acknowledgment 번호를 가진 세그먼트)의 윈도우 정보에 따라 작동하는 것입니다.
 
-  The window management procedure has significant influence on the
-  communication performance.  The following comments are suggestions to
-  implementers.
+  윈도우 관리 절차는 통신 성능에 상당한 영향을 미칩니다. 다음 의견은 구현자에 대한 제안입니다.
 
-    Window Management Suggestions
+    윈도우 관리 제안
 
-      Allocating a very small window causes data to be transmitted in
-      many small segments when better performance is achieved using
-      fewer large segments.
+      매우 작은 윈도우를 할당하면 더 적은 수의 큰 세그먼트를 사용하여 더 나은 성능을 얻을 때
+      데이터가 많은 작은 세그먼트로 전송됩니다.
 
-      One suggestion for avoiding small windows is for the receiver to
-      defer updating a window until the additional allocation is at
-      least X percent of the maximum allocation possible for the
-      connection (where X might be 20 to 40).
+      작은 윈도우를 피하는 한 가지 제안은 수신자가 추가 할당이 연결에 가능한 최대 할당의 X%
+      이상이 될 때까지 윈도우 업데이트를 연기하는 것입니다(여기서 X는 20~40일 수 있음).
 
-      Another suggestion is for the sender to avoid sending small
-      segments by waiting until the window is large enough before
-      sending data.  If the the user signals a push function then the
-      data must be sent even if it is a small segment.
+      또 다른 제안은 송신자가 데이터를 보내기 전에 윈도우가 충분히 커질 때까지 기다리면서 작은
+      세그먼트를 보내는 것을 피하는 것입니다. 사용자가 푸시 기능 신호를 보내면 작은
+      세그먼트라도 데이터를 보내야 합니다.
 
-      Note that the acknowledgments should not be delayed or unnecessary
-      retransmissions will result.  One strategy would be to send an
-      acknowledgment when a small segment arrives (with out updating the
-      window information), and then to send another acknowledgment with
-      new window information when the window is larger.
+      acknowledgment가 지연되지 않으면 불필요한 재전송이 발생합니다. 한 가지 전략은 작은
+      세그먼트가 도착하면(윈도우 정보를 업데이트하지 않고) acknowledgment를 보낸 다음
+      윈도우가 더 크면 새 윈도우 정보와 함께 다른 acknowledgment를 보내는 것입니다.
 
-      The segment sent to probe a zero window may also begin a break up
-      of transmitted data into smaller and smaller segments.  If a
-      segment containing a single data octet sent to probe a zero window
-      is accepted, it consumes one octet of the window now available.
-      If the sending TCP simply sends as much as it can whenever the
-      window is non zero, the transmitted data will be broken into
-      alternating big and small segments.  As time goes on, occasional
-      pauses in the receiver making window allocation available will
-      result in breaking the big segments into a small and not quite so
-      big pair. And after a while the data transmission will be in
-      mostly small segments.
+      제로 윈도우를 조사하기 위해 전송된 세그먼트는 전송된 데이터를 점점 더 작은 세그먼트로
+      분할하기 시작할 수도 있습니다. 제로 윈도우를 조사하기 위해 전송된 단일 데이터 옥텟을
+      포함하는 세그먼트가 수락되면 현재 사용 가능한 윈도우의 한 옥텟을 소비합니다. 전송 TCP가
+      윈도우가 0이 아닐 때마다 가능한 한 많이 전송하면 전송된 데이터가 번갈아 크고 작은
+      세그먼트로 나뉩니다. 시간이 지남에 따라 윈도우 할당을 사용 가능하게 만드는 수신기에서
+      가끔 일시 중지하면 큰 세그먼트가 작은 쌍과 그다지 크지 않은 쌍으로 나뉩니다. 그리고 잠시
+      후 데이터 전송은 대부분 작은 세그먼트로 이루어집니다.
 
-      The suggestion here is that the TCP implementations need to
-      actively attempt to combine small window allocations into larger
-      windows, since the mechanisms for managing the window tend to lead
-      to many small windows in the simplest minded implementations.
+      여기에서 제안하는 것은 TCP 구현이 작은 윈도우 할당을 더 큰 윈도우로 결합하려고
+      적극적으로 시도할 필요가 있다는 것입니다. 왜냐하면 윈도우를 관리하는 메커니즘은 가장
+      간단한 구현에서 많은 작은 윈도우로 이어지는 경향이 있기 때문입니다.
 
-3.8.  Interfaces
+3.8.  Interfaces (인터페이스)
 
-  There are of course two interfaces of concern:  the user/TCP interface
-  and the TCP/lower-level interface.  We have a fairly elaborate model
-  of the user/TCP interface, but the interface to the lower level
-  protocol module is left unspecified here, since it will be specified
-  in detail by the specification of the lowel level protocol.  For the
-  case that the lower level is IP we note some of the parameter values
-  that TCPs might use.
+  우려되는 두 가지 인터페이스가 있습니다: user/TCP 인터페이스 및 TCP/하위 수준 인터페이스.
+  우리는 상당히 정교한 user/TCP 인터페이스 모델을 가지고 있지만, 하위 수준 프로토콜 모듈에
+  대한 인터페이스는 하위 수준 프로토콜의 사양에 의해 자세히 지정될 것이기 때문에 여기서는
+  지정하지 않습니다. 하위 수준이 IP인 경우 TCP가 사용할 수 있는 일부 매개 변수 값을
+  기록합니다.
 
-  User/TCP Interface
+  User/TCP 인터페이스
 
-    The following functional description of user commands to the TCP is,
-    at best, fictional, since every operating system will have different
-    facilities.  Consequently, we must warn readers that different TCP
-    implementations may have different user interfaces.  However, all
-    TCPs must provide a certain minimum set of services to guarantee
-    that all TCP implementations can support the same protocol
-    hierarchy.  This section specifies the functional interfaces
-    required of all TCP implementations.
+    TCP에 대한 사용자 명령에 대한 다음 기능 설명은 모든 운영 체제가 서로 다른 기능을 갖기
+    때문에 기껏해야 허구입니다. 결과적으로 우리는 다른 TCP 구현이 다른 사용자 인터페이스를
+    가질 수 있음을 독자들에게 경고해야 합니다. 그러나 모든 TCP는 모든 TCP 구현이 동일한
+    프로토콜 계층을 지원할 수 있도록 보장하기 위해 특정 최소 서비스 집합을 제공해야 합니다. 이
+    섹션은 모든 TCP 구현에 필요한 기능적 인터페이스를 지정합니다.
 
-    TCP User Commands
+    TCP 사용자 명령
 
-      The following sections functionally characterize a USER/TCP
-      interface.  The notation used is similar to most procedure or
-      function calls in high level languages, but this usage is not
-      meant to rule out trap type service calls (e.g., SVCs, UUOs,
-      EMTs).
+      다음 섹션에서는 USER/TCP 인터페이스를 기능적으로 특성화합니다. 사용된 표기법은 고급
+      언어에서 대부분의 프로시저 또는 함수 호출과 유사하지만 이 사용법이 트랩 유형 서비스
+      호출(예: SVC, UUO, EMT)을 배제하기 위한 것은 아닙니다.
 
-      The user commands described below specify the basic functions the
-      TCP must perform to support interprocess communication.
-      Individual implementations must define their own exact format, and
-      may provide combinations or subsets of the basic functions in
-      single calls.  In particular, some implementations may wish to
-      automatically OPEN a connection on the first SEND or RECEIVE
-      issued by the user for a given connection.
+      아래에 설명된 사용자 명령은 프로세스 간 통신을 지원하기 위해 TCP가 수행해야 하는 기본
+      기능을 지정합니다. 개별 구현은 고유한 정확한 형식을 정의해야 하며 단일 호출에서 기본
+      기능의 조합 또는 하위 집합을 제공할 수 있습니다. 특히 일부 구현에서는 주어진 연결에
+      대해 사용자가 발행한 첫 번째 SEND 또는 RECEIVE에서 연결을 자동으로 열기를 원할 수
+      있습니다.
 
-      In providing interprocess communication facilities, the TCP must
-      not only accept commands, but must also return information to the
-      processes it serves.  The latter consists of:
+      프로세스 간 통신 기능을 제공할 때 TCP는 명령을 수락할 뿐만 아니라 서비스를 제공하는
+      프로세스에 정보를 반환해야 합니다. 후자는 다음으로 구성됩니다:
 
-        (a) general information about a connection (e.g., interrupts,
-        remote close, binding of unspecified foreign socket).
+        (a) 연결에 대한 일반 정보(예: 인터럽트, 원격 닫기, 지정되지 않은 외부 소켓
+        바인딩).
 
-        (b) replies to specific user commands indicating success or
-        various types of failure.
+        (b) 성공 또는 다양한 유형의 실패를 나타내는 특정 사용자 명령에 응답합니다.
 
       Open
 
@@ -1736,227 +1658,161 @@ IENs:  129, 124, 112, 81,
         [, timeout] [, precedence] [, security/compartment] [, options])
         -> local connection name
 
-        We assume that the local TCP is aware of the identity of the
-        processes it serves and will check the authority of the process
-        to use the connection specified.  Depending upon the
-        implementation of the TCP, the local network and TCP identifiers
-        for the source address will either be supplied by the TCP or the
-        lower level protocol (e.g., IP).  These considerations are the
-        result of concern about security, to the extent that no TCP be
-        able to masquerade as another one, and so on.  Similarly, no
-        process can masquerade as another without the collusion of the
-        TCP.
+        우리는 로컬 TCP가 서비스를 제공하는 프로세스의 ID를 알고 있고 지정된 연결을
+        사용하기 위해 프로세스의 권한을 확인한다고 가정합니다. TCP 구현에 따라 소스 주소에
+        대한 로컬 네트워크 및 TCP 식별자는 TCP 또는 하위 수준 프로토콜(예: IP)에서
+        제공됩니다. 이러한 고려 사항은 어떤 TCP도 다른 TCP로 가장할 수 없는 정도까지
+        보안에 대한 우려의 결과입니다. 마찬가지로 어떤 프로세스도 TCP의 공모 없이는 다른
+        프로세스로 가장할 수 없습니다.
 
-        If the active/passive flag is set to passive, then this is a
-        call to LISTEN for an incoming connection.  A passive open may
-        have either a fully specified foreign socket to wait for a
-        particular connection or an unspecified foreign socket to wait
-        for any call.  A fully specified passive call can be made active
-        by the subsequent execution of a SEND.
+        Active/Passive 플래그가 수동으로 설정되어 있으면 들어오는 연결에 대한 LISTEN
+        호출입니다. Passive open에는 특정 연결을 기다리는 완전히 지정된 외부 소켓 또는
+        호출을 기다리는 지정되지 않은 외부 소켓이 있을 수 있습니다. 완전히 지정된 Passive
+        호출은 SEND의 후속 실행에 의해 활성화될 수 있습니다.
 
-        A transmission control block (TCB) is created and partially
-        filled in with data from the OPEN command parameters.
+        전송 제어 블록(TCB)이 생성되고 OPEN 명령 매개변수의 데이터로 부분적으로 채워집니다.
 
-        On an active OPEN command, the TCP will begin the procedure to
-        synchronize (i.e., establish) the connection at once.
+        Active OPEN 명령에서 TCP는 즉시 연결을 동기화(즉, establish)하는 절차를
+        시작합니다.
 
-        The timeout, if present, permits the caller to set up a timeout
-        for all data submitted to TCP.  If data is not successfully
-        delivered to the destination within the timeout period, the TCP
-        will abort the connection.  The present global default is five
-        minutes.
+        타임아웃이 있는 경우 호출자는 TCP에 제출된 모든 데이터에 대한 타임아웃을 설정할 수
+        있습니다. 제한 시간 내에 데이터가 대상으로 성공적으로 전달되지 않으면 TCP는 연결을
+        중단합니다. 현재 전역 기본값은 5분입니다.
 
-        The TCP or some component of the operating system will verify
-        the users authority to open a connection with the specified
-        precedence or security/compartment.  The absence of precedence
-        or security/compartment specification in the OPEN call indicates
-        the default values must be used.
+        TCP 또는 운영 체제의 일부 구성 요소는 지정된 우선 순위 또는 보안/구획과의 연결을
+        여는 사용자 권한을 확인합니다. OPEN 호출에서 우선 순위 또는 보안/구획 지정이 없으면
+        기본값을 사용해야 함을 나타냅니다.
 
-        TCP will accept incoming requests as matching only if the
-        security/compartment information is exactly the same and only if
-        the precedence is equal to or higher than the precedence
-        requested in the OPEN call.
+        TCP는 보안/구획 정보가 정확히 동일하고 우선 순위가 OPEN 호출에서 요청된 우선 순위와
+        같거나 높은 경우에만 들어오는 요청을 일치하는 것으로 수락합니다.
 
-        The precedence for the connection is the higher of the values
-        requested in the OPEN call and received from the incoming
-        request, and fixed at that value for the life of the
-        connection.Implementers may want to give the user control of
-        this precedence negotiation.  For example, the user might be
-        allowed to specify that the precedence must be exactly matched,
-        or that any attempt to raise the precedence be confirmed by the
-        user.
+        연결의 우선 순위는 OPEN 호출에서 요청되고 들어오는 요청에서 받은 값 중 더 높은
+        값이며 연결 수명 동안 해당 값으로 고정됩니다. 구현자는 /Gridgames.png이 우선 순위
+        협상에 대한 사용자 제어를 사용자에게 제공하기를 원할 수 있습니다. 예를 들어 사용자는
+        우선 순위가 정확히 일치해야 하거나 우선 순위를 높이려는 모든 시도를 사용자가 확인하도록
+        지정할 수 있습니다.
 
-        A local connection name will be returned to the user by the TCP.
-        The local connection name can then be used as a short hand term
-        for the connection defined by the <local socket, foreign socket>
-        pair.
+        로컬 연결 이름은 TCP에 의해 사용자에게 반환됩니다. 그러면 로컬 연결 이름을 <local
+        socket, foreign socket> 쌍으로 정의된 연결에 대한 약칭으로 사용할 수 있습니다.
 
       Send
 
         Format:  SEND (local connection name, buffer address, byte
         count, PUSH flag, URGENT flag [,timeout])
 
-        This call causes the data contained in the indicated user buffer
-        to be sent on the indicated connection.  If the connection has
-        not been opened, the SEND is considered an error.  Some
-        implementations may allow users to SEND first; in which case, an
-        automatic OPEN would be done.  If the calling process is not
-        authorized to use this connection, an error is returned.
+        이 호출로 인해 표시된 사용자 버퍼에 포함된 데이터가 표시된 연결에서 전송됩니다. 연결이
+        열리지 않은 경우 SEND는 오류로 간주됩니다. 일부 구현에서는 사용자가 먼저 SEND를
+        허용할 수 있습니다; 이 경우 자동 OPEN이 수행됩니다. 호출 프로세스가 이 연결을 사용할
+        권한이 없으면 오류가 반환됩니다.
 
-        If the PUSH flag is set, the data must be transmitted promptly
-        to the receiver, and the PUSH bit will be set in the last TCP
-        segment created from the buffer.  If the PUSH flag is not set,
-        the data may be combined with data from subsequent SENDs for
-        transmission efficiency.
+        PUSH 플래그가 설정되면 데이터를 즉시 수신자에게 전송해야 하며 PUSH 비트는 버퍼에서
+        생성된 마지막 TCP 세그먼트에 설정됩니다. PUSH 플래그가 설정되지 않은 경우 데이터는
+        전송 효율성을 위해 후속 SEND의 데이터와 결합될 수 있습니다.
 
-        If the URGENT flag is set, segments sent to the destination TCP
-        will have the urgent pointer set.  The receiving TCP will signal
-        the urgent condition to the receiving process if the urgent
-        pointer indicates that data preceding the urgent pointer has not
-        been consumed by the receiving process.  The purpose of urgent
-        is to stimulate the receiver to process the urgent data and to
-        indicate to the receiver when all the currently known urgent
-        data has been received.  The number of times the sending user's
-        TCP signals urgent will not necessarily be equal to the number
-        of times the receiving user will be notified of the presence of
-        urgent data.
+        URGENT 플래그가 설정되면 대상 TCP로 전송되는 세그먼트에 긴급 포인터가 설정됩니다.
+        긴급 포인터가 긴급 포인터 이전의 데이터가 수신 프로세스에 의해 소비되지 않았음을
+        나타내는 경우 수신 TCP는 수신 프로세스에 긴급 상태를 알립니다. 긴급의 목적은
+        수신자가 긴급 데이터를 처리하도록 자극하고 현재 알려진 모든 긴급 데이터가 수신되면
+        수신자에게 알리는 것입니다. 보내는 사용자의 TCP 신호가 긴급한 횟수는 받는
+        사용자에게 긴급한 데이터가 있음을 알리는 횟수와 반드시 같지는 않습니다.
 
-        If no foreign socket was specified in the OPEN, but the
-        connection is established (e.g., because a LISTENing connection
-        has become specific due to a foreign segment arriving for the
-        local socket), then the designated buffer is sent to the implied
-        foreign socket.  Users who make use of OPEN with an unspecified
-        foreign socket can make use of SEND without ever explicitly
-        knowing the foreign socket address.
+        OPEN에 외부 소켓이 지정되지 않았지만 연결이 설정되면(예: 로컬 소켓에 도착하는 외부
+        세그먼트로 인해 LISTENing 연결이 특정화되었기 때문에) 지정된 버퍼가 묵시적 외부
+        소켓으로 전송됩니다. 지정되지 않은 외부 소켓으로 OPEN을 사용하는 사용자는 외부 소켓
+        주소를 명시적으로 알지 않고도 SEND를 사용할 수 있습니다.
 
-        However, if a SEND is attempted before the foreign socket
-        becomes specified, an error will be returned.  Users can use the
-        STATUS call to determine the status of the connection.  In some
-        implementations the TCP may notify the user when an unspecified
-        socket is bound.
+        그러나 외부 소켓이 지정되기 전에 SEND를 시도하면 오류가 반환됩니다. 사용자는 STATUS
+        호출을 사용하여 연결 상태를 확인할 수 있습니다. 일부 구현에서 TCP는 지정되지 않은
+        소켓이 바인드될 때 사용자에게 알릴 수 있습니다.
 
-        If a timeout is specified, the current user timeout for this
-        connection is changed to the new one.
+        제한 시간이 지정되면 이 연결에 대한 현재 사용자 제한 시간이 새 것으로 변경됩니다.
 
-        In the simplest implementation, SEND would not return control to
-        the sending process until either the transmission was complete
-        or the timeout had been exceeded.  However, this simple method
-        is both subject to deadlocks (for example, both sides of the
-        connection might try to do SENDs before doing any RECEIVEs) and
-        offers poor performance, so it is not recommended.  A more
-        sophisticated implementation would return immediately to allow
-        the process to run concurrently with network I/O, and,
-        furthermore, to allow multiple SENDs to be in progress.
-        Multiple SENDs are served in first come, first served order, so
-        the TCP will queue those it cannot service immediately.
+        가장 간단한 구현에서 SEND는 전송이 완료되거나 제한 시간이 초과될 때까지 전송
+        프로세스로 제어를 반환하지 않습니다. 그러나 이 간단한 방법은 교착 상태(예를 들어,
+        연결의 양쪽에서 RECEIVE를 수행하기 전에 SEND를 시도할 수 있음)에 취약하고 성능이
+        좋지 않으므로 권장되지 않습니다. 보다 정교한 구현은 프로세스가 네트워크 I/O와 동시에
+        실행될 수 있도록 즉시 반환되고 더 나아가 여러 SEND가 진행될 수 있도록 합니다. 여러
+        SEND는 선착순으로 처리되므로 TCP는 즉시 처리할 수 없는 항목을 대기열에 넣습니다.
 
-        We have implicitly assumed an asynchronous user interface in
-        which a SEND later elicits some kind of SIGNAL or
-        pseudo-interrupt from the serving TCP.  An alternative is to
-        return a response immediately.  For instance, SENDs might return
-        immediate local acknowledgment, even if the segment sent had not
-        been acknowledged by the distant TCP.  We could optimistically
-        assume eventual success.  If we are wrong, the connection will
-        close anyway due to the timeout.  In implementations of this
-        kind (synchronous), there will still be some asynchronous
-        signals, but these will deal with the connection itself, and not
-        with specific segments or buffers.
+        우리는 SEND가 나중에 제공받은 TCP에서 일종의 SIGNAL 또는 의사 인터럽트를
+        이끌어내는 비동기 사용자 인터페이스를 암시적으로 가정했습니다. 대안은 응답을 즉시
+        반환하는 것입니다. 예를 들어 SEND는 전송된 세그먼트가 멀리 있는 TCP에서 확인되지
+        않은 경우에도 즉시 로컬 확인을 반환할 수 있습니다. 우리는 궁극적인 성공을 낙관적으로
+        가정할 수 있습니다. 우리가 틀렸다면 시간 초과로 인해 연결이 종료됩니다. 이러한 종류
+        (동기식)의 구현에는 여전히 일부 비동기 신호가 있지만 특정 세그먼트나 버퍼가 아닌 연결
+        자체를 처리합니다.
 
-        In order for the process to distinguish among error or success
-        indications for different SENDs, it might be appropriate for the
-        buffer address to be returned along with the coded response to
-        the SEND request.  TCP-to-user signals are discussed below,
-        indicating the information which should be returned to the
-        calling process.
+        프로세스가 서로 다른 SEND에 대한 오류 또는 성공 표시를 구별하기 위해 버퍼 주소가
+        SEND 요청에 대한 코딩된 응답과 함께 반환되는 것이 적절할 수 있습니다. 호출
+        프로세스로 반환되어야 하는 정보를 나타내는 TCP-사용자 신호는 아래에서 설명합니다.
 
       Receive
 
         Format:  RECEIVE (local connection name, buffer address, byte
         count) -> byte count, urgent flag, push flag
 
-        This command allocates a receiving buffer associated with the
-        specified connection.  If no OPEN precedes this command or the
-        calling process is not authorized to use this connection, an
-        error is returned.
+        이 명령은 지정된 연결과 관련된 수신 버퍼를 할당합니다. 이 명령 앞에 OPEN이 없거나
+        호출 프로세스가 이 연결을 사용할 권한이 없으면 오류가 반환됩니다.
 
-        In the simplest implementation, control would not return to the
-        calling program until either the buffer was filled, or some
-        error occurred, but this scheme is highly subject to deadlocks.
-        A more sophisticated implementation would permit several
-        RECEIVEs to be outstanding at once.  These would be filled as
-        segments arrive.  This strategy permits increased throughput at
-        the cost of a more elaborate scheme (possibly asynchronous) to
-        notify the calling program that a PUSH has been seen or a buffer
-        filled.
+        가장 간단한 구현에서 제어는 버퍼가 채워지거나 일부 오류가 발생할 때까지 호출
+        프로그램으로 돌아가지 않지만 이 방식은 교착 상태에 매우 취약합니다. 보다 정교한
+        구현을 통해 여러 RECEIVE가 한 번에 미해결 상태가 될 수 있습니다. 세그먼트가
+        도착하면 채워집니다. 이 전략은 호출 프로그램에 PUSH가 표시되었거나 버퍼가 가득
+        찼음을 알리기 위해 보다 정교한 체계(아마도 비동기식)의 비용으로 처리량 증가를
+        허용합니다.
 
-        If enough data arrive to fill the buffer before a PUSH is seen,
-        the PUSH flag will not be set in the response to the RECEIVE.
-        The buffer will be filled with as much data as it can hold.  If
-        a PUSH is seen before the buffer is filled the buffer will be
-        returned partially filled and PUSH indicated.
+        PUSH가 표시되기 전에 버퍼를 채우기에 충분한 데이터가 도착하면 RECEIVE에 대한
+        응답에서 PUSH 플래그가 설정되지 않습니다. 버퍼는 보유할 수 있는 만큼의 데이터로
+        채워집니다. 버퍼가 채워지기 전에 PUSH가 표시되면 버퍼는 부분적으로 채워진 것으로
+        반환되고 PUSH가 표시됩니다.
 
-        If there is urgent data the user will have been informed as soon
-        as it arrived via a TCP-to-user signal.  The receiving user
-        should thus be in "urgent mode".  If the URGENT flag is on,
-        additional urgent data remains.  If the URGENT flag is off, this
-        call to RECEIVE has returned all the urgent data, and the user
-        may now leave "urgent mode".  Note that data following the
-        urgent pointer (non-urgent data) cannot be delivered to the user
-        in the same buffer with preceeding urgent data unless the
-        boundary is clearly marked for the user.
+        긴급한 데이터가 있는 경우 TCP-사용자 신호를 통해 데이터가 도착하자마자 사용자에게
+        알립니다. 따라서 받는 사용자는 "urgent mode"에 있어야 합니다. URGENT 플래그가
+        켜져 있으면 추가 긴급 데이터가 남아 있습니다. URGENT 플래그가 꺼져 있으면
+        RECEIVE에 대한 이 호출이 모든 긴급 데이터를 반환했으며 사용자는 이제 "urgent
+        mode"를 종료할 수 있습니다. 긴급 포인터 다음의 데이터(비긴급 데이터)는 경계가
+        사용자에게 명확하게 표시되지 않는 한 선행 긴급 데이터와 동일한 버퍼에서 사용자에게
+        전달될 수 없습니다.
 
-        To distinguish among several outstanding RECEIVEs and to take
-        care of the case that a buffer is not completely filled, the
-        return code is accompanied by both a buffer pointer and a byte
-        count indicating the actual length of the data received.
+        여러 미해결 RECEIVE들을 구별하고 버퍼가 완전히 채워지지 않은 경우를 처리하기 위해
+        반환 코드에는 버퍼 포인터와 수신된 데이터의 실제 길이를 나타내는 바이트 수가 함께
+        제공됩니다.
 
-        Alternative implementations of RECEIVE might have the TCP
-        allocate buffer storage, or the TCP might share a ring buffer
-        with the user.
+        RECEIVE의 대체 구현에는 TCP 할당 버퍼 저장소가 있거나 TCP가 사용자와 링 버퍼를
+        공유할 수 있습니다.
 
       Close
 
         Format:  CLOSE (local connection name)
 
-        This command causes the connection specified to be closed.  If
-        the connection is not open or the calling process is not
-        authorized to use this connection, an error is returned.
-        Closing connections is intended to be a graceful operation in
-        the sense that outstanding SENDs will be transmitted (and
-        retransmitted), as flow control permits, until all have been
-        serviced.  Thus, it should be acceptable to make several SEND
-        calls, followed by a CLOSE, and expect all the data to be sent
-        to the destination.  It should also be clear that users should
-        continue to RECEIVE on CLOSING connections, since the other side
-        may be trying to transmit the last of its data.  Thus, CLOSE
-        means "I have no more to send" but does not mean "I will not
-        receive any more."  It may happen (if the user level protocol is
-        not well thought out) that the closing side is unable to get rid
-        of all its data before timing out.  In this event, CLOSE turns
-        into ABORT, and the closing TCP gives up.
+        이 명령은 지정된 연결이 닫히도록 합니다. 연결이 열려 있지 않거나 호출 프로세스가 이
+        연결을 사용할 권한이 없으면 오류가 반환됩니다. 연결 닫기는 흐름 제어가 허용하는 대로
+        미해결 SEND가 모두 서비스될 때까지 전송(및 재전송)된다는 점에서 정상적인 작업을 위한
+        것입니다. 따라서 여러 번 SEND 호출을 한 다음 CLOSE를 호출하고 모든 데이터가
+        대상으로 전송될 것으로 예상하는 것이 허용되어야 합니다. 상대방이 데이터의 마지막
+        전송을 시도할 수 있으므로 사용자가 CLOSING 연결에서 계속 수신해야 한다는 점도
+        분명해야 합니다. 따라서 CLOSE는 "더 이상 보낼 것이 없다"는 의미이지 "더 이상 받지
+        않겠다"는 의미는 아닙니다. 닫는 쪽이 시간 초과 전에 모든 데이터를 제거할 수 없는
+        경우가 발생할 수 있습니다(사용자 수준 프로토콜이 잘 고려되지 않은 경우). 이 경우
+        CLOSE는 ABORT로 바뀌고 TCP 닫기를 포기합니다.
 
-        The user may CLOSE the connection at any time on his own
-        initiative, or in response to various prompts from the TCP
-        (e.g., remote close executed, transmission timeout exceeded,
-        destination inaccessible).
+        사용자는 자신의 주도로 또는 TCP의 다양한 프롬프트(예: 원격 닫기 실행, 전송 시간 초과
+        초과, 대상 액세스 불가)에 대한 응답으로 언제든지 연결을 CLOSE 할 수 있습니다.
 
-        Because closing a connection requires communication with the
-        foreign TCP, connections may remain in the closing state for a
-        short time.  Attempts to reopen the connection before the TCP
-        replies to the CLOSE command will result in error responses.
+        연결을 닫으려면 외부 TCP와의 통신이 필요하기 때문에 연결이 잠시 동안 닫힘 상태로
+        유지될 수 있습니다. TCP가 CLOSE 명령에 응답하기 전에 연결을 다시 열려고 하면 오류
+        응답이 발생합니다.
 
-        Close also implies push function.
+        닫기는 또한 푸시 기능을 의미합니다.
 
       Status
 
         Format:  STATUS (local connection name) -> status data
 
-        This is an implementation dependent user command and could be
-        excluded without adverse effect.  Information returned would
-        typically come from the TCB associated with the connection.
+        이것은 구현 종속 사용자 명령이며 역효과 없이 제외될 수 있습니다. 반환된 정보는
+        일반적으로 연결과 관련된 TCB에서 가져옵니다.
 
-        This command returns a data block containing the following
-        information:
+        이 명령은 다음 정보가 포함된 데이터 블록을 반환합니다:
 
           local socket,
           foreign socket,
@@ -1971,35 +1827,27 @@ IENs:  129, 124, 112, 81,
           security/compartment,
           and transmission timeout.
 
-        Depending on the state of the connection, or on the
-        implementation itself, some of this information may not be
-        available or meaningful.  If the calling process is not
-        authorized to use this connection, an error is returned.  This
-        prevents unauthorized processes from gaining information about a
-        connection.
+        연결 상태 또는 구현 자체에 따라 이 정보 중 일부를 사용할 수 없거나 의미가 없을 수
+        있습니다. 호출 프로세스가 이 연결을 사용할 권한이 없으면 오류가 반환됩니다. 이렇게
+        하면 승인되지 않은 프로세스가 연결에 대한 정보를 얻는 것을 방지할 수 있습니다.
 
       Abort
 
         Format:  ABORT (local connection name)
 
-        This command causes all pending SENDs and RECEIVES to be
-        aborted, the TCB to be removed, and a special RESET message to
-        be sent to the TCP on the other side of the connection.
-        Depending on the implementation, users may receive abort
-        indications for each outstanding SEND or RECEIVE, or may simply
-        receive an ABORT-acknowledgment.
+        이 명령은 보류 중인 모든 SEND 및 RECEIVES가 중단되고 TCB가 제거되며 특수 RESET
+        메시지가 연결의 반대편에 있는 TCP로 전송되도록 합니다. 구현에 따라 사용자는 각 미해결
+        SEND 또는 RECEIVE에 대한 중단 표시를 받거나 단순히 ABORT 승인을 받을 수
+        있습니다.
 
     TCP-to-User Messages
 
-      It is assumed that the operating system environment provides a
-      means for the TCP to asynchronously signal the user program.  When
-      the TCP does signal a user program, certain information is passed
-      to the user.  Often in the specification the information will be
-      an error message.  In other cases there will be information
-      relating to the completion of processing a SEND or RECEIVE or
-      other user call.
+      운영 체제 환경은 TCP가 사용자 프로그램에 비동기적으로 신호를 보낼 수 있는 수단을
+      제공한다고 가정합니다. TCP가 사용자 프로그램에 신호를 보내면 특정 정보가 사용자에게
+      전달됩니다. 종종 사양에서 정보는 오류 메시지가 됩니다. 다른 경우에는 SEND 또는
+      RECEIVE 또는 다른 사용자 호출 처리 완료와 관련된 정보가 있습니다.
 
-      The following information is provided:
+      다음 정보가 제공됩니다:
 
         Local Connection Name                    Always
         Response String                          Always
@@ -2010,36 +1858,28 @@ IENs:  129, 124, 112, 81,
 
   TCP/Lower-Level Interface
 
-    The TCP calls on a lower level protocol module to actually send and
-    receive information over a network.  One case is that of the ARPA
-    internetwork system where the lower level module is the Internet
-    Protocol (IP) [2].
+    TCP는 하위 수준의 프로토콜 모듈을 호출하여 네트워크를 통해 실제로 정보를 보내고 받습니다.
+    한 가지 사례는 하위 수준 모듈이 인터넷 프로토콜(IP)인 ARPA 인터네트워크 시스템의
+    경우입니다[2].
 
-    If the lower level protocol is IP it provides arguments for a type
-    of service and for a time to live.  TCP uses the following settings
-    for these parameters:
+    하위 수준 프로토콜이 IP인 경우 서비스 유형 및 수명에 대한 인수를 제공합니다. TCP는
+    이러한 매개변수에 대해 다음 설정을 사용합니다:
 
       Type of Service = Precedence: routine, Delay: normal, Throughput:
       normal, Reliability: normal; or 00000000.
 
       Time to Live    = one minute, or 00111100.
 
-        Note that the assumed maximum segment lifetime is two minutes.
-        Here we explicitly ask that a segment be destroyed if it cannot
-        be delivered by the internet system within one minute.
+        가정된 최대 세그먼트 수명은 2분입니다. 여기서 우리는 인터넷 시스템에서 1분 이내에
+        세그먼트를 전달할 수 없는 경우 세그먼트를 파기하도록 명시적으로 요청합니다.
 
-    If the lower level is IP (or other protocol that provides this
-    feature) and source routing is used, the interface must allow the
-    route information to be communicated.  This is especially important
-    so that the source and destination addresses used in the TCP
-    checksum be the originating source and ultimate destination. It is
-    also important to preserve the return route to answer connection
-    requests.
+    하위 수준이 IP(또는 이 기능을 제공하는 다른 프로토콜)이고 소스 라우팅이 사용되는 경우
+    인터페이스는 경로 정보가 전달되도록 허용해야 합니다. 이는 TCP 체크섬에 사용되는 소스 및
+    대상 주소가 원래 소스 및 최종 대상이 되도록 특히 중요합니다. 연결 요청에 응답하기 위해
+    반환 경로를 유지하는 것도 중요합니다.
 
-    Any lower level protocol will have to provide the source address,
-    destination address, and protocol fields, and some way to determine
-    the "TCP length", both to provide the functional equivlent service
-    of IP and to be used in the TCP checksum.
+    모든 하위 수준 프로토콜은 송신 주소, 대상 주소 및 프로토콜 필드와 "TCP 길이"를 결정하는
+    방법을 제공해야 합니다. IP의 기능적 등가 서비스를 제공하고 TCP 체크섬에서 사용됩니다.
 
 3.9.  Event Processing
 
