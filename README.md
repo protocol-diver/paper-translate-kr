@@ -17,7 +17,7 @@
    - [x] [RFC5128](https://github.com/protocol-diver/rfc-translate-kr/blob/main/kr/rfc5128.txt) - State of Peer-to-Peer (P2P) Communication across Network Address Translators (NATs)
 
 ### Protocol
-   - [ ] [RFC793](https://github.com/protocol-diver/rfc-translate-kr/blob/main/kr/rfc793.txt) - Transmission Control Protocol
+   - [x] [RFC793](https://github.com/protocol-diver/rfc-translate-kr/blob/main/kr/rfc793.txt) - Transmission Control Protocol
    - [ ] [RFC3550](https://github.com/protocol-diver/rfc-translate-kr/blob/main/kr/rfc3550.txt) - RTP: A Transport Protocol for Real-Time Applications
    - [x] [RFC6886](https://github.com/protocol-diver/rfc-translate-kr/blob/main/kr/rfc6886.txt) - NAT Port Mapping Protocol (NAT-PMP)
    - [ ] [RFC9293]() - Transmission Control Protocol
