@@ -1881,20 +1881,17 @@ IENs:  129, 124, 112, 81,
     모든 하위 수준 프로토콜은 송신 주소, 대상 주소 및 프로토콜 필드와 "TCP 길이"를 결정하는
     방법을 제공해야 합니다. IP의 기능적 등가 서비스를 제공하고 TCP 체크섬에서 사용됩니다.
 
-3.9.  Event Processing
+3.9.  Event Processing (이벤트 처리)
 
-  The processing depicted in this section is an example of one possible
-  implementation.  Other implementations may have slightly different
-  processing sequences, but they should differ from those in this
-  section only in detail, not in substance.
+  이 섹션에 설명된 처리는 가능한 구현 중 하나의 예입니다. 다른 구현은 처리 순서가 약간 다를 수
+  있지만 이 섹션의 내용과 세부 사항만 다를뿐 본질적으로는 같습니다.
 
-  The activity of the TCP can be characterized as responding to events.
-  The events that occur can be cast into three categories:  user calls,
-  arriving segments, and timeouts.  This section describes the
-  processing the TCP does in response to each of the events.  In many
-  cases the processing required depends on the state of the connection.
+  TCP의 활동은 이벤트에 대한 응답으로 특징지을 수 있습니다. 발생하는 이벤트는 사용자 호출, 도착
+  세그먼트 및 시간 초과의 세 가지 범주로 캐스트될 수 있습니다. 이 섹션에서는 각 이벤트에 대한
+  응답으로 TCP가 수행하는 처리를 설명합니다. 대부분의 경우 필요한 처리는 연결 상태에 따라
+  다릅니다.
 
-    Events that occur:
+    발생하는 이벤트:
 
       User Calls
 
@@ -1915,70 +1912,56 @@ IENs:  129, 124, 112, 81,
         RETRANSMISSION TIMEOUT
         TIME-WAIT TIMEOUT
 
-  The model of the TCP/user interface is that user commands receive an
-  immediate return and possibly a delayed response via an event or
-  pseudo interrupt.  In the following descriptions, the term "signal"
-  means cause a delayed response.
+  TCP/사용자 인터페이스의 모델은 사용자 명령이 이벤트 또는 의사 인터럽트를 통해 즉각적인 반환과
+  지연된 응답을 받는 것입니다. 다음 설명에서 "signal"이라는 용어는 지연된 응답을 유발하는
+  것을 의미합니다.
 
-  Error responses are given as character strings.  For example, user
-  commands referencing connections that do not exist receive "error:
-  connection not open".
+  오류 응답은 문자열로 제공됩니다. 예를 들어 존재하지 않는 연결을 참조하는 사용자 명령은
+  "error: connection not open"을 수신합니다.
 
-  Please note in the following that all arithmetic on sequence numbers,
-  acknowledgment numbers, windows, et cetera, is modulo 2**32 the size
-  of the sequence number space.  Also note that "=<" means less than or
-  equal to (modulo 2**32).
+  시퀀스 번호, acknowledgment 번호, 윈도우 등에 대한 모든 산술 연산은 모듈로 2**32
+  시퀀스 번호 공간 크기입니다. 또한 "=<"는 (modulo 2**32)보다 작거나 같음을 의미합니다.
 
-  A natural way to think about processing incoming segments is to
-  imagine that they are first tested for proper sequence number (i.e.,
-  that their contents lie in the range of the expected "receive window"
-  in the sequence number space) and then that they are generally queued
-  and processed in sequence number order.
+  수신 세그먼트 처리에 대해 생각하는 자연스러운 방법은 세그먼트가 먼저 적절한 시퀀스 번호(즉,
+  해당 내용이 시퀀스 번호 공간에서 예상되는 "수신 윈도우" 범위에 있음)에 대해 테스트된 다음
+  일반적으로 다음과 같다고 상상하는 것입니다. 시퀀스 번호 순서대로 대기 및 처리됩니다.
 
-  When a segment overlaps other already received segments we reconstruct
-  the segment to contain just the new data, and adjust the header fields
-  to be consistent.
+  세그먼트가 이미 수신된 다른 세그먼트와 겹치면 새 데이터만 포함하도록 세그먼트를 재구성하고
+  헤더 필드를 일관되게 조정합니다.
 
-  Note that if no state change is mentioned the TCP stays in the same
-  state.
+  상태 변경이 언급되지 않으면 TCP는 동일한 상태를 유지합니다.
 
   OPEN Call
 
     CLOSED STATE (i.e., TCB does not exist)
 
-      Create a new transmission control block (TCB) to hold connection
-      state information.  Fill in local socket identifier, foreign
-      socket, precedence, security/compartment, and user timeout
-      information.  Note that some parts of the foreign socket may be
-      unspecified in a passive OPEN and are to be filled in by the
-      parameters of the incoming SYN segment.  Verify the security and
-      precedence requested are allowed for this user, if not return
-      "error:  precedence not allowed" or "error:  security/compartment
-      not allowed."  If passive enter the LISTEN state and return.  If
-      active and the foreign socket is unspecified, return "error:
-      foreign socket unspecified"; if active and the foreign socket is
-      specified, issue a SYN segment.  An initial send sequence number
-      (ISS) is selected.  A SYN segment of the form <SEQ=ISS><CTL=SYN>
-      is sent.  Set SND.UNA to ISS, SND.NXT to ISS+1, enter SYN-SENT
-      state, and return.
+      연결 상태 정보를 보관할 새 전송 제어 블록(TCB)을 만듭니다. 로컬 소켓 식별자, 외부
+      소켓, 우선 순위, 보안/구획 및 사용자 제한 시간 정보를 입력합니다. 외부 소켓의 일부는
+      Passive OPEN에서 지정되지 않을 수 있으며 들어오는 SYN 세그먼트의 매개변수로
+      채워집니다. 요청된 보안 및 우선 순위가 이 사용자에 대해 허용되는지 확인하고 그렇지
+      않은 경우 ""error: precedence not allowed" 또는 "error: security/
+      compartment not allowed."을 반환합니다. Passive이면 LISTEN 상태로
+      들어가고 돌아갑니다. Active 상태이고 외부 소켓이 지정되지 않은 경우 "error:
+      foreign socket unspecified"을 반환합니다; Active 상태이고 외부 소켓이
+      지정된 경우 SYN 세그먼트를 발행합니다. 초기 전송 시퀀스 번호(Initial Send
+      Sequence number)가 선택됩니다. <SEQ=ISS><CTL=SYN> 형식의 SYN 세그먼트가
+      전송됩니다. SND.UNA를 ISS로, SND.NXT를 ISS+1로 설정하고 SYN-SENT 상태로
+      진입한 후 반환합니다.
 
-      If the caller does not have access to the local socket specified,
-      return "error:  connection illegal for this process".  If there is
-      no room to create a new connection, return "error:  insufficient
-      resources".
+      호출자가 지정된 로컬 소켓에 대한 액세스 권한이 없으면 "error: connection
+      illegal for this process"를 반환합니다. 새 연결을 만들 공간이 없으면 "error:
+      insufficient resources"을 반환합니다.
 
     LISTEN STATE
 
-      If active and the foreign socket is specified, then change the
-      connection from passive to active, select an ISS.  Send a SYN
-      segment, set SND.UNA to ISS, SND.NXT to ISS+1.  Enter SYN-SENT
-      state.  Data associated with SEND may be sent with SYN segment or
-      queued for transmission after entering ESTABLISHED state.  The
-      urgent bit if requested in the command must be sent with the data
-      segments sent as a result of this command.  If there is no room to
-      queue the request, respond with "error:  insufficient resources".
-      If Foreign socket was not specified, then return "error:  foreign
-      socket unspecified".
+      Active 및 외부 소켓이 지정된 경우 연결을 Passive에서 Acitve으로 변경하고 ISS를
+      선택하십시오. SYN 세그먼트를 보내고 SND.UNA를 ISS로, SND.NXT를 ISS+1로
+      설정합니다. SYN-SENT 상태로 들어갑니다. SEND와 관련된 데이터는 SYN 세그먼트와 함께
+      전송되거나 ESTABLISHED 상태에 들어간 후 전송을 위해 대기할 수 있습니다. 명령에서
+      요청된 경우 긴급 비트는 이 명령의 결과로 전송된 데이터 세그먼트와 함께 전송되어야
+      합니다. 요청을 대기할 공간이 없으면 "error: insufficient resources"으로
+      응답합니다. 외부 소켓이 지정되지 않은 경우 "error: foreign socket
+      unspecified"을 반환합니다.
 
     SYN-SENT STATE
     SYN-RECEIVED STATE
@@ -1996,41 +1979,36 @@ IENs:  129, 124, 112, 81,
 
     CLOSED STATE (i.e., TCB does not exist)
 
-      If the user does not have access to such a connection, then return
-      "error:  connection illegal for this process".
+      사용자가 이러한 연결에 액세스할 수 없으면 "error: connection illegal for
+      this process"를 반환합니다.
 
-      Otherwise, return "error:  connection does not exist".
+      그렇지 않으면 "error:  connection does not exist"를 반환합니다.
 
     LISTEN STATE
 
-      If the foreign socket is specified, then change the connection
-      from passive to active, select an ISS.  Send a SYN segment, set
-      SND.UNA to ISS, SND.NXT to ISS+1.  Enter SYN-SENT state.  Data
-      associated with SEND may be sent with SYN segment or queued for
-      transmission after entering ESTABLISHED state.  The urgent bit if
-      requested in the command must be sent with the data segments sent
-      as a result of this command.  If there is no room to queue the
-      request, respond with "error:  insufficient resources".  If
-      Foreign socket was not specified, then return "error:  foreign
-      socket unspecified".
+      외부 소켓이 지정된 경우 Passive에서 Active으로 연결을 변경하고 ISS를 선택하십시오.
+      SYN 세그먼트를 보내고 SND.UNA를 ISS로, SND.NXT를 ISS+1로 설정합니다.
+      SYN-SENT 상태로 들어갑니다. SEND와 관련된 데이터는 SYN 세그먼트와 함께 전송되거나
+      ESTABLISHED 상태에 들어간 후 전송을 위해 대기할 수 있습니다. 명령에서 요청된 경우
+      긴급 비트는 이 명령의 결과로 전송된 데이터 세그먼트와 함께 전송되어야 합니다. 요청을
+      대기할 공간이 없으면 "error: insufficient resources"으로 응답합니다. 외부
+      소켓이 지정되지 않은 경우 "error:  foreign socket unspecified"을 반환합니다.
 
     SYN-SENT STATE
     SYN-RECEIVED STATE
 
-      Queue the data for transmission after entering ESTABLISHED state.
-      If no space to queue, respond with "error:  insufficient
-      resources".
+      ESTABLISHED 상태에 진입한 후 전송을 위해 데이터를 대기시킵니다. 대기할 공간이 없으면
+      "error: insufficient resources"으로 응답합니다.
 
     ESTABLISHED STATE
     CLOSE-WAIT STATE
 
-      Segmentize the buffer and send it with a piggybacked
-      acknowledgment (acknowledgment value = RCV.NXT).  If there is
-      insufficient space to remember this buffer, simply return "error:
-      insufficient resources".
+      버퍼를 세그먼트화하고 피기백된 확인과 함께 보냅니다(acknowledgment 값 = RCV.NXT).
+      이 버퍼를 기억할 공간이 충분하지 않으면 "error: insufficient resources"을
+      반환합니다.
 
-      If the urgent flag is set, then SND.UP <- SND.NXT-1 and set the
-      urgent pointer in the outgoing segments.
+      긴급 플래그가 설정되면 SND.UP <- SND.NXT-1이고 나가는 세그먼트에 긴급 포인터를
+      설정합니다.
 
     FIN-WAIT-1 STATE
     FIN-WAIT-2 STATE
@@ -2038,129 +2016,121 @@ IENs:  129, 124, 112, 81,
     LAST-ACK STATE
     TIME-WAIT STATE
 
-      Return "error:  connection closing" and do not service request.
+      "error:  connection closing"를 반환하고 요청을 서비스하지 않습니다.
 
   RECEIVE Call
 
     CLOSED STATE (i.e., TCB does not exist)
 
-      If the user does not have access to such a connection, return
-      "error:  connection illegal for this process".
+      사용자가 이러한 연결에 액세스할 수 없으면 "error: connection illegal for this
+      process"를 반환합니다.
 
-      Otherwise return "error:  connection does not exist".
+      그렇지 않으면 "error:  connection does not exist"를 반환합니다.
 
     LISTEN STATE
     SYN-SENT STATE
     SYN-RECEIVED STATE
 
-      Queue for processing after entering ESTABLISHED state.  If there
-      is no room to queue this request, respond with "error:
-      insufficient resources".
+      ESTABLISHED 상태에 진입한 후 처리를 위한 대기열입니다. 이 요청을 대기할 공간이 없으면
+      "error: insufficient resources"으로 응답합니다.
 
     ESTABLISHED STATE
     FIN-WAIT-1 STATE
     FIN-WAIT-2 STATE
 
-      If insufficient incoming segments are queued to satisfy the
-      request, queue the request.  If there is no queue space to
-      remember the RECEIVE, respond with "error:  insufficient
-      resources".
+      들어오는 세그먼트가 충분하지 않아 요청을 충족할 수 없으면 요청을 대기열에 넣습니다.
+      RECEIVE를 기억할 대기열 공간이 없으면 "error:  insufficient resources"으로
+      응답합니다.
 
-      Reassemble queued incoming segments into receive buffer and return
-      to user.  Mark "push seen" (PUSH) if this is the case.
+      대기 중인 수신 세그먼트를 수신 버퍼로 재조립하고 사용자에게 반환합니다. 이 경우 "push
+      seen"(PUSH)을 표시합니다.
 
-      If RCV.UP is in advance of the data currently being passed to the
-      user notify the user of the presence of urgent data.
+      RCV.UP이 현재 사용자에게 전달되는 데이터보다 앞서 있으면 긴급한 데이터가 있음을
+      사용자에게 알립니다.
 
-      When the TCP takes responsibility for delivering data to the user
-      that fact must be communicated to the sender via an
-      acknowledgment.  The formation of such an acknowledgment is
-      described below in the discussion of processing an incoming
-      segment.
+      TCP가 사용자에게 데이터를 전달하는 책임을 지는 경우 승인을 통해 발신자에게 그 사실을
+      전달해야 합니다. 이러한 acknowledgment의 형성은 들어오는 세그먼트 처리에 대한
+      논의에서 아래에 설명되어 있습니다.
 
     CLOSE-WAIT STATE
 
-      Since the remote side has already sent FIN, RECEIVEs must be
-      satisfied by text already on hand, but not yet delivered to the
-      user.  If no text is awaiting delivery, the RECEIVE will get a
-      "error:  connection closing" response.  Otherwise, any remaining
-      text can be used to satisfy the RECEIVE.
+      원격 측에서 이미 FIN을 보냈기 때문에 RECEIVE는 이미 가지고 있지만 아직 사용자에게
+      전달되지 않은 텍스트로 충족되어야 합니다. 전달을 기다리는 텍스트가 없으면 RECEIVE는
+      "error: connection closing" 응답을 받습니다. 그렇지 않으면 나머지 텍스트를
+      RECEIVE를 만족시키는 데 사용할 수 있습니다.
 
     CLOSING STATE
     LAST-ACK STATE
     TIME-WAIT STATE
 
-      Return "error:  connection closing".
+      "error: connection closing"를 반환합니다.
 
   CLOSE Call
 
     CLOSED STATE (i.e., TCB does not exist)
 
-      If the user does not have access to such a connection, return
-      "error:  connection illegal for this process".
+      사용자가 이러한 연결에 액세스할 수 없으면 "error: connection illegal for this
+      process"를 반환합니다.
 
-      Otherwise, return "error:  connection does not exist".
+      그렇지 않으면 "error: connection does not exist"를 반환합니다.
 
     LISTEN STATE
 
-      Any outstanding RECEIVEs are returned with "error:  closing"
-      responses.  Delete TCB, enter CLOSED state, and return.
+      모든 미해결 RECEIVE는 "error: closing" 응답과 함께 반환됩니다. TCB를 삭제하고
+      CLOSED 상태로 진입한 후 복귀합니다.
 
     SYN-SENT STATE
 
-      Delete the TCB and return "error:  closing" responses to any
-      queued SENDs, or RECEIVEs.
+      TCB를 삭제하고 대기 중인 모든 SEND 또는 RECEIVE에 대해 "error: closing"
+      응답을 반환합니다.
 
     SYN-RECEIVED STATE
 
-      If no SENDs have been issued and there is no pending data to send,
-      then form a FIN segment and send it, and enter FIN-WAIT-1 state;
-      otherwise queue for processing after entering ESTABLISHED state.
+      SEND가 발행되지 않았고 보낼 대기 중인 데이터가 없으면 FIN 세그먼트를 형성하여 전송하고
+      FIN-WAIT-1 상태로 들어갑니다; 그렇지 않으면 ESTABLISHED 상태에 들어간 후 처리를
+      위해 대기합니다.
 
     ESTABLISHED STATE
 
-      Queue this until all preceding SENDs have been segmentized, then
-      form a FIN segment and send it.  In any case, enter FIN-WAIT-1
-      state.
+      이전의 모든 SEND가 세그먼트화될 때까지 이것을 대기시킨 다음 FIN 세그먼트를 형성하고
+      전송합니다. 어쨌든 FIN-WAIT-1 상태로 들어갑니다.
 
     FIN-WAIT-1 STATE
     FIN-WAIT-2 STATE
 
-      Strictly speaking, this is an error and should receive a "error:
-      connection closing" response.  An "ok" response would be
-      acceptable, too, as long as a second FIN is not emitted (the first
-      FIN may be retransmitted though).
+      엄밀히 말하면 이것은 오류이며 "error: connection closing" 응답을 받아야 합니다.
+      두 번째 FIN이 방출되지 않는 한 "ok" 응답도 허용됩니다(첫 번째 FIN은 재전송될 수
+      있음).
 
     CLOSE-WAIT STATE
 
-      Queue this request until all preceding SENDs have been
-      segmentized; then send a FIN segment, enter CLOSING state.
+      이전의 모든 SEND가 세그먼트화될 때까지 이 요청을 대기시킵니다; 그런 다음 FIN 세그먼트를
+      보내고 CLOSING 상태로 들어갑니다.
 
     CLOSING STATE
     LAST-ACK STATE
     TIME-WAIT STATE
 
-      Respond with "error:  connection closing".
+      "error: connection closing"로 응답합니다.
 
   ABORT Call
 
     CLOSED STATE (i.e., TCB does not exist)
 
-      If the user should not have access to such a connection, return
-      "error:  connection illegal for this process".
+      사용자가 이러한 연결에 액세스할 수 없어야 하는 경우 "error: connection illegal for
+      this process"를 반환합니다.
 
-      Otherwise return "error:  connection does not exist".
+      그렇지 않으면 "error: connection does not exist"를 반환합니다.
 
     LISTEN STATE
 
-      Any outstanding RECEIVEs should be returned with "error:
-      connection reset" responses.  Delete TCB, enter CLOSED state, and
-      return.
+      모든 미해결 RECEIVE는 "error: connection reset" 응답과 함께 반환되어야 합니다.
+      TCB를 삭제하고 CLOSED 상태로 진입한 후 복귀합니다.
 
     SYN-SENT STATE
 
-      All queued SENDs and RECEIVEs should be given "connection reset"
-      notification, delete the TCB, enter CLOSED state, and return.
+      대기 중인 모든 SEND 및 RECEIVE는 "connection reset" 알림을 받고 TCB를 삭제하고
+      CLOSED 상태로 들어가 반환해야 합니다.
 
     SYN-RECEIVED STATE
     ESTABLISHED STATE
@@ -2168,242 +2138,222 @@ IENs:  129, 124, 112, 81,
     FIN-WAIT-2 STATE
     CLOSE-WAIT STATE
 
-      Send a reset segment:
+      재설정 세그먼트 보내기:
 
         <SEQ=SND.NXT><CTL=RST>
 
-      All queued SENDs and RECEIVEs should be given "connection reset"
-      notification; all segments queued for transmission (except for the
-      RST formed above) or retransmission should be flushed, delete the
-      TCB, enter CLOSED state, and return.
+      대기 중인 모든 SEND 및 RECEIVE에는 "connection reset" 알림이 제공되어야 합니다.
+      전송을 위해 대기 중인 모든 세그먼트(위에서 형성된 RST 제외) 또는 재전송을 플러시하고
+      TCB를 삭제하고 CLOSED 상태로 들어가 반환해야 합니다.
 
     CLOSING STATE
     LAST-ACK STATE
     TIME-WAIT STATE
 
-      Respond with "ok" and delete the TCB, enter CLOSED state, and
-      return.
+      "ok"라고 응답하고 TCB를 삭제하고 CLOSED 상태로 들어간 후 돌아갑니다.
 
   STATUS Call
 
     CLOSED STATE (i.e., TCB does not exist)
 
-      If the user should not have access to such a connection, return
-      "error:  connection illegal for this process".
+      사용자가 이러한 연결에 액세스할 수 없어야 하는 경우 "error: connection illegal
+      for this process"를 반환합니다.
 
-      Otherwise return "error:  connection does not exist".
+      그렇지 않으면 "error:  connection does not exist"를 반환합니다.
 
     LISTEN STATE
 
-      Return "state = LISTEN", and the TCB pointer.
+      "state = LISTEN" 및 TCB 포인터를 반환합니다.
 
     SYN-SENT STATE
 
-      Return "state = SYN-SENT", and the TCB pointer.
+      "state = SYN-SENT" 및 TCB 포인터를 반환합니다.
 
     SYN-RECEIVED STATE
 
-      Return "state = SYN-RECEIVED", and the TCB pointer.
+      "state = SYN-RECEIVED" 및 TCB 포인터를 반환합니다.
 
     ESTABLISHED STATE
 
-      Return "state = ESTABLISHED", and the TCB pointer.
+      "state = ESTABLISHED" 및 TCB 포인터를 반환합니다.
 
     FIN-WAIT-1 STATE
 
-      Return "state = FIN-WAIT-1", and the TCB pointer.
+      "state = FIN-WAIT-1" 및 TCB 포인터를 반환합니다.
 
     FIN-WAIT-2 STATE
 
-      Return "state = FIN-WAIT-2", and the TCB pointer.
+      "state = FIN-WAIT-2" 및 TCB 포인터를 반환합니다.
 
     CLOSE-WAIT STATE
 
-      Return "state = CLOSE-WAIT", and the TCB pointer.
+      "state = CLOSE-WAIT" 및 TCB 포인터를 반환합니다.
 
     CLOSING STATE
 
-      Return "state = CLOSING", and the TCB pointer.
+      "state = CLOSING" 및 TCB 포인터를 반환합니다.
 
     LAST-ACK STATE
 
-      Return "state = LAST-ACK", and the TCB pointer.
+      "state = LAST-ACK" 및 TCB 포인터를 반환합니다.
 
     TIME-WAIT STATE
 
-      Return "state = TIME-WAIT", and the TCB pointer.
+      "state = TIME-WAIT" 및 TCB 포인터를 반환합니다.
 
   SEGMENT ARRIVES
 
-    If the state is CLOSED (i.e., TCB does not exist) then
+    만약 상태가 CLOSED(즉, TCB가 존재하지 않음)이라면
 
-      all data in the incoming segment is discarded.  An incoming
-      segment containing a RST is discarded.  An incoming segment not
-      containing a RST causes a RST to be sent in response.  The
-      acknowledgment and sequence field values are selected to make the
-      reset sequence acceptable to the TCP that sent the offending
-      segment.
+      들어오는 세그먼트의 모든 데이터는 삭제됩니다. RST를 포함하는 수신 세그먼트는 폐기됩니다.
+      RST를 포함하지 않는 수신 세그먼트로 인해 응답으로 RST가 전송됩니다. 잘못된 세그먼트를
+      보낸 TCP에서 재설정 시퀀스를 수락할 수 있도록 승인 및 시퀀스 필드 값이 선택됩니다.
 
-      If the ACK bit is off, sequence number zero is used,
+      ACK 비트가 꺼져 있으면 시퀀스 번호 0이 사용되며,
 
         <SEQ=0><ACK=SEG.SEQ+SEG.LEN><CTL=RST,ACK>
 
-      If the ACK bit is on,
+      ACK 비트가 켜져 있으면,
 
         <SEQ=SEG.ACK><CTL=RST>
 
-      Return.
+      반환.
 
-    If the state is LISTEN then
+    상태가 LISTEN이면
 
-      first check for an RST
+      먼저 RST 확인
 
-        An incoming RST should be ignored.  Return.
+        들어오는 RST는 무시해야 합니다. 반환.
 
-      second check for an ACK
+      두 번째로 ACK 확인
 
-        Any acknowledgment is bad if it arrives on a connection still in
-        the LISTEN state.  An acceptable reset segment should be formed
-        for any arriving ACK-bearing segment.  The RST should be
-        formatted as follows:
-
-          <SEQ=SEG.ACK><CTL=RST>
-
-        Return.
-
-      third check for a SYN
-
-        If the SYN bit is set, check the security.  If the
-        security/compartment on the incoming segment does not exactly
-        match the security/compartment in the TCB then send a reset and
-        return.
+        아직 LISTEN 상태에 있는 연결에 도착한 acknowledgment은 잘못된 것입니다.
+        도착하는 ACK 포함 세그먼트에 대해 허용 가능한 재설정 세그먼트가 형성되어야 합니다.
+        RST는 다음과 같은 형식이어야 합니다:
 
           <SEQ=SEG.ACK><CTL=RST>
 
-        If the SEG.PRC is greater than the TCB.PRC then if allowed by
-        the user and the system set TCB.PRC<-SEG.PRC, if not allowed
-        send a reset and return.
+        반환.
+
+      세 번째로 SYN 확인
+
+        SYN 비트가 설정되어 있으면 보안을 확인하십시오. 들어오는 세그먼트의 보안/컴파트먼트가
+        TCB의 보안/구획과 정확히 일치하지 않으면 재설정을 보내고 반환합니다.
 
           <SEQ=SEG.ACK><CTL=RST>
 
-        If the SEG.PRC is less than the TCB.PRC then continue.
+        SEG.PRC가 TCB.PRC보다 크면 사용자와 시스템이 허용하면 TCB.PRC<-SEG.PRC를
+        설정하고, 허용되지 않으면 재설정을 보내고 반환합니다.
 
-        Set RCV.NXT to SEG.SEQ+1, IRS is set to SEG.SEQ and any other
-        control or text should be queued for processing later.  ISS
-        should be selected and a SYN segment sent of the form:
+          <SEQ=SEG.ACK><CTL=RST>
+
+        SEG.PRC가 TCB.PRC보다 작으면 계속합니다.
+
+        RCV.NXT를 SEG.SEQ+1로 설정하고, IRS는 SEG.SEQ로 설정하고 다른 컨트롤이나
+        텍스트는 나중에 처리하기 위해 대기해야 합니다. ISS를 선택하고 다음 형식의 SYN
+        세그먼트를 전송해야 합니다:
 
           <SEQ=ISS><ACK=RCV.NXT><CTL=SYN,ACK>
+          
+        SND.NXT는 ISS+1로, SND.UNA는 ISS로 설정됩니다. 연결 상태를
+        SYN-RECEIVED로 변경해야 합니다. 들어오는 다른 제어 또는 데이터(SYN과 결합)는
+        SYN-RECEIVED 상태에서 처리되지만 SYN 및 ACK 처리는 반복되어서는 안 됩니다.
+        청취가 완전히 지정되지 않은 경우(즉, 외부 소켓이 완전히 지정되지 않은 경우) 지정되지
+        않은 필드를 지금 채워야 합니다.
 
-        SND.NXT is set to ISS+1 and SND.UNA to ISS.  The connection
-        state should be changed to SYN-RECEIVED.  Note that any other
-        incoming control or data (combined with SYN) will be processed
-        in the SYN-RECEIVED state, but processing of SYN and ACK should
-        not be repeated.  If the listen was not fully specified (i.e.,
-        the foreign socket was not fully specified), then the
-        unspecified fields should be filled in now.
+      네 번째로 다른 텍스트나 컨트롤
 
-      fourth other text or control
+        다른 제어 또는 텍스트 포함 세그먼트(SYN을 포함하지 않음)에는 ACK가 있어야 하므로
+        ACK 처리에 의해 폐기됩니다. 들어오는 RST 세그먼트는 이 연결 화신에 의해 전송된 어떤
+        것에 대한 응답으로 전송될 수 없기 때문에 유효하지 않을 수 있습니다. 따라서 여기에
+        도달할 가능성은 없지만 만약 도달한다면 세그먼트를 삭제하고 돌아오십시오.
 
-        Any other control or text-bearing segment (not containing SYN)
-        must have an ACK and thus would be discarded by the ACK
-        processing.  An incoming RST segment could not be valid, since
-        it could not have been sent in response to anything sent by this
-        incarnation of the connection.  So you are unlikely to get here,
-        but if you do, drop the segment, and return.
+    만약 상태가 SYN-SENT이면
 
-    If the state is SYN-SENT then
+      먼저 ACK 비트를 확인
 
-      first check the ACK bit
+        ACK 비트가 설정된 경우
 
-        If the ACK bit is set
-
-          If SEG.ACK =< ISS, or SEG.ACK > SND.NXT, send a reset (unless
-          the RST bit is set, if so drop the segment and return)
+          SEG.ACK =< ISS 또는 SEG.ACK > SND.NXT인 경우 재설정 전송(RST 비트가
+          설정되지 않은 경우 세그먼트를 삭제하고 반환)
 
             <SEQ=SEG.ACK><CTL=RST>
 
-          and discard the segment.  Return.
+          그리고 세그먼트를 버립니다. 반환.
 
-          If SND.UNA =< SEG.ACK =< SND.NXT then the ACK is acceptable.
+          SND.UNA =< SEG.ACK =< SND.NXT이면 ACK가 허용됩니다.
 
-      second check the RST bit
+      두 번째로 RST 비트 확인
 
-        If the RST bit is set
+        RST 비트가 설정되어 있는 경우
 
-          If the ACK was acceptable then signal the user "error:
-          connection reset", drop the segment, enter CLOSED state,
-          delete TCB, and return.  Otherwise (no ACK) drop the segment
-          and return.
+          ACK가 허용되면 사용자에게 "error: connection reset" 신호를 보내고
+          세그먼트를 삭제하고 CLOSED 상태로 들어가 TCB를 삭제한 다음 반환합니다. 그렇지
+          않으면(ACK 없음) 세그먼트를 삭제하고 반환합니다.
 
-      third check the security and precedence
+      세 번째로 보안 및 우선 순위 확인
 
-        If the security/compartment in the segment does not exactly
-        match the security/compartment in the TCB, send a reset
+        세그먼트의 보안/구획이 TCB의 보안/구획과 정확히 일치하지 않으면 재설정을 보냅니다.
 
-          If there is an ACK
+          ACK가 있는 경우
 
             <SEQ=SEG.ACK><CTL=RST>
 
-          Otherwise
+          그렇지 않으면
 
             <SEQ=0><ACK=SEG.SEQ+SEG.LEN><CTL=RST,ACK>
 
-        If there is an ACK
+        ACK가 있는 경우
 
-          The precedence in the segment must match the precedence in the
-          TCB, if not, send a reset
+          세그먼트의 우선 순위는 TCB의 우선 순위와 일치해야 하며 일치하지 않으면 재설정을
+          보냅니다.
 
             <SEQ=SEG.ACK><CTL=RST>
 
-        If there is no ACK
+        ACK가 없는 경우
 
-          If the precedence in the segment is higher than the precedence
-          in the TCB then if allowed by the user and the system raise
-          the precedence in the TCB to that in the segment, if not
-          allowed to raise the prec then send a reset.
+          세그먼트의 우선 순위가 TCB의 우선 순위보다 높으면 사용자가 허용하고 시스템이 TCB의
+          우선 순위를 세그먼트의 우선 순위로 올리고 prec를 올리는 것이 허용되지 않으면
+          재설정을 보냅니다.
 
             <SEQ=0><ACK=SEG.SEQ+SEG.LEN><CTL=RST,ACK>
 
-          If the precedence in the segment is lower than the precedence
-          in the TCB continue.
+          세그먼트의 우선 순위가 TCB의 우선 순위보다 낮으면 계속합니다.
 
-        If a reset was sent, discard the segment and return.
+        재설정이 전송된 경우 세그먼트를 버리고 반환합니다.
 
-      fourth check the SYN bit
+      네 번째로 SYN 비트 확인
 
-        This step should be reached only if the ACK is ok, or there is
-        no ACK, and it the segment did not contain a RST.
+        이 단계는 ACK가 정상이거나 ACK가 없고 세그먼트에 RST가 포함되지 않은 경우에만
+        도달해야 합니다.
 
-        If the SYN bit is on and the security/compartment and precedence
-        are acceptable then, RCV.NXT is set to SEG.SEQ+1, IRS is set to
-        SEG.SEQ.  SND.UNA should be advanced to equal SEG.ACK (if there
-        is an ACK), and any segments on the retransmission queue which
-        are thereby acknowledged should be removed.
+        SYN 비트가 켜져 있고 보안/구획 및 우선 순위가 허용되는 경우 RCV.NXT는
+        SEG.SEQ+1로 설정되고 IRS는 SEG.SEQ로 설정됩니다. SND.UNA는 SEG.ACK(ACK가
+        있는 경우)와 동일하게 진행되어야 하며 이에 의해 확인된 재전송 큐의 모든 세그먼트는
+        제거되어야 합니다.
 
-        If SND.UNA > ISS (our SYN has been ACKed), change the connection
-        state to ESTABLISHED, form an ACK segment
+        SND.UNA > ISS(우리의 SYN이 ACK됨)이면 연결 상태를 ESTABLISHED로 변경하고
+        ACK 세그먼트를 형성합니다
 
           <SEQ=SND.NXT><ACK=RCV.NXT><CTL=ACK>
 
-        and send it.  Data or controls which were queued for
-        transmission may be included.  If there are other controls or
-        text in the segment then continue processing at the sixth step
-        below where the URG bit is checked, otherwise return.
+        그 후 이를 보냅니다. 전송 대기 중인 데이터 또는 컨트롤이 포함될 수 있습니다.
+        세그먼트에 다른 컨트롤이나 텍스트가 있으면 URG 비트가 확인되는 아래 여섯 번째
+        단계에서 처리를 계속하고 그렇지 않으면 반환합니다.
 
-        Otherwise enter SYN-RECEIVED, form a SYN,ACK segment
+        그렇지 않으면 SYN-RECEIVED를 입력하고 SYN,ACK 세그먼트를 형성합니다.
 
           <SEQ=ISS><ACK=RCV.NXT><CTL=SYN,ACK>
 
-        and send it.  If there are other controls or text in the
-        segment, queue them for processing after the ESTABLISHED state
-        has been reached, return.
+        그 후 이를 보냅니다. 세그먼트에 다른 컨트롤이나 텍스트가 있는 경우 ESTABLISHED
+        상태에 도달한 후 처리를 위해 큐에 넣고 반환합니다.
 
-      fifth, if neither of the SYN or RST bits is set then drop the
-      segment and return.
+      다섯 번째로, SYN 또는 RST 비트 중 어느 것도 설정되지 않은 경우 세그먼트를 삭제하고
+      반환합니다.
 
-    Otherwise,
+    그렇지 않으면,
 
-    first check sequence number
+    첫 번째로 시퀀스 번호 확인
 
       SYN-RECEIVED STATE
       ESTABLISHED STATE
@@ -2414,14 +2364,11 @@ IENs:  129, 124, 112, 81,
       LAST-ACK STATE
       TIME-WAIT STATE
 
-        Segments are processed in sequence.  Initial tests on arrival
-        are used to discard old duplicates, but further processing is
-        done in SEG.SEQ order.  If a segment's contents straddle the
-        boundary between old and new, only the new parts should be
-        processed.
+        세그먼트는 순서대로 처리됩니다. 도착 시 초기 테스트는 이전 중복을 폐기하는 데
+        사용되지만 추가 처리는 SEG.SEQ 순서로 수행됩니다. 세그먼트의 내용이 이전 부분과
+        새 부분 사이의 경계에 걸쳐 있는 경우 새 부분만 처리해야 합니다.
 
-        There are four cases for the acceptability test for an incoming
-        segment:
+        들어오는 세그먼트에 대한 적합성 테스트에는 네 가지 경우가 있습니다:
 
         Segment Receive  Test
         Length  Window
@@ -2436,85 +2383,70 @@ IENs:  129, 124, 112, 81,
           >0      >0     RCV.NXT =< SEG.SEQ < RCV.NXT+RCV.WND
                       or RCV.NXT =< SEG.SEQ+SEG.LEN-1 < RCV.NXT+RCV.WND
 
-        If the RCV.WND is zero, no segments will be acceptable, but
-        special allowance should be made to accept valid ACKs, URGs and
-        RSTs.
+        RCV.WND가 0이면 어떤 세그먼트도 허용되지 않지만 유효한 ACK, URG 및 RST를
+        수락하도록 특별히 허용해야 합니다.
 
-        If an incoming segment is not acceptable, an acknowledgment
-        should be sent in reply (unless the RST bit is set, if so drop
-        the segment and return):
+        들어오는 세그먼트가 허용되지 않는 경우 acknowledgment를 응답으로 보내야
+        합니다(RST 비트가 설정되지 않은 경우 세그먼트를 삭제하고 반환):
 
           <SEQ=SND.NXT><ACK=RCV.NXT><CTL=ACK>
 
-        After sending the acknowledgment, drop the unacceptable segment
-        and return.
+        acknowledgment를 보낸 후 허용되지 않는 세그먼트를 삭제하고 반환합니다.
 
-        In the following it is assumed that the segment is the idealized
-        segment that begins at RCV.NXT and does not exceed the window.
-        One could tailor actual segments to fit this assumption by
-        trimming off any portions that lie outside the window (including
-        SYN and FIN), and only processing further if the segment then
-        begins at RCV.NXT.  Segments with higher begining sequence
-        numbers may be held for later processing.
+        다음에서는 세그먼트가 RCV.NXT에서 시작하고 창을 초과하지 않는 이상적인 세그먼트라고
+        가정합니다. 창 밖에 있는 부분(SYN 및 FIN 포함)을 잘라내고 세그먼트가
+        RCV.NXT에서 시작하는 경우에만 추가 처리하여 이 가정에 맞게 실제 세그먼트를 조정할
+        수 있습니다. 더 높은 시작 시퀀스 번호를 가진 세그먼트는 나중 처리를 위해 보류될 수
+        있습니다.
 
-    second check the RST bit,
+    두 번째로 RST 비트를 확인,
 
       SYN-RECEIVED STATE
 
-        If the RST bit is set
+        RST 비트가 설정되어 있는 경우
 
-          If this connection was initiated with a passive OPEN (i.e.,
-          came from the LISTEN state), then return this connection to
-          LISTEN state and return.  The user need not be informed.  If
-          this connection was initiated with an active OPEN (i.e., came
-          from SYN-SENT state) then the connection was refused, signal
-          the user "connection refused".  In either case, all segments
-          on the retransmission queue should be removed.  And in the
-          active OPEN case, enter the CLOSED state and delete the TCB,
-          and return.
+          이 연결이 Passive OPEN으로 시작된 경우(즉, LISTEN 상태에서 온 경우) 연결을
+          LISTEN 상태로 되돌리고 반홥합니다. 사용자에게 알릴 필요가 없습니다. 이 연결이
+          Active OPEN으로 시작된 경우(즉, SYN-SENT 상태에서 온 경우) 연결이 거부되면
+          사용자에게 "connection refused" 신호를 보냅니다. 두 경우 모두 재전송 
+          대기열의 모든 세그먼트를 제거해야 합니다. 그리고 Active OPEN의 경우 CLOSED
+          상태로 진입하여 TCB를 삭제하고 반환합니다.
 
       ESTABLISHED
       FIN-WAIT-1
       FIN-WAIT-2
       CLOSE-WAIT
 
-        If the RST bit is set then, any outstanding RECEIVEs and SEND
-        should receive "reset" responses.  All segment queues should be
-        flushed.  Users should also receive an unsolicited general
-        "connection reset" signal.  Enter the CLOSED state, delete the
-        TCB, and return.
+        RST 비트가 설정되면 미해결 RECEIVE 및 SEND는 "reset" 응답을 수신해야 합니다.
+        모든 세그먼트 대기열을 플러시해야 합니다. 사용자는 요청하지 않은 일반 "connection
+        reset" 신호도 수신해야 합니다. CLOSED 상태로 들어가 TCB를 삭제하고 반환합니다.
 
       CLOSING STATE
       LAST-ACK STATE
       TIME-WAIT
 
-        If the RST bit is set then, enter the CLOSED state, delete the
-        TCB, and return.
+        RST 비트가 설정되면 CLOSED 상태로 들어가고 TCB를 삭제하고 돌아갑니다.
 
-    third check security and precedence
+    세 번째로 보안 및 우선 순위 확인
 
       SYN-RECEIVED
 
-        If the security/compartment and precedence in the segment do not
-        exactly match the security/compartment and precedence in the TCB
-        then send a reset, and return.
+        세그먼트의 보안/구획 및 우선 순위가 TCB의 보안/구획 및 우선 순위와 정확히 일치하지
+        않으면 재설정을 보내고 반환합니다.
 
       ESTABLISHED STATE
 
-        If the security/compartment and precedence in the segment do not
-        exactly match the security/compartment and precedence in the TCB
-        then send a reset, any outstanding RECEIVEs and SEND should
-        receive "reset" responses.  All segment queues should be
-        flushed.  Users should also receive an unsolicited general
-        "connection reset" signal.  Enter the CLOSED state, delete the
-        TCB, and return.
+        세그먼트의 보안/구획 및 우선 순위가 TCB의 보안/구획 및 우선 순위와 정확히 일치하지
+        않는 경우 재설정을 보내면 모든 미해결 RECEIVE 및 SEND가 "reset" 응답을
+        수신해야 합니다. 모든 세그먼트 대기열을 플러시해야 합니다. 사용자는 요청하지 않은
+        일반 "connection reset" 신호도 수신해야 합니다. CLOSED 상태로 들어가 TCB를
+        삭제하고 반환합니다.
 
-      Note this check is placed following the sequence check to prevent
-      a segment from an old connection between these ports with a
-      different security or precedence from causing an abort of the
-      current connection.
+      이 검사는 보안 또는 우선 순위가 다른 이러한 포트 사이의 이전 연결의 세그먼트가 현재
+      연결을 중단시키는 것을 방지하기 위해 시퀀스 검사 다음에 배치됩니다.
 
-    fourth, check the SYN bit,
+    네 번째로, SYN 비트 확인,
+
 
       SYN-RECEIVED
       ESTABLISHED STATE
@@ -2525,215 +2457,192 @@ IENs:  129, 124, 112, 81,
       LAST-ACK STATE
       TIME-WAIT STATE
 
-        If the SYN is in the window it is an error, send a reset, any
-        outstanding RECEIVEs and SEND should receive "reset" responses,
-        all segment queues should be flushed, the user should also
-        receive an unsolicited general "connection reset" signal, enter
-        the CLOSED state, delete the TCB, and return.
+        SYN가 윈도우에 있으면 오류이며 재설정을 보내고 미해결 RECEIVE 및 SEND는
+        "reset" 응답을 수신하고 모든 세그먼트 대기열을 플러시해야 하며 사용자는 요청하지
+        않은 일반 "connection reset" 신호도 수신해야 합니다. CLOSED 상태에서 TCB를
+        삭제하고 돌아갑니다.
 
-        If the SYN is not in the window this step would not be reached
-        and an ack would have been sent in the first step (sequence
-        number check).
+        SYN가 윈도우에 없으면 이 단계에 도달하지 못하고 첫 번째 단계(시퀀스 번호 확인)에서
+        ack가 전송됩니다.
 
-    fifth check the ACK field,
+    다섯 번째로 ACK 필드 확인,
 
-      if the ACK bit is off drop the segment and return
+      ACK 비트가 꺼져 있으면 세그먼트를 삭제하고 반환
 
-      if the ACK bit is on
+      ACK 비트가 켜져 있으면
 
         SYN-RECEIVED STATE
 
-          If SND.UNA =< SEG.ACK =< SND.NXT then enter ESTABLISHED state
-          and continue processing.
+          SND.UNA =< SEG.ACK =< SND.NXT이면 ESTABLISHED 상태로 들어가 처리를
+          계속합니다.
 
-            If the segment acknowledgment is not acceptable, form a
-            reset segment,
+            세그먼트 확인이 허용되지 않으면 재설정 세그먼트를 형성하고,
 
               <SEQ=SEG.ACK><CTL=RST>
 
-            and send it.
+            이를 보냅니다.
 
         ESTABLISHED STATE
 
-          If SND.UNA < SEG.ACK =< SND.NXT then, set SND.UNA <- SEG.ACK.
-          Any segments on the retransmission queue which are thereby
-          entirely acknowledged are removed.  Users should receive
-          positive acknowledgments for buffers which have been SENT and
-          fully acknowledged (i.e., SEND buffer should be returned with
-          "ok" response).  If the ACK is a duplicate
-          (SEG.ACK < SND.UNA), it can be ignored.  If the ACK acks
-          something not yet sent (SEG.ACK > SND.NXT) then send an ACK,
-          drop the segment, and return.
+          SND.UNA < SEG.ACK =< SND.NXT이면 SND.UNA <- SEG.ACK를 설정합니다.
+          이로써 완전히 확인된 재전송 대기열의 모든 세그먼트가 제거됩니다. 사용자는 전송되고
+          완전히 승인된 버퍼에 대해 긍정적인 승인을 받아야 합니다(즉, SEND 버퍼는 "ok"
+          응답과 함께 반환되어야 함). ACK가 중복되면(SEG.ACK < SND.UNA) 무시할 수
+          있습니다. ACK가 아직 전송되지 않은 항목에 응답하면(SEG.ACK > SND.NXT)
+          ACK를 전송하고 세그먼트를 삭제한 다음 반환합니다.
 
-          If SND.UNA < SEG.ACK =< SND.NXT, the send window should be
-          updated.  If (SND.WL1 < SEG.SEQ or (SND.WL1 = SEG.SEQ and
-          SND.WL2 =< SEG.ACK)), set SND.WND <- SEG.WND, set
-          SND.WL1 <- SEG.SEQ, and set SND.WL2 <- SEG.ACK.
+          SND.UNA < SEG.ACK =< SND.NXT인 경우 전송 윈도우를 업데이트해야 합니다.
+          (SND.WL1 < SEG.SEQ 또는 (SND.WL1 = SEG.SEQ 및
+          SND.WL2 =< SEG.ACK))인 경우 SND.WND <- SEG.WND 설정,
+          SND.WL1 <- SEG.SEQ 설정, SND.WL2 <- SEG.ACK를 설정합니다.
 
-          Note that SND.WND is an offset from SND.UNA, that SND.WL1
-          records the sequence number of the last segment used to update
-          SND.WND, and that SND.WL2 records the acknowledgment number of
-          the last segment used to update SND.WND.  The check here
-          prevents using old segments to update the window.
+          SND.WND는 SND.UNA의 오프셋이고, SND.WL1은 SND.WND를 업데이트하는 데 사용된
+          마지막 세그먼트의 시퀀스 번호를 기록하고, SND.WL2는 SND.WND를 업데이트하는 데
+          사용된 마지막 세그먼트의 acknowledgment 번호를 기록합니다. 여기를 확인하면
+          오래된 세그먼트를 사용하여 윈도우를 업데이트하는 것을 방지합니다.
 
         FIN-WAIT-1 STATE
 
-          In addition to the processing for the ESTABLISHED state, if
-          our FIN is now acknowledged then enter FIN-WAIT-2 and continue
-          processing in that state.
+          ESTABLISHED 상태에 대한 처리 외에도 이제 FIN이 확인되면 FIN-WAIT-2를
+          입력하고 해당 상태에서 처리를 계속합니다.
 
         FIN-WAIT-2 STATE
 
-          In addition to the processing for the ESTABLISHED state, if
-          the retransmission queue is empty, the user's CLOSE can be
-          acknowledged ("ok") but do not delete the TCB.
+          ESTABLISHED 상태에 대한 처리 외에도 재전송 대기열이 비어 있으면 사용자의
+          CLOSE가 승인("ok")될 수 있지만 TCB를 삭제하지는 않습니다.
 
         CLOSE-WAIT STATE
 
-          Do the same processing as for the ESTABLISHED state.
+          ESTABLISHED 상태와 동일한 처리를 합니다.
 
         CLOSING STATE
 
-          In addition to the processing for the ESTABLISHED state, if
-          the ACK acknowledges our FIN then enter the TIME-WAIT state,
-          otherwise ignore the segment.
+          ESTABLISHED 상태에 대한 처리 외에도 ACK가 FIN을 확인하면 TIME-WAIT 상태로
+          들어가고 그렇지 않으면 세그먼트를 무시합니다.
 
         LAST-ACK STATE
 
-          The only thing that can arrive in this state is an
-          acknowledgment of our FIN.  If our FIN is now acknowledged,
-          delete the TCB, enter the CLOSED state, and return.
+          이 상태에 도착할 수 있는 유일한 것은 FIN에 대한 acknowledgment입니다.
+          FIN이 확인되지 않으면 TCB를 삭제하고 CLOSED 상태로 들어간 후 돌아갑니다.
 
         TIME-WAIT STATE
 
-          The only thing that can arrive in this state is a
-          retransmission of the remote FIN.  Acknowledge it, and restart
-          the 2 MSL timeout.
+          이 상태로 도착할 수 있는 유일한 것은 원격 FIN의 재전송입니다. 확인하고 2 MSL
+          시간 제한을 다시 시작합니다.
 
-    sixth, check the URG bit,
+    여섯 번째로, URG 비트 확인,
 
       ESTABLISHED STATE
       FIN-WAIT-1 STATE
       FIN-WAIT-2 STATE
 
-        If the URG bit is set, RCV.UP <- max(RCV.UP,SEG.UP), and signal
-        the user that the remote side has urgent data if the urgent
-        pointer (RCV.UP) is in advance of the data consumed.  If the
-        user has already been signaled (or is still in the "urgent
-        mode") for this continuous sequence of urgent data, do not
-        signal the user again.
+        URG 비트가 설정되어 있으면 RCV.UP <- max(RCV.UP,SEG.UP)이고 긴급
+        포인터(RCV.UP)가 데이터 소모보다 앞서 있으면 원격 측에 긴급 데이터가 있음을
+        사용자에게 알립니다. 사용자가 이 연속적인 긴급 데이터 시퀀스에 대해 이미 신호를
+        받은 경우(또는 여전히 "urgent mode"에 있는 경우) 사용자에게 다시 신호를
+        보내지 마십시오.
 
       CLOSE-WAIT STATE
       CLOSING STATE
       LAST-ACK STATE
       TIME-WAIT
 
-        This should not occur, since a FIN has been received from the
-        remote side.  Ignore the URG.
+        FIN이 원격 측에서 수신되었으므로 이런 일이 발생하지 않아야 합니다. URG를
+        무시하십시오.
 
-    seventh, process the segment text,
+    일곱 번째로, 세그먼트 텍스트 처리,
 
       ESTABLISHED STATE
       FIN-WAIT-1 STATE
       FIN-WAIT-2 STATE
 
-        Once in the ESTABLISHED state, it is possible to deliver segment
-        text to user RECEIVE buffers.  Text from segments can be moved
-        into buffers until either the buffer is full or the segment is
-        empty.  If the segment empties and carries an PUSH flag, then
-        the user is informed, when the buffer is returned, that a PUSH
-        has been received.
+        ESTABLISHED 상태가 되면 사용자 RECEIVE 버퍼에 세그먼트 텍스트를 전달할 수
+        있습니다. 세그먼트의 텍스트는 버퍼가 가득 차거나 세그먼트가 비어 있을 때까지 버퍼로
+        이동할 수 있습니다. 세그먼트가 비어 있고 PUSH 플래그가 있으면 버퍼가 반환될 때
+        PUSH가 수신되었음을 사용자에게 알립니다.
 
-        When the TCP takes responsibility for delivering the data to the
-        user it must also acknowledge the receipt of the data.
+        TCP가 사용자에게 데이터 전달을 담당할 때 데이터 수신을 승인해야 합니다.
 
-        Once the TCP takes responsibility for the data it advances
-        RCV.NXT over the data accepted, and adjusts RCV.WND as
-        apporopriate to the current buffer availability.  The total of
-        RCV.NXT and RCV.WND should not be reduced.
+        일단 TCP가 데이터에 대한 책임을 지면 수락된 데이터보다 RCV.NXT를 진행하고
+        RCV.WND를 현재 버퍼 가용성에 적절하게 조정합니다. RCV.NXT 및 RCV.WND의
+        합계는 줄어들지 않아야 합니다.
 
-        Please note the window management suggestions in section 3.7.
+        섹션 3.7의 윈도우 관리 제안를 참고하세요.
 
-        Send an acknowledgment of the form:
+        다음 양식에 대한 acknowledgment를 보냅니다:
 
           <SEQ=SND.NXT><ACK=RCV.NXT><CTL=ACK>
 
-        This acknowledgment should be piggybacked on a segment being
-        transmitted if possible without incurring undue delay.
+        이 acknowledgment는 가능한 경우 과도한 지연 없이 전송되는 세그먼트에
+        피기백되어야 합니다.
 
       CLOSE-WAIT STATE
       CLOSING STATE
       LAST-ACK STATE
       TIME-WAIT STATE
 
-        This should not occur, since a FIN has been received from the
-        remote side.  Ignore the segment text.
+        FIN이 원격 측에서 수신되었으므로 이런 일이 발생하지 않아야 합니다. 세그먼트
+        텍스트를 무시하십시오.
 
-    eighth, check the FIN bit,
+    여덟 번째로, FIN 비트 확인,
 
-      Do not process the FIN if the state is CLOSED, LISTEN or SYN-SENT
-      since the SEG.SEQ cannot be validated; drop the segment and
-      return.
+      SEG.SEQ를 확인할 수 없으므로 상태가 CLOSED, LISTEN 또는 SYN-SENT인 경우
+      FIN을 처리하지 마십시오. 세그먼트를 삭제하고 반환합니다.
 
-      If the FIN bit is set, signal the user "connection closing" and
-      return any pending RECEIVEs with same message, advance RCV.NXT
-      over the FIN, and send an acknowledgment for the FIN.  Note that
-      FIN implies PUSH for any segment text not yet delivered to the
-      user.
+      FIN 비트가 설정되면 사용자에게 "connection closing" 신호를 보내고 동일한
+      메시지와 함께 보류 중인 RECEIVE를 반환하고 FIN을 통해 RCV.NXT를 진행하고
+      FIN에 대한 acknowledgment를 보냅니다. FIN은 아직 사용자에게 전달되지 않은
+      세그먼트 텍스트에 대해 PUSH를 의미합니다.
 
         SYN-RECEIVED STATE
         ESTABLISHED STATE
 
-          Enter the CLOSE-WAIT state.
+          CLOSE-WAIT 상태로 들어갑니다.
 
         FIN-WAIT-1 STATE
 
-          If our FIN has been ACKed (perhaps in this segment), then
-          enter TIME-WAIT, start the time-wait timer, turn off the other
-          timers; otherwise enter the CLOSING state.
+          FIN이 ACK된 경우(아마도 이 세그먼트에서) TIME-WAIT를 입력하고 시간 대기
+          타이머를 시작하고 다른 타이머를 끕니다. 그렇지 않으면 CLOSING 상태로
+          들어갑니다.
 
         FIN-WAIT-2 STATE
 
-          Enter the TIME-WAIT state.  Start the time-wait timer, turn
-          off the other timers.
+          TIME-WAIT 상태로 들어갑니다. 시간 대기 타이머를 시작하고 다른 타이머를
+          끕니다.
 
         CLOSE-WAIT STATE
 
-          Remain in the CLOSE-WAIT state.
+          CLOSE-WAIT 상태 유지.
 
         CLOSING STATE
 
-          Remain in the CLOSING state.
+          CLOSING 상태 유지.
 
         LAST-ACK STATE
 
-          Remain in the LAST-ACK state.
+          LAST-ACK 상태 유지.
 
         TIME-WAIT STATE
 
-          Remain in the TIME-WAIT state.  Restart the 2 MSL time-wait
-          timeout.
+          TIME-WAIT 상태 유지. 2 MSL time-wait 타임아웃을 다시 시작합니다.
 
-    and return.
+    그리고 반환합니다.
 
   USER TIMEOUT
 
-    For any state if the user timeout expires, flush all queues, signal
-    the user "error:  connection aborted due to user timeout" in general
-    and for any outstanding calls, delete the TCB, enter the CLOSED
-    state and return.
+    모든 상태에서 사용자 시간 초과가 만료되면 모든 대기열을 플러시하고 일반적으로 사용자에게
+    "error: connection aborted due to user timeout" 신호를 보내고 미해결
+    호출의 경우 TCB를 삭제하고 CLOSED 상태로 들어가 반환합니다.
 
   RETRANSMISSION TIMEOUT
 
-    For any state if the retransmission timeout expires on a segment in
-    the retransmission queue, send the segment at the front of the
-    retransmission queue again, reinitialize the retransmission timer,
-    and return.
+    어떤 상태에서든 재전송 큐의 세그먼트에서 재전송 타임아웃이 만료되면 재전송 큐의 맨 앞에
+    있는 세그먼트를 다시 보내고 재전송 타이머를 다시 초기화한 뒤 반환합니다.
 
   TIME-WAIT TIMEOUT
 
-    If the time-wait timeout expires on a connection delete the TCB,
-    enter the CLOSED state and return.
+    연결에서 시간 대기 제한 시간이 만료되면 TCB를 삭제하고 CLOSED 상태로 들어가
+    반환합니다.
 
                                 GLOSSARY
 
