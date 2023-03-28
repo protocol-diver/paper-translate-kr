@@ -260,7 +260,7 @@ Hello 다음에 오는 모든 메시지는 Snappy 알고리즘을 사용하여 �
 
 # Change Log
 
-### Known Issues in the current version (현재 버전에서 알려진 문제)
+### 현재 버전에서 알려진 문제
 
 - 프레임 암호화/MAC 체계는 `aes-secret`과 `mac-secret`이 읽기 및 쓰기 모두에 재사용되기 때문에 '깨진' 것으로
   간주됩니다. RLPx 연결의 양쪽은 동일한 키, 논스 및 IV에서 두 개의 CTR 스트림을 생성합니다. 공격자가 하나의 평문을
