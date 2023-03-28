@@ -39,15 +39,6 @@ RLPx에서 사용하는 암호화 시스템은 다음과 같습니다
 앨리스는 밥의 정적 개인 키 <code>k<sub>B</sub></code>로 복호화할 수 있는 암호화된 메시지를 보내려고 합니다. 앨리스는
 밥의 정적 공개 키 <code>K<sub>B</sub></code>에 대해 알고 있습니다.
 
-To encrypt the message, Alice generates a random number `r` and corresponding elliptic
-curve public key `R = r * G` and computes the shared secret <code>S = P<sub>x</sub></code>
-where <code>(P<sub>x</sub>, P<sub>y</sub>) = r * K<sub>B</sub></code>. She derives key
-material for encryption and authentication as
-<code>k<sub>E</sub> || k<sub>M</sub> = KDF(S, 32)</code> as well as a random
-initialization vector `iv`. Alice sends the encrypted message `R || iv || c || d` where
-<code>c = AES(k<sub>E</sub>, iv , m)</code> and
-<code>d = MAC(sha256(k<sub>M</sub>), iv || c)</code> to Bob.
-
 메시지 `m`을 암호화하기 위해 앨리스는 난수 `r`과 해당 타원 곡선 공개 키 `R = r * G`를 생성하고 <code>(P<sub>x</sub>, P<sub>y</sub>) = r * K<sub>B</sub></code>인 
 공유 secret <code>S = P<sub>x</sub></code>를 계산합니다. 앨리스는 암호화 및 인증을 위한 키 자료를 <code>k<sub>E</sub> || k<sub>M</sub> = KDF(S, 32)</code>와
 무작위 초기화 벡터 `iv`를 도출합니다. 앨리스는 암호화된 메시지 `R || iv || c || d`를 보내며, 여기서 <code>c = AES(k<sub>E</sub>, iv , m)</code>와
