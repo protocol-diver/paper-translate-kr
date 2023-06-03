@@ -34,10 +34,6 @@
 #### EIP
    - [x] [EIP-650: Istanbul Byzantine Fault Tolerance](https://dbadoy.tistory.com/20) - yutelin
 
-
-
-
-
 # 문서 규격
 한/영 변환 Github Page 운영에 대비하여 원본과 번역본 둘 다 저장합니다.
 
