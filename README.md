@@ -31,6 +31,8 @@
    - [x] [There is No Now](https://dbadoy.tistory.com/28) - Justin Sheehy
 #### Paper
    - [x] [An O(1) algorithm for implementing the LFU cache eviction scheme](https://dbadoy.tistory.com/18) - Prof. Ketan Shah, Anirban Mitra, Dhruv Matani
+   - [x] [Anti-Caching: A New Approach to Database Management System Architecture](https://dbadoy.tistory.com/39) - Justin DeBrabant, Andrew Pavlo, Stephen Tu
+
 #### EIP
    - [x] [EIP-650: Istanbul Byzantine Fault Tolerance](https://dbadoy.tistory.com/20) - yutelin
 
