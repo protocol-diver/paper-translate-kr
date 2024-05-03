@@ -8,28 +8,23 @@ Date: 2024-05-03 (last commit hash is `eed27ad`) <br>
 
 # Byzantine Consensus Algorithm
 
-## Terms
+## 용어
+- 네트워크는 선택적으로 연결된 _nodes_ 로 구성됩니다. 특정 노드에 직접 연결된 노드는 _peers_ 라고 합니다.
+- 다음 블록(특정 _height_ `H`)을 결정하는 합의 프로세스는 하나 또는 여러 개의 _rounds_ 로 구성됩니다.
+- `NewHeight`, `Propose`, `Prevote`, `Precommit`, 그리고 `Commit` 은 round 의 
+  state machine 상태를 나타냅니다. (일명 `RoundStep` 또는 "step").
+- 노드는 주어진 height, round, step, 또는 `(H,R,S)`, step 을 생략하는 경우 `(H,R)`에 있다고 합니다.
+- _prevote_ 또는 _precommit_ 은 무언가에 대한 
+  [prevote vote](https://godoc.org/github.com/tendermint/tendermint/types#Vote) 혹은 
+  [첫 번째 precommit vote](https://godoc.org/github.com/tendermint/tendermint/types#FirstPrecommit) 를
+  브로드캐스트하는 것을 의미합니다.
+- `(H,R)` 에서의 vote 는 [sign-bytes](../core/data_structures.md#vote)에 `H`와 `R`의
+  바이트가 포함되어 서명된 투표입니다.
+- _+2/3_ 는 “2/3 이상”의 줄임말입니다.
+- _1/3+_ 는 “1/3 이상”의 줄임말입니다.
+- 특정 블록에 대해 +2/3의 사전투표 또는 `(H,R)` 에 `<nil>` 을 설정하는 것을 _proof-of-lock-change_ 또는
+  줄여서 _PoLC_ 라고 합니다.
 
-- The network is composed of optionally connected _nodes_. Nodes
-  directly connected to a particular node are called _peers_.
-- The consensus process in deciding the next block (at some _height_
-  `H`) is composed of one or many _rounds_.
-- `NewHeight`, `Propose`, `Prevote`, `Precommit`, and `Commit`
-  represent state machine states of a round. (aka `RoundStep` or
-  just "step").
-- A node is said to be _at_ a given height, round, and step, or at
-  `(H,R,S)`, or at `(H,R)` in short to omit the step.
-- To _prevote_ or _precommit_ something means to broadcast a [prevote
-  vote](https://godoc.org/github.com/tendermint/tendermint/types#Vote)
-  or [first precommit
-  vote](https://godoc.org/github.com/tendermint/tendermint/types#FirstPrecommit)
-  for something.
-- A vote _at_ `(H,R)` is a vote signed with the bytes for `H` and `R`
-  included in its [sign-bytes](../core/data_structures.md#vote).
-- _+2/3_ is short for "more than 2/3"
-- _1/3+_ is short for "1/3 or more"
-- A set of +2/3 of prevotes for a particular block or `<nil>` at
-  `(H,R)` is called a _proof-of-lock-change_ or _PoLC_ for short.
 
 ## State Machine Overview
 
