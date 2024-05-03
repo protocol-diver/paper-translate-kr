@@ -25,6 +25,7 @@
    - [ ] [RFC9293]() - Transmission Control Protocol
    - [x] [devp2p/eth](https://github.com/protocol-diver/paper-translate-kr/blob/main/kr/devp2p/caps/eth.md) - Etheruem devp2p eth procotol
    - [x] [devp2p/rlpx](https://github.com/protocol-diver/paper-translate-kr/blob/main/kr/devp2p/rlpx.md) - Etheruem devp2p rlpx procotol
+   - [ ] [tendermint/consensus/consensus](https://github.com/protocol-diver/paper-translate-kr/blob/main/kr/tendermint/consensus/consensus.md) - Tendermint Byzantine Consensus Algorithm
 
 ### Etc.
 #### Post
