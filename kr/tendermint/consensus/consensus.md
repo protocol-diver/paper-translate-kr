@@ -26,41 +26,35 @@ Date: 2024-05-03 (last commit hash is `eed27ad`) <br>
   줄여서 _PoLC_ 라고 합니다.
 
 
-## State Machine Overview
+## State Machine 개요
 
-At each height of the blockchain a round-based protocol is run to
-determine the next block. Each round is composed of three _steps_
-(`Propose`, `Prevote`, and `Precommit`), along with two special steps
-`Commit` and `NewHeight`.
+블록체인의 각 높이에서 round 기반 프로토콜이 실행되어 다음 블록을 결정합니다. 각 round 는 
+세 단계(`Propose`, `Prevote`, `Precommit`)와 두 가지 특수 step 인 `Commit` 및 `NewHeight`로 구성됩니다.
 
-In the optimal scenario, the order of steps is:
+최적의 시나리오에서 단계의 순서는 다음과 같습니다:
 
 ```md
 NewHeight -> (Propose -> Prevote -> Precommit)+ -> Commit -> NewHeight ->...
 ```
 
-The sequence `(Propose -> Prevote -> Precommit)` is called a _round_.
-There may be more than one round required to commit a block at a given
-height. Examples for why more rounds may be required include:
+이 순서 `(Propose -> Prevote -> Precommit)` 를 _round_ 라고 합니다. 주어진 
+높이에서 블록을 커밋하는 데 한 번 이상의 round 가 필요할 수 있습니다. round 가 더 필요한 이유에
+대한 예는 다음과 같습니다:
 
-- The designated proposer was not online.
-- The block proposed by the designated proposer was not valid.
-- The block proposed by the designated proposer did not propagate
-  in time.
-- The block proposed was valid, but +2/3 of prevotes for the proposed
-  block were not received in time for enough validator nodes by the
-  time they reached the `Precommit` step. Even though +2/3 of prevotes
-  are necessary to progress to the next step, at least one validator
-  may have voted `<nil>` or maliciously voted for something else.
-- The block proposed was valid, and +2/3 of prevotes were received for
-  enough nodes, but +2/3 of precommits for the proposed block were not
-  received for enough validator nodes.
+- 지정된 proposer 가 온라인 상태가 아니었습니다.
+- 지정된 proposer 가 제안한 블록이 유효하지 않습니다.
+- 지정된 proposer 가 제안한 블록이 제시간에 전파되지 않았습니다.
+- 제안된 블록은 유효하지만, `Precommit` 단계에 도달할 때까지 충분한 검증자 노드가 제안된
+  블록에 대한 +2/3의 prevote 를 제때 받지 못했습니다. 다음 단계로 진행하려면 +2/3의 
+  사전 투표가 필요하지만, 최소 한 명의 검증자가 `<nil>` 에 투표했거나 악의적으로 다른 것에 
+  투표했을 수 있습니다.
+- 제안된 블록은 유효하고 충분한 노드에서 +2/3의 prevote 를 받았지만, 제안된 블록에 대한 
+  +2/3의 precommit 을 충분한 검증자 노드에서 받지 못했습니다.
 
-Some of these problems are resolved by moving onto the next round &
-proposer. Others are resolved by increasing certain round timeout
-parameters over each successive round.
+이러한 문제 중 일부는 다음 round & proposer 로 넘어가면 해결됩니다. 다른 문제들은 각 
+round 마다 특정 round timeout 매개변수를 증가시킴으로써 해결됩니다.
 
-## State Machine Diagram
+## State Machine 다이어그램
 
 ```md
                          +-------------------------------------+
@@ -85,37 +79,31 @@ parameters over each successive round.
 
 # Background Gossip
 
-A node may not have a corresponding validator private key, but it
-nevertheless plays an active role in the consensus process by relaying
-relevant meta-data, proposals, blocks, and votes to its peers. A node
-that has the private keys of an active validator and is engaged in
-signing votes is called a _validator-node_. All nodes (not just
-validator-nodes) have an associated state (the current height, round,
-and step) and work to make progress.
+노드는 해당 validator 개인키가 없을 수 있지만, 관련 메타데이터, 제안서, 블록, 투표를 peer 에게 
+전달함으로써 합의 과정에서 적극적인 역할을 수행합니다. active validator 의 개인 키를 가지고 
+있으며 투표 서명에 참여하는 노드를 _validator-node_ 라고 합니다. validator 노드뿐만 아니라 
+모든 노드는 관련 상태(현재 높이, round, step)를 가지며 진행을 위해 노력합니다.
 
-Between two nodes there exists a `Connection`, and multiplexed on top of
-this connection are fairly throttled `Channel`s of information. An
-epidemic gossip protocol is implemented among some of these channels to
-bring peers up to speed on the most recent state of consensus. For
-example,
+두 노드 사이에는 `Connection`이 존재하며, 이 연결 위에 상당히 스로틀링된 정보의 `Channel`이 
+멀티플렉싱되어 있습니다. 이러한 채널 중 일부에 유행성 가십 프로토콜이 구현되어 peer 들이 가장 최근의 
+합의 상태를 알 수 있습니다. 예를 들어,
 
-- Nodes gossip `PartSet` parts of the current round's proposer's
-  proposed block. A LibSwift inspired algorithm is used to quickly
-  broadcast blocks across the gossip network.
-- Nodes gossip prevote/precommit votes. A node `NODE_A` that is ahead
-  of `NODE_B` can send `NODE_B` prevotes or precommits for `NODE_B`'s
-  current (or future) round to enable it to progress forward.
-- Nodes gossip prevotes for the proposed PoLC (proof-of-lock-change)
-  round if one is proposed.
-- Nodes gossip to nodes lagging in blockchain height with block
-  [commits](https://godoc.org/github.com/tendermint/tendermint/types#Commit)
-  for older blocks.
-- Nodes opportunistically gossip `ReceivedVote` messages to hint peers what
-  votes it already has.
-- Nodes broadcast their current state to all neighboring peers. (but
-  is not gossiped further)
+- 노드는 현재 round의 proposer가 제안한 블록의 `PartSet` 부분을 가십합니다. 
+  가십 네트워크에 블록을 빠르게 전파하기 위해 LibSwift에서 영감을 얻은 알고리즘이 사용됩니다.
+- 노드는 prevote/precommit 투표를 가십합니다. `NODE_B`보다 앞서 있는 노드 `NODE_A`는 
+  현재(또는 미래) round 가 진행되도록 `NODE_B`에 prevote 또는 precommit 을 전송할 수 
+  있습니다.
+- 노드 가십은 PoLC(proof-of-lock-change) round 가 제안되면 제안된 round 에 대한 
+  투표를 진행합니다.
+- 노드는 이전 블록에 대한 블록 
+  [commits](https://godoc.org/github.com/tendermint/tendermint/types#Commit)을 
+  통해 블록체인 높이가 뒤처진 노드에게 가십을 보냅니다.
+- 노드는 기회에 따라 `ReceivedVote` 메시지를 가십으로 전달하여 이미 보유하고 있는 투표수를 
+  peer 에게 암시합니다.
+- 노드는 현재 상태를 인접한 모든 peer에게 브로드캐스트합니다. (하지만 더 이상 가십으로 전달되지 
+  않습니다.)
 
-There's more, but let's not get ahead of ourselves here.
+이 외에도 다양한 기능이 있지만 여기서 너무 앞서 나가지 않도록 하겠습니다.
 
 ## Proposals
 
