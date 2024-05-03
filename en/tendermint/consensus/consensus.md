@@ -2,9 +2,9 @@
 order: 1
 ---
 
+### Comment
 Source: https://github.com/tendermint/tendermint/blob/main/spec/consensus/consensus.md <br>
 Date: 2024-05-03 (last commit hash is `eed27ad`) <br>
-<br><br>
 
 # Byzantine Consensus Algorithm
 
