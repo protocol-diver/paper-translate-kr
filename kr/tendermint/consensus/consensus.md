@@ -1,7 +1,3 @@
-Source: https://github.com/tendermint/tendermint/blob/main/spec/consensus/consensus.md
-Date: 2024-05-03 (last commit hash is `eed27ad`)
-<br><br>
-
 ---
 order: 1
 ---
