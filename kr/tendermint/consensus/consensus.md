@@ -107,7 +107,7 @@ round 마다 특정 round timeout 매개변수를 증가시킴으로써 해결�
 
 ## Proposals
 
-제안은 각 round 에서 지정된 proposer가 서명하고 게시합니다. Proposer는 voting power에 비례하여 proposer를 선택하는 결정론적, non-choking 라운드 로빈 선택 알고리즘에 의해 선택됩니다((구현 참조)[https://github.com/tendermint/tendermint/blob/v0.34.x/types/validator_set.go]).
+제안은 각 round 에서 지정된 proposer가 서명하고 게시합니다. Proposer는 voting power에 비례하여 proposer를 선택하는 결정론적, non-choking 라운드 로빈 선택 알고리즘에 의해 선택됩니다([구현 참조](https://github.com/tendermint/tendermint/blob/v0.34.x/types/validator_set.go)).
 
 `(H,R)`의 제안은 블록과 proposer가 알고 있는 경우 포함되는 선택적 최신 `PoLC-Round < R`로 구성됩니다. 이는 네트워크에 힌트를 주어 노드가 (안전할 때) 잠금을 해제하여 liveness 속성을 보장할 수 있도록 합니다.
 
