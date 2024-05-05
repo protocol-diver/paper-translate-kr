@@ -111,21 +111,19 @@ round 마다 특정 round timeout 매개변수를 증가시킴으로써 해결�
 
 `(H,R)`의 제안은 블록과 proposer가 알고 있는 경우 포함되는 선택적 최신 `PoLC-Round < R`로 구성됩니다. 이는 네트워크에 힌트를 주어 노드가 (안전할 때) 잠금을 해제하여 liveness 속성을 보장할 수 있도록 합니다.
 
-## State Machine Spec
+## State Machine 스펙
 
 ### Propose Step (height:H,round:R)
 
-Upon entering `Propose`:
+`Propose` 진입:
 
-- The designated proposer proposes a block at `(H,R)`.
+- 지정된 proposer가 `(H,R)`에서 블록을 제안합니다.
 
-The `Propose` step ends:
+`Propose` step 종료:
 
-- After `timeoutProposeR` after entering `Propose`. --> goto
-  `Prevote(H,R)`
-- After receiving proposal block and all prevotes at `PoLC-Round`. -->
-  goto `Prevote(H,R)`
-- After [common exit conditions](#common-exit-conditions)
+- `Proposer` 진입 후 `timeoutProposeR` 이 지나면. --> goto `Prevote(H,R)`
+- 제안서 블록을 받은 후 `PoLC-Round`에서 모든 prevote를 진행합니다. --> goto `Prevote(H,R)`
+- [common exit conditions](#common-exit-conditions) 이후
 
 ### Prevote Step (height:H,round:R)
 
