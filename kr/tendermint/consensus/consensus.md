@@ -123,28 +123,22 @@ round 마다 특정 round timeout 매개변수를 증가시킴으로써 해결�
 
 - `Proposer` 진입 후 `timeoutProposeR` 이 지나면. --> goto `Prevote(H,R)`
 - 제안서 블록을 받은 후 `PoLC-Round`에서 모든 prevote를 진행합니다. --> goto `Prevote(H,R)`
-- [common exit conditions](#common-exit-conditions) 이후
+- [common exit conditions](#common-exit-conditions) 
 
 ### Prevote Step (height:H,round:R)
 
-Upon entering `Prevote`, each validator broadcasts its prevote vote.
+`Prevote`에 진입하면, 각 validator가 prevote를 브로드캐스트합니다.
 
-- First, if the validator is locked on a block since `LastLockRound`
-  but now has a PoLC for something else at round `PoLC-Round` where
-  `LastLockRound < PoLC-Round < R`, then it unlocks.
-- If the validator is still locked on a block, it prevotes that.
-- Else, if the proposed block from `Propose(H,R)` is good, it
-  prevotes that.
-- Else, if the proposal is invalid or wasn't received on time, it
-  prevotes `<nil>`.
+- 처음으로, validator가 `LastLockRound` 이후 블록에 잠겼지만 `PoLC-Round` round에서 다른 것에 대한 PoLC가 있는 경우 `LastLockRound < PoLC-Round < R`이면 잠금이 해제됩니다.
+- validator 가 여전히 블록에 잠겨 있으면 prevote 합니다.
+- 혹은, `Propose(H,R)`에서 제안된 블록이 괜찮다면 해당 블록에 prevote 합니다.
+- 그렇지 않으면 제안이 유효하지 않거나 제시간에 접수되지 않은 경우 `<nil>` 에 prevote 합니다.
 
-The `Prevote` step ends:
+`Prevote` step 종료:
 
-- After +2/3 prevotes for a particular block or `<nil>`. -->; goto
-  `Precommit(H,R)`
-- After `timeoutPrevote` after receiving any +2/3 prevotes. --> goto
-  `Precommit(H,R)`
-- After [common exit conditions](#common-exit-conditions)
+- 특정 블록에 대한 +2/3 prevote 또는 `<nil>` 이후. -->; goto `Precommit(H,R)`
+- +2/3 prevote를 받고 `timeoutPrevote` 이후. --> goto `Precommit(H,R)`
+- [common exit conditions](#common-exit-conditions)
 
 ### Precommit Step (height:H,round:R)
 
