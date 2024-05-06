@@ -131,7 +131,7 @@ round 마다 특정 round timeout 매개변수를 증가시킴으로써 해결�
 
 - 처음으로, validator가 `LastLockRound` 이후 블록에 잠겼지만 `PoLC-Round` round에서 다른 것에 대한 PoLC가 있는 경우 `LastLockRound < PoLC-Round < R`이면 잠금이 해제됩니다.
 - validator 가 여전히 블록에 잠겨 있으면 prevote 합니다.
-- 혹은, `Propose(H,R)`에서 제안된 블록이 괜찮다면 해당 블록에 prevote 합니다.
+- 그렇지 않으면, `Propose(H,R)`에서 제안된 블록이 괜찮다면 해당 블록에 prevote 합니다.
 - 그렇지 않으면 제안이 유효하지 않거나 제시간에 접수되지 않은 경우 `<nil>` 에 prevote 합니다.
 
 `Prevote` step 종료:
@@ -142,45 +142,36 @@ round 마다 특정 round timeout 매개변수를 증가시킴으로써 해결�
 
 ### Precommit Step (height:H,round:R)
 
-Upon entering `Precommit`, each validator broadcasts its precommit vote.
+`Precommit`에 진입하면, 각 validator는 precommit vote를 브로드캐스트합니다.
 
-- If the validator has a PoLC at `(H,R)` for a particular block `B`, it
-  (re)locks (or changes lock to) and precommits `B` and sets
-  `LastLockRound = R`.
-- Else, if the validator has a PoLC at `(H,R)` for `<nil>`, it unlocks
-  and precommits `<nil>`.
-- Else, it keeps the lock unchanged and precommits `<nil>`.
+- validator가 특정 블록 `B`에 대해 `(H,R)`의 PoLC를 가지고 있다면, `B`를 (다시)잠그고 (또는 잠금으로 변경하고) precommit 하며 `LastLockRound = R`을 설정합니다.
+- 그렇지 않으면, validator가 `<nil>`에 대해 `(H,R)`의 PoLC를 가지고 있으면, 잠금을 해제하고 `<nil>`을 precommit 합니다.
+- 그렇지 않으면, 잠금을 변경하지 않고 `<nil>`을 precommit 합니다.
 
-A precommit for `<nil>` means "I didn’t see a PoLC for this round, but I
-did get +2/3 prevotes and waited a bit".
+`<nil>` precommit 은 “이번 round에 대한 PoLC를 보지 못했지만 +2/3 prevote를 받고 조금 기다렸습니다”라는 의미입니다.
 
-The Precommit step ends:
+Precommit step 종료:
 
-- After +2/3 precommits for `<nil>`. --> goto `Propose(H,R+1)`
-- After `timeoutPrecommit` after receiving any +2/3 precommits. --> goto
-  `Propose(H,R+1)`
-- After [common exit conditions](#common-exit-conditions)
+- 2/3 `<nil>` precommit 후. --> goto `Propose(H,R+1)`
+- 2/3 precommit을 받은 뒤 `timeoutPrecommit` 이후. --> goto `Propose(H,R+1)`
+- [common exit conditions](#common-exit-conditions)
 
 ### Common exit conditions
 
-- After +2/3 precommits for a particular block. --> goto
-  `Commit(H)`
-- After any +2/3 prevotes received at `(H,R+x)`. --> goto
-  `Prevote(H,R+x)`
-- After any +2/3 precommits received at `(H,R+x)`. --> goto
-  `Precommit(H,R+x)`
+- 특정 블록에 대해 +2/3 precommit 후. --> goto `Commit(H)`
+- `(H,R+x)`에서 +2/3 prevote 를 받은 후. --> goto `Prevote(H,R+x)`
+- `(H,R+x)`에서 +2/3 precommit 을 받은 후. --> goto `Precommit(H,R+x)`
 
 ### Commit Step (height:H)
 
-- Set `CommitTime = now()`
-- Wait until block is received. --> goto `NewHeight(H+1)`
+- `CommitTime = now()` 설정
+- 블록이 수신될 때까지 대기. --> goto `NewHeight(H+1)`
 
 ### NewHeight Step (height:H)
 
-- Move `Precommits` to `LastCommit` and increment height.
-- Set `StartTime = CommitTime+timeoutCommit`
-- Wait until `StartTime` to receive straggler commits. --> goto
-  `Propose(H,0)`
+- `Precommits`을 `LastCommit`으로 이동하고 높이를 증가시킵니다.
+- `StartTime = CommitTime+timeoutCommit` 설정.
+- `StartTime`까지 기다렸는데 지연 commit을 받음. --> goto `Propose(H,0)`
 
 ## Proofs
 
