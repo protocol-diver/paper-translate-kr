@@ -5,6 +5,10 @@ parent:
   order: 2
 ---
 
+### Comment
+Source: https://github.com/tendermint/tendermint/blob/main/spec/abci/README.md <br>
+Date: 2024-05-11 (last commit hash is `eed27ad`) <br>
+
 # ABCI
 
 ABCI stands for "**A**pplication **B**lock**c**hain **I**nterface".
