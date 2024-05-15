@@ -642,7 +642,6 @@ ABCI에서 사용되는 대부분의 데이터 구조는 공유되는 [common da
     | metadata | bytes  | 임의의 애플리케이션 메타데이터(예: chunk 해시 또는 기타 인증 데이터).                                                                                              | 3            |
 
 * **Usage**:
-    * When sent across the network, a snapshot message can be at most 4 MB.
     * 상태 동기화 스냅샷에 사용되며, 자세한 내용은 [state sync section](../spec/p2p/messages/state-sync.md)을 참조하세요.
     * 스냅샷은 _모든_ 필드(`Metadata` 포함)가 동일한 경우에만 노드 간에 일치하는 것으로 간주됩니다. chunk 는 동일한 스냅샷을 가진 모든 노드에서 검색할 수 있습니다.
     * 네트워크를 통해 전송되는 스냅샷 메시지는 최대 4MB까지 가능합니다.
