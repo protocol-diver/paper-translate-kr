@@ -425,17 +425,17 @@ State Sync 를 사용하면 새 노드가 과거 블록을 재생하는 대신 �
     | Name   | Type  | Description                        | Field Number |
     |--------|-------|------------------------------------|--------------|
 
-    Empty request asking the application for a list of snapshots.
+    애플리케이션에 스냅샷 목록을 요청하는 빈 요청입니다.
 
 * **Response**:
 
     | Name      | Type                           | Description                    | Field Number |
     |-----------|--------------------------------|--------------------------------|--------------|
-    | snapshots | repeated [Snapshot](#snapshot) | List of local state snapshots. | 1            |
+    | snapshots | repeated [Snapshot](#snapshot) | 로컬 상태 스냅샷 목록입니다. | 1            |
 
 * **Usage**:
-    * Used during state sync to discover available snapshots on peers.
-    * See `Snapshot` data type for details.
+    * 상태 동기화 중에 피어에서 사용 가능한 스냅샷을 검색하는 데 사용됩니다.
+    * 자세한 내용은 `Snapshot` 데이터 유형을 참조하세요.
 
 ### LoadSnapshotChunk
 
@@ -443,18 +443,18 @@ State Sync 를 사용하면 새 노드가 과거 블록을 재생하는 대신 �
 
     | Name   | Type   | Description                                                           | Field Number |
     |--------|--------|-----------------------------------------------------------------------|--------------|
-    | height | uint64 | The height of the snapshot the chunks belongs to.                     | 1            |
-    | format | uint32 | The application-specific format of the snapshot the chunk belongs to. | 2            |
-    | chunk  | uint32 | The chunk index, starting from `0` for the initial chunk.             | 3            |
+    | height | uint64 | chunk 가 속한 스냅샷의 높이입니다.                     | 1            |
+    | format | uint32 | chunk 가 속한 스냅샷의 애플리케이션별 형식입니다. | 2            |
+    | chunk  | uint32 | 초기 chunk 의 `0`부터 시작하는 chunk 인덱스입니다.             | 3            |
 
 * **Response**:
 
     | Name  | Type  | Description                                                                                                                                           | Field Number |
     |-------|-------|-------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
-    | chunk | bytes | The binary chunk contents, in an arbitray format. Chunk messages cannot be larger than 16 MB _including metadata_, so 10 MB is a good starting point. | 1            |
+    | chunk | bytes | 바이너리 chunk 콘텐츠, 배열 형식입니다. chunk 메시지는 _메타데이터 포함_ 16MB를 초과할 수 없으므로 10MB가 좋은 출발점입니다. | 1            |
 
 * **Usage**:
-    * Used during state sync to retrieve snapshot chunks from peers.
+    * 상태 동기화 중에 피어에서 스냅샷 chunk 를 검색하는 데 사용됩니다.
 
 ### OfferSnapshot
 
@@ -462,39 +462,32 @@ State Sync 를 사용하면 새 노드가 과거 블록을 재생하는 대신 �
 
     | Name     | Type                  | Description                                                              | Field Number |
     |----------|-----------------------|--------------------------------------------------------------------------|--------------|
-    | snapshot | [Snapshot](#snapshot) | The snapshot offered for restoration.                                    | 1            |
-    | app_hash | bytes                 | The light client-verified app hash for this height, from the blockchain. | 2            |
+    | snapshot | [Snapshot](#snapshot) | 복원을 위해 제공되는 스냅샷입니다.                                    | 1            |
+    | app_hash | bytes                 | 블록체인에서 이 높이에 대해 라이트 클라이언트가 검증한 app hash 입니다. | 2            |
 
 * **Response**:
 
     | Name   | Type              | Description                       | Field Number |
     |--------|-------------------|-----------------------------------|--------------|
-    | result | [Result](#result) | The result of the snapshot offer. | 1            |
+    | result | [Result](#result) | 스냅샷 오퍼의 결과입니다. | 1            |
 
 #### Result
 
 ```proto
   enum Result {
-    UNKNOWN       = 0;  // Unknown result, abort all snapshot restoration
-    ACCEPT        = 1;  // Snapshot is accepted, start applying chunks.
-    ABORT         = 2;  // Abort snapshot restoration, and don't try any other snapshots.
-    REJECT        = 3;  // Reject this specific snapshot, try others.
-    REJECT_FORMAT = 4;  // Reject all snapshots with this `format`, try others.
-    REJECT_SENDER = 5;  // Reject all snapshots from all senders of this snapshot, try others.
+    UNKNOWN       = 0;  // 결과를 알 수 없음, 모든 스냅샷 복원 중단
+    ACCEPT        = 1;  // 스냅샷이 수락되면 chunk 적용을 시작합니다.
+    ABORT         = 2;  // 스냅샷 복원을 중단하고 다른 스냅샷을 시도하지 마세요.
+    REJECT        = 3;  // 해당 스냅샷을 거부하고 다른 스냅샷을 시도하세요.
+    REJECT_FORMAT = 4;  // 이 'format' 의 모든 스냅샷을 거부하고 다른 스냅샷을 시도하세요.
+    REJECT_SENDER = 5;  // 이 스냅샷의 모든 발신자의 모든 스냅샷을 거부하고 다른 스냅샷을 시도하세요.
   }
 ```
 
 * **Usage**:
-    * `OfferSnapshot` is called when bootstrapping a node using state sync. The application may
-    accept or reject snapshots as appropriate. Upon accepting, Tendermint will retrieve and
-    apply snapshot chunks via `ApplySnapshotChunk`. The application may also choose to reject a
-    snapshot in the chunk response, in which case it should be prepared to accept further
-    `OfferSnapshot` calls.
-    * Only `AppHash` can be trusted, as it has been verified by the light client. Any other data
-    can be spoofed by adversaries, so applications should employ additional verification schemes
-    to avoid denial-of-service attacks. The verified `AppHash` is automatically checked against
-    the restored application at the end of snapshot restoration.
-    * For more information, see the `Snapshot` data type or the [state sync section](../spec/p2p/messages/state-sync.md).
+    * `OfferSnapshot` 은 상태 동기화를 사용하여 노드를 부트스트랩할 때 호출됩니다. 애플리케이션은 스냅샷을 적절히 수락하거나 거부할 수 있습니다. 수락하면 Tendermint 는 `ApplySnapshotChunk` 를 통해 스냅샷 chunk 를 검색하고 적용합니다. 애플리케이션은 chunk 응답에서 스냅샷을 거부하도록 선택할 수도 있으며, 이 경우 추가 `OfferSnapshot` 호출을 수락할 준비가 되어 있어야 합니다.
+    * 라이트 클라이언트에 의해 확인된 `AppHash` 만 신뢰할 수 있습니다. 다른 모든 데이터는 공격자가 스푸핑할 수 있으므로 애플리케이션은 DoS 공격을 피하기 위해 추가 검증 체계를 사용해야 합니다. 확인된 `AppHash` 는 스냅샷 복원이 끝날 때 복원된 애플리케이션에 대해 자동으로 확인됩니다.
+    * 자세한 내용은 `Snapshot` 데이터 유형 또는 [state sync section](../spec/p2p/messages/state-sync.md)을 참조하세요.
 
 ### ApplySnapshotChunk
 
@@ -502,45 +495,38 @@ State Sync 를 사용하면 새 노드가 과거 블록을 재생하는 대신 �
 
     | Name   | Type   | Description                                                                 | Field Number |
     |--------|--------|-----------------------------------------------------------------------------|--------------|
-    | index  | uint32 | The chunk index, starting from `0`. Tendermint applies chunks sequentially. | 1            |
-    | chunk  | bytes  | The binary chunk contents, as returned by `LoadSnapshotChunk`.              | 2            |
-    | sender | string | The P2P ID of the node who sent this chunk.                                 | 3            |
+    | index  | uint32 | `0`부터 시작하는 chunk 인덱스입니다. Tendermint 는 chunk 를 순차적으로 적용합니다. | 1            |
+    | chunk  | bytes  | `LoadSnapshotChunk`가 반환한 바이너리 chunk 입니다.              | 2            |
+    | sender | string | 이 chunk 를 전송한 노드의 P2P ID입니다.                                 | 3            |
 
 * **Response**:
 
     | Name           | Type                | Description                                                                                                                                                                                                                             | Field Number |
     |----------------|---------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
-    | result         | Result  (see below) | The result of applying this chunk.                                                                                                                                                                                                      | 1            |
-    | refetch_chunks | repeated uint32     | Refetch and reapply the given chunks, regardless of `result`. Only the listed chunks will be refetched, and reapplied in sequential order.                                                                                              | 2            |
-    | reject_senders | repeated string     | Reject the given P2P senders, regardless of `Result`. Any chunks already applied will not be refetched unless explicitly requested, but queued chunks from these senders will be discarded, and new chunks or other snapshots rejected. | 3            |
+    | result         | Result  (see below) | 이 chunk 를 적용한 결과입니다.                                                                                                                                                                                                      | 1            |
+    | refetch_chunks | repeated uint32     | 'result' 에 관계없이 주어진 chunk 를 다시 가져와 다시 적용합니다. 나열된 chunk 만 리프레시하고 순차적으로 다시 적용합니다.                                                                                              | 2            |
+    | reject_senders | repeated string     | `Result` 에 관계없이 지정된 P2P 발신자를 거부합니다. 이미 적용된 chunk 는 명시적으로 요청하지 않는 한 다시 가져오지 않지만 이러한 발신자로부터 대기 중인 chunk 는 삭제되고 새 chunk 나 다른 스냅샷은 거부됩니다. | 3            |
 
 ```proto
   enum Result {
-    UNKNOWN         = 0;  // Unknown result, abort all snapshot restoration
-    ACCEPT          = 1;  // The chunk was accepted.
-    ABORT           = 2;  // Abort snapshot restoration, and don't try any other snapshots.
-    RETRY           = 3;  // Reapply this chunk, combine with `RefetchChunks` and `RejectSenders` as appropriate.
-    RETRY_SNAPSHOT  = 4;  // Restart this snapshot from `OfferSnapshot`, reusing chunks unless instructed otherwise.
-    REJECT_SNAPSHOT = 5;  // Reject this snapshot, try a different one.
+    UNKNOWN         = 0;  // Result 를 알 수 없음, 모든 스냅샷 복원 중단
+    ACCEPT          = 1;  // chunk 가 수락됨.
+    ABORT           = 2;  // 스냅샷 복원을 중단하고 다른 스냅샷을 시도하지 마세요.
+    RETRY           = 3;  // 이 chunk 를 다시 적용하고 `RefetchChunks` 및 `RejectSenders`와 적절히 결합합니다.
+    RETRY_SNAPSHOT  = 4;  // 별도의 지시가 없는 한 chunk 를 재사용하면서 `OfferSnapshot`에서 이 스냅샷을 다시 시작합니다.
+    REJECT_SNAPSHOT = 5;  // 이 스냅샷을 거부하고 다른 스냅샷을 시도하세요.
   }
 ```
 
 * **Usage**:
-    * The application can choose to refetch chunks and/or ban P2P peers as appropriate. Tendermint
-    will not do this unless instructed by the application.
-    * The application may want to verify each chunk, e.g. by attaching chunk hashes in
-    `Snapshot.Metadata` and/or incrementally verifying contents against `AppHash`.
-    * When all chunks have been accepted, Tendermint will make an ABCI `Info` call to verify that
-    `LastBlockAppHash` and `LastBlockHeight` matches the expected values, and record the
-    `AppVersion` in the node state. It then switches to fast sync or consensus and joins the
-    network.
-    * If Tendermint is unable to retrieve the next chunk after some time (e.g. because no suitable
-    peers are available), it will reject the snapshot and try a different one via `OfferSnapshot`.
-    The application should be prepared to reset and accept it or abort as appropriate.
+    * 애플리케이션은 적절하게 chunk 를 다시 가져오거나 P2P 피어를 밴하도록 선택할 수 있습니다. 애플리케이션의 지시가 없는 한 Tendermint 는 이를 수행하지 않습니다.
+    * 애플리케이션은 `Snapshot.Metadata` 에 chunk 해시를 첨부하거나 `AppHash` 와 비교하여 콘텐츠를 점진적으로 검증하는 등 각 chunk 를 검증할 수 있습니다.
+    * 모든 chunk 가 수락되면, Tendermint 는 ABCI `Info` 호출을 통해 `LastBlockAppHash` 와 `LastBlockHeight` 가 예상 값과 일치하는지 확인하고, 노드 상태에 `AppVersion` 을 기록합니다. 그런 다음 fast sync 또는 consensus 로 전환하고 네트워크에 참여합니다.
+    * 일정 시간이 지나도 적절한 피어를 찾을 수 없는 경우(e.g. 사용할 수 있는 피어가 없음) Tendermint 는 스냅샷을 거부하고 `OfferSnapshot` 을 통해 다른 스냅샷을 시도합니다. 애플리케이션은 적절하게 재설정하고 수락하거나 중단할 준비를 해야 합니다.
 
 ## Data Types
 
-Most of the data structures used in ABCI are shared [common data structures](../spec/core/data_structures.md). In certain cases, ABCI uses different data structures which are documented here:
+ABCI에서 사용되는 대부분의 데이터 구조는 공유되는 [common data structures](../spec/core/data_structures.md) 입니다. 경우에 따라 ABCI는 여기에 설명된 다른 데이터 구조를 사용합니다:
 
 ### Validator
 
@@ -548,14 +534,13 @@ Most of the data structures used in ABCI are shared [common data structures](../
 
     | Name    | Type  | Description                                                         | Field Number |
     |---------|-------|---------------------------------------------------------------------|--------------|
-    | address | bytes | [Address](../core/data_structures.md#address) of validator          | 1            |
-    | power   | int64 | Voting power of the validator                                       | 3            |
+    | address | bytes | 검증자의 [주소](../core/data_structures.md#address)          | 1            |
+    | power   | int64 | 검증자의 Voting power                                       | 3            |
 
 * **Usage**:
-    * Validator identified by address
-    * Used in RequestBeginBlock as part of VoteInfo
-    * Does not include PubKey to avoid sending potentially large quantum pubkeys
-    over the ABCI
+    * 주소로 식별된 검증자입니다
+    * VoteInfo 의 일부로 RequestBeginBlock 에 사용됩니다
+    * ABCI를 통해 잠재적으로 대량의 퀀텀 퍼블릭키를 전송하지 않기 위해 퍼블릭키를 포함하지 않습니다.
 
 ### ValidatorUpdate
 
@@ -563,12 +548,12 @@ Most of the data structures used in ABCI are shared [common data structures](../
 
     | Name    | Type                                             | Description                   | Field Number |
     |---------|--------------------------------------------------|-------------------------------|--------------|
-    | pub_key | [Public Key](../core/data_structures.md#pub_key) | Public key of the validator   | 1            |
-    | power   | int64                                            | Voting power of the validator | 2            |
+    | pub_key | [Public Key](../core/data_structures.md#pub_key) | 검증자의 Public key   | 1            |
+    | power   | int64                                            | 검증자의 Voting power | 2            |
 
 * **Usage**:
-    * Validator identified by PubKey
-    * Used to tell Tendermint to update the validator set
+    * PubKey로 식별된 검증자
+    * Tendermint 에게 검증자 세트를 업데이트하도록 지시하는 데 사용됩니다.
 
 ### VoteInfo
 
@@ -576,12 +561,11 @@ Most of the data structures used in ABCI are shared [common data structures](../
 
     | Name              | Type                    | Description                                                  | Field Number |
     |-------------------|-------------------------|--------------------------------------------------------------|--------------|
-    | validator         | [Validator](#validator) | A validator                                                  | 1            |
-    | signed_last_block | bool                    | Indicates whether or not the validator signed the last block | 2            |
+    | validator         | [Validator](#validator) | 검증자                                                  | 1            |
+    | signed_last_block | bool                    | 검증자가 마지막 블록에 서명했는지 여부를 나타냅니다. | 2            |
 
 * **Usage**:
-    * Indicates whether a validator signed the last block, allowing for rewards
-    based on validator availability
+    * 검증자가 마지막 블록에 서명했는지 여부를 나타내며, 검증자 가용성에 따라 보상을 받을 수 있습니다.
 
 ### Evidence
 
@@ -589,17 +573,17 @@ Most of the data structures used in ABCI are shared [common data structures](../
 
     | Name               | Type                                                                                                                                 | Description                                                                  | Field Number |
     |--------------------|--------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------|--------------|
-    | type               | [EvidenceType](#evidencetype)                                                                                                        | Type of the evidence. An enum of possible evidence's.                        | 1            |
-    | validator          | [Validator](#validator)                                                                                                              | The offending validator                                                      | 2            |
-    | height             | int64                                                                                                                                | Height when the offense occurred                                             | 3            |
-    | time               | [google.protobuf.Timestamp](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#google.protobuf.Timestamp) | Time of the block that was committed at the height that the offense occurred | 4            |
-    | total_voting_power | int64                                                                                                                                | Total voting power of the validator set at height `Height`                   | 5            |
+    | type               | [EvidenceType](#evidencetype)                                                                                                        | Evidence 유형입니다. 가능한 Evidence 의 enum 입니다.                        | 1            |
+    | validator          | [Validator](#validator)                                                                                                              | 문제를 일으킨 검증자                                                      | 2            |
+    | height             | int64                                                                                                                                | 문제를 일으킨 높이                                             | 3            |
+    | time               | [google.protobuf.Timestamp](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#google.protobuf.Timestamp) | 문제가 발생한 블록 높이가 커밋된 블록의 시간 | 4            |
+    | total_voting_power | int64                                                                                                                                | 높이 `Height`로 설정된 검증자의 총 Voting Power                   | 5            |
 
 #### EvidenceType
 
 * **Fields**
 
-    EvidenceType is an enum with the listed fields:
+    EvidenceType 은 나열된 필드가 있는 enum 입니다:
 
     | Name                | Field Number |
     |---------------------|--------------|
@@ -613,8 +597,8 @@ Most of the data structures used in ABCI are shared [common data structures](../
 
     | Name  | Type                           | Description                                                                                                           | Field Number |
     |-------|--------------------------------|-----------------------------------------------------------------------------------------------------------------------|--------------|
-    | round | int32                          | Commit round. Reflects the total amount of rounds it took to come to consensus for the current block.                 | 1            |
-    | votes | repeated [VoteInfo](#voteinfo) | List of validators addresses in the last validator set with their voting power and whether or not they signed a vote. | 2            |
+    | round | int32                          | Commit round. 현재 블록에 대한 합의에 도달하는 데 걸린 총 라운드 수를 반영합니다.                 | 1            |
+    | votes | repeated [VoteInfo](#voteinfo) | 투표권을 가진 마지막 검증자 세트의 검증자 주소와 투표에 서명했는지에 대한 여부 목록입니다. | 2            |
 
 ### ConsensusParams
 
@@ -622,10 +606,10 @@ Most of the data structures used in ABCI are shared [common data structures](../
 
     | Name      | Type                                                          | Description                                                                  | Field Number |
     |-----------|---------------------------------------------------------------|------------------------------------------------------------------------------|--------------|
-    | block     | [BlockParams](../core/data_structures.md#blockparams)                                   | Parameters limiting the size of a block and time between consecutive blocks. | 1            |
-    | evidence  | [EvidenceParams](../core/data_structures.md#evidenceparams)   | Parameters limiting the validity of evidence of byzantine behaviour.         | 2            |
-    | validator | [ValidatorParams](../core/data_structures.md#validatorparams) | Parameters limiting the types of public keys validators can use.             | 3            |
-    | version   | [VersionsParams](../core/data_structures.md#versionparams)       | The ABCI application version.                                                | 4            |
+    | block     | [BlockParams](../core/data_structures.md#blockparams)                                   | 블록의 크기와 연속된 블록 사이의 시간을 제한하는 파라미터입니다. | 1            |
+    | evidence  | [EvidenceParams](../core/data_structures.md#evidenceparams)   | 비잔틴 행동에 대한 Evidence 의 유효성을 제한하는 파라미터입니다.         | 2            |
+    | validator | [ValidatorParams](../core/data_structures.md#validatorparams) | 검증자가 사용할 수 있는 공개 키의 유형을 제한하는 파라미터입니다.             | 3            |
+    | version   | [VersionsParams](../core/data_structures.md#versionparams)       | ABCI 애플리케이션 버전입니다.                                                | 4            |
 
 ### ProofOps
 
@@ -633,7 +617,7 @@ Most of the data structures used in ABCI are shared [common data structures](../
 
     | Name | Type                         | Description                                                                                                                                                                                                                  | Field Number |
     |------|------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
-    | ops  | repeated [ProofOp](#proofop) | List of chained Merkle proofs, of possibly different types. The Merkle root of one op is the value being proven in the next op. The Merkle root of the final op should equal the ultimate root hash being verified against.. | 1            |
+    | ops  | repeated [ProofOp](#proofop) | 서로 다른 유형의 연쇄 머클 증명 목록입니다. 한 연산자의 머클 루트는 다음 연산에서 증명되는 값입니다. 최종 연산에 대한 머클 루트는 검증 중인 최종 루트 해시와 같아야 합니다. | 1            |
 
 ### ProofOp
 
@@ -641,9 +625,9 @@ Most of the data structures used in ABCI are shared [common data structures](../
 
     | Name | Type   | Description                                    | Field Number |
     |------|--------|------------------------------------------------|--------------|
-    | type | string | Type of Merkle proof and how it's encoded.     | 1            |
-    | key  | bytes  | Key in the Merkle tree that this proof is for. | 2            |
-    | data | bytes  | Encoded Merkle proof for the key.              | 3            |
+    | type | string | 머클 증명의 유형 및 인코딩 방법.     | 1            |
+    | key  | bytes  | 이 증명을 위한 머클 트리의 Key 를 입력합니다. | 2            |
+    | data | bytes  | Key 에 대해 인코딩된 머클 증명.              | 3            |
 
 ### Snapshot
 
@@ -651,14 +635,14 @@ Most of the data structures used in ABCI are shared [common data structures](../
 
     | Name     | Type   | Description                                                                                                                                                                       | Field Number |
     |----------|--------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
-    | height   | uint64 | The height at which the snapshot was taken (after commit).                                                                                                                        | 1            |
-    | format   | uint32 | An application-specific snapshot format, allowing applications to version their snapshot data format and make backwards-incompatible changes. Tendermint does not interpret this. | 2            |
-    | chunks   | uint32 | The number of chunks in the snapshot. Must be at least 1 (even if empty).                                                                                                         | 3            |
-    | hash     | bytes  | TAn arbitrary snapshot hash. Must be equal only for identical snapshots across nodes. Tendermint does not interpret the hash, it only compares them.                              | 3            |
-    | metadata | bytes  | Arbitrary application metadata, for example chunk hashes or other verification data.                                                                                              | 3            |
+    | height   | uint64 | 스냅샷을 찍은 높이(커밋 후)입니다.                                                                                                                        | 1            |
+    | format   | uint32 | 애플리케이션별 스냅샷 포맷으로, 애플리케이션이 스냅샷 데이터 포맷을 버전화하고 이전 버전과 호환되지 않는 변경을 할 수 있습니다. Tendermint 는 이를 해석하지 않습니다. | 2            |
+    | chunks   | uint32 | 스냅샷의 chunk 수입니다. 반드시 1 이상이어야 합니다 (비어있는 경우에도).                                                                                                         | 3            |
+    | hash     | bytes  | 임의의 스냅샷 해시입니다. 노드 간에 동일한 스냅샷에 대해서만 동일해야 합니다. Tendermint 는 해시를 해석하지 않고 비교만 합니다.                              | 3            |
+    | metadata | bytes  | 임의의 애플리케이션 메타데이터(예: chunk 해시 또는 기타 인증 데이터).                                                                                              | 3            |
 
 * **Usage**:
-    * Used for state sync snapshots, see the [state sync section](../spec/p2p/messages/state-sync.md) for details.
-    * A snapshot is considered identical across nodes only if _all_ fields are equal (including
-    `Metadata`). Chunks may be retrieved from all nodes that have the same snapshot.
     * When sent across the network, a snapshot message can be at most 4 MB.
+    * 상태 동기화 스냅샷에 사용되며, 자세한 내용은 [state sync section](../spec/p2p/messages/state-sync.md)을 참조하세요.
+    * 스냅샷은 _모든_ 필드(`Metadata` 포함)가 동일한 경우에만 노드 간에 일치하는 것으로 간주됩니다. chunk 는 동일한 스냅샷을 가진 모든 노드에서 검색할 수 있습니다.
+    * 네트워크를 통해 전송되는 스냅샷 메시지는 최대 4MB까지 가능합니다.
