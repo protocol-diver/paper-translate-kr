@@ -3,151 +3,91 @@ order: 2
 title: Applications
 ---
 
+### Comment
+Source: https://github.com/tendermint/tendermint/blob/main/spec/abci/apps.md <br>
+Date: 2024-05-11 (last commit hash is `eed27ad`) <br>
+
 # Applications
 
-Please ensure you've first read the spec for [ABCI Methods and Types](abci.md)
+먼저 [ABCI Methods and Types](abci.md)에 대한 사양을 읽어보시기 바랍니다.
 
-Here we cover the following components of ABCI applications:
+여기에서는 ABCI 애플리케이션의 다음 구성 요소를 다룹니다:
 
-- [Connection State](#connection-state) - the interplay between ABCI connections and application state
-  and the differences between `CheckTx` and `DeliverTx`.
-- [Transaction Results](#transaction-results) - rules around transaction
-  results and validity
-- [Validator Set Updates](#validator-updates) - how validator sets are
-  changed during `InitChain` and `EndBlock`
-- [Query](#query) - standards for using the `Query` method and proofs about the
-  application state
-- [Crash Recovery](#crash-recovery) - handshake protocol to synchronize
-  Tendermint and the application on startup.
-- [State Sync](#state-sync) - rapid bootstrapping of new nodes by restoring state machine snapshots
+- [Connection State](#connection-state) - ABCI Connection 과 애플리케이션 상태 간의 상호 작용 및 `CheckTx`와 `DeliverTx` 간의 차이점입니다.
+- [Transaction Results](#transaction-results) - 거래 결과 및 유효성에 관한 규칙
+- [Validator Set Updates](#validator-updates) - `InitChain` 및 `EndBlock` 중에 검증자 세트가 변경되는 방법
+- [Query](#query) - Query 메서드 사용에 대한 표준 및 애플리케이션 상태에 대한 증명
+- [Crash Recovery](#crash-recovery) - 핸드셰이크 프로토콜을 사용하여 시작 시 Tendermint 와 애플리케이션을 동기화합니다.
+- [State Sync](#state-sync) - 상태 머신 스냅샷 복원을 통한 새 노드의 신속한 부트스트래핑
 
 ## Connection State
 
-Since Tendermint maintains four concurrent ABCI connections, it is typical
-for an application to maintain a distinct state for each, and for the states to
-be synchronized during `Commit`.
+Tendermint 는 4개의 동시 ABCI Connection 을 유지하므로, 애플리케이션이 각각 별개의 상태를 유지하고 `Commit` 하는 동안 상태를 동기화하는 것이 일반적입니다.
 
 ### Concurrency
 
-In principle, each of the four ABCI connections operate concurrently with one
-another. This means applications need to ensure access to state is
-thread safe. In practice, both the
-[default in-process ABCI client](https://github.com/tendermint/tendermint/blob/v0.34.4/abci/client/local_client.go#L18)
-and the
-[default Go ABCI
-server](https://github.com/tendermint/tendermint/blob/v0.34.4/abci/server/socket_server.go#L32)
-use global locks across all connections, so they are not
-concurrent at all. This means if your app is written in Go, and compiled in-process with Tendermint
-using the default `NewLocalClient`, or run out-of-process using the default `SocketServer`,
-ABCI messages from all connections will be linearizable (received one at a
-time).
+원칙적으로 4개의 ABCI Connection 은 각각 서로 동시에 작동합니다. 즉, 애플리케이션은 상태에 대한 액세스가 스레드 안전성을 보장해야 합니다. 실제로는 [default in-process ABCI client](https://github.com/tendermint/tendermint/blob/v0.34.4/abci/client/local_client.go#L18)와 [default Go ABCI server](https://github.com/tendermint/tendermint/blob/v0.34.4/abci/server/socket_server.go#L32) 모두 모든 Connection 에서 전역 잠금을 사용하므로 전혀 동시적이지 않습니다. 즉, 앱이 Go로 작성되고 기본 `NewLocalClient`를 사용하여 Tendermint 에서 프로세스 중 컴파일되거나 기본 `SocketServer`를 사용하여 프로세스 외로 실행되는 경우 모든 Connection 의 ABCI 메시지는 선형화(한 번에 하나씩 수신)가 가능합니다.
 
-The existence of this global mutex means Go application developers can get
-thread safety for application state by routing *all* reads and writes through the ABCI
-system. Thus it may be *unsafe* to expose application state directly to an RPC
-interface, and unless explicit measures are taken, all queries should be routed through the ABCI Query method.
+이 글로벌 mutex 의 존재는 Go 애플리케이션 개발자가 *모든* 읽기 및 쓰기를 ABCI 시스템을 통해 라우팅함으로써 애플리케이션 상태에 대한 스레드 안전성을 확보할 수 있음을 의미합니다. 따라서 애플리케이션 상태를 RPC 인터페이스에 직접 노출하는 것은 *안전하지 않을 수* 있으며, 명시적인 조치를 취하지 않는 한 모든 쿼리는 ABCI 쿼리 메서드를 통해 라우팅되어야 합니다.
 
 ### BeginBlock
 
-The BeginBlock request can be used to run some code at the beginning of
-every block. It also allows Tendermint to send the current block hash
-and header to the application, before it sends any of the transactions.
+BeginBlock 요청은 모든 블록이 시작될 때 일부 코드를 실행하는 데 사용할 수 있습니다. 또한 트랜잭션을 전송하기 전에 Tendermint 가 현재 블록 해시와 헤더를 애플리케이션에 전송할 수 있습니다.
 
-The app should remember the latest height and header (ie. from which it
-has run a successful Commit) so that it can tell Tendermint where to
-pick up from when it restarts. See information on the Handshake, below.
+앱은 최신 높이와 헤더(즉, 성공적인 Commit 을 실행한 곳)를 기억하여 다시 시작할 때 Tendermin 가 어디에서 시작할지 알려줄 수 있어야 합니다. 아래 Handshake 에 대한 정보를 참조하세요.
 
 ### Commit
 
-Application state should only be persisted to disk during `Commit`.
+애플리케이션 상태는 `Commit`하는 동안에만 디스크에 유지되어야 합니다.
 
-Before `Commit` is called, Tendermint locks and flushes the mempool so that no new messages will
-be received on the mempool connection. This provides an opportunity to safely update all four connection
-states to the latest committed state at once.
+`Commit`이 호출되기 전에 Tendermint 는 mempool 을 잠그고 플러시하여 Mempool Connection 에 새 메시지가 수신되지 않도록 합니다. 이렇게 하면 네 가지 Connection 상태를 모두 최신 커밋 상태로 한 번에 안전하게 업데이트할 수 있습니다.
 
-When `Commit` completes, it unlocks the mempool.
+`Commit`이 완료되면 멤풀의 잠금이 해제됩니다.
 
-WARNING: if the ABCI app logic processing the `Commit` message sends a
-`/broadcast_tx_sync` or `/broadcast_tx_commit` and waits for the response
-before proceeding, it will deadlock. Executing those `broadcast_tx` calls
-involves acquiring a lock that is held during the `Commit` call, so it's not
-possible. If you make the call to the `broadcast_tx` endpoints concurrently,
-that's no problem, it just can't be part of the sequential logic of the
-`Commit` function.
+WARNING: `Commit` 메시지를 처리하는 ABCI 앱 로직이 `/broadcast_tx_sync` 또는 `/broadcast_tx_commit`을 전송하고 응답을 기다린 후 계속 진행하면 교착 상태가 됩니다. 이러한 `broadcast_tx` 호출을 실행하려면 `Commit` 호출 중에 유지되는 잠금을 획득해야 하므로 실행할 수 없습니다. `broadcast_tx` 엔드포인트를 동시에 호출하는 것은 문제가 되지 않으며, 단지 `Commit` 함수의 순차적 로직에 포함될 수 없을 뿐입니다.
 
 ### Consensus Connection
 
-The Consensus Connection should maintain a `DeliverTxState` - the working state
-for block execution. It should be updated by the calls to `BeginBlock`, `DeliverTx`,
-and `EndBlock` during block execution and committed to disk as the "latest
-committed state" during `Commit`.
+Consensus Connection 은 블록 실행을 위한 작업 상태인 `DeliverTxState` 를 유지해야 합니다. 이는 블록 실행 중에 `BeginBlock`, `DeliverTx` 그리고 `EndBlock` 호출에 의해 업데이트되어야 하며, 커밋 중에 "latest committed state" 로 디스크에 `Commit`되어야 합니다.
 
-Updates made to the `DeliverTxState` by each method call must be readable by each subsequent method -
-ie. the updates are linearizable.
+각 메서드 호출에 의해 `DeliverTxState`에 대한 업데이트는 각 후속 메서드에서 읽을 수 있어야 합니다 - 즉, 업데이트는 선형화할 수 있어야 합니다.
 
 ### Mempool Connection
 
-The mempool Connection should maintain a `CheckTxState`
-to sequentially process pending transactions in the mempool that have
-not yet been committed. It should be initialized to the latest committed state
-at the end of every `Commit`.
+Mempool Connection 은 아직 커밋되지 않은 mempool 의 보류 중인 트랜잭션을 순차적으로 처리하기 위해 `CheckTxState`를 유지해야 합니다. 모든 `Commit`이 끝날 때마다 최신 커밋 상태로 초기화되어야 합니다.
 
-Before calling `Commit`, Tendermint will lock and flush the mempool connection,
-ensuring that all existing CheckTx are responded to and no new ones can begin.
-The `CheckTxState` may be updated concurrently with the `DeliverTxState`, as
-messages may be sent concurrently on the Consensus and Mempool connections.
+`Commit`을 호출하기 전에 Tendermint 는 Mempool Connection 을 잠그고 플러시하여 기존의 모든 CheckTx 에 응답하고 새로운 Connection 이 시작되지 않도록 합니다. Consensus, Mempool Connection 에서 메시지가 동시에 전송될 수 있으므로 `CheckTxState`는 `DeliverTxState`와 동시에 업데이트될 수 있습니다.
 
-After `Commit`, while still holding the mempool lock, CheckTx is run again on all transactions that remain in the
-node's local mempool after filtering those included in the block.
-An additional `Type` parameter is made available to the CheckTx function that
-indicates whether an incoming transaction is new (`CheckTxType_New`), or a
-recheck (`CheckTxType_Recheck`).
+`Commit` 후 mempool 잠금을 유지한 상태에서 블록에 포함된 트랜잭션을 필터링한 후 노드의 로컬 mempool 에 남아 있는 모든 트랜잭션에 대해 CheckTx 가 다시 실행됩니다. 들어오는 트랜잭션이 신규 트랜잭션(`CheckTxType_New`)인지, 재확인 트랜잭션(`CheckTxType_Recheck`)인지를 나타내는 추가 `Type` 파라미터를 CheckTx 함수에 사용할 수 있습니다.
 
-Finally, after re-checking transactions in the mempool, Tendermint will unlock
-the mempool connection. New transactions are once again able to be processed through CheckTx.
+마지막으로, mempool 에서 트랜잭션을 다시 확인한 후 Tendermint 는 Mempool Connection 을 잠금 해제합니다. 새로운 트랜잭션은 다시 한번 CheckTx를 통해 처리할 수 있습니다.
 
-Note that CheckTx is just a weak filter to keep invalid transactions out of the block chain.
-CheckTx doesn't have to check everything that affects transaction validity; the
-expensive things can be skipped.  It's weak because a Byzantine node doesn't
-care about CheckTx; it can propose a block full of invalid transactions if it wants.
+CheckTx 는 유효하지 않은 트랜잭션을 블록체인에서 걸러내는 약한 필터일 뿐이라는 점에 유의하세요. CheckTx 는 트랜잭션 유효성에 영향을 미치는 모든 것을 검사할 필요는 없으며, 비용이 많이 드는 것은 건너뛸 수 있습니다. 비잔틴 노드는 CheckTx 에 신경 쓰지 않고 원한다면 무효 트랜잭션으로 가득 찬 블록을 제안할 수 있기 때문에 약한 필터입니다.
 
 #### Replay Protection
 
-To prevent old transactions from being replayed, CheckTx must implement
-replay protection.
+이전 트랜잭션이 재생되는 것을 방지하기 위해 CheckTx 는 재생 방지 기능을 구현해야 합니다.
 
-It is possible for old transactions to be sent to the application. So
-it is important CheckTx implements some logic to handle them.
+오래된 트랜잭션이 애플리케이션으로 전송될 수 있습니다. 따라서 이를 처리하기 위한 몇 가지 로직을 구현하는 것이 중요합니다.
 
 ### Query Connection
 
-The Info Connection should maintain a `QueryState` for answering queries from the user,
-and for initialization when Tendermint first starts up (both described further
-below).
-It should always contain the latest committed state associated with the
-latest committed block.
+Info Connection 은 사용자의 쿼리에 대한 응답과 Tendermint 가 처음 시작될 때 초기화를 위해 `QueryState`를 유지해야 합니다(둘 다 아래에 자세히 설명되어 있습니다). 여기에는 항상 최신 커밋된 블록과 관련된 최신 커밋 상태가 포함되어야 합니다.
 
-`QueryState` should be set to the latest `DeliverTxState` at the end of every `Commit`,
-after the full block has been processed and the state committed to disk.
-Otherwise it should never be modified.
+전체 블록이 처리되고 상태가 디스크에 커밋된 후 모든 `Commit`이 끝날 때 `QueryState`를 최신 `DeliverTxState`로 설정해야 합니다. 그렇지 않으면 절대로 수정해서는 안 됩니다.
 
-Tendermint Core currently uses the Query connection to filter peers upon
-connecting, according to IP address or node ID. For instance,
-returning non-OK ABCI response to either of the following queries will
-cause Tendermint to not connect to the corresponding peer:
+Tendermint 코어는 현재 Query Connection 을 사용하여 연결 시 IP 주소 또는 노드 ID 에 따라 피어를 필터링합니다. 예를 들어, 다음 쿼리 중 하나에 대해 OK가 아닌 ABCI 응답을 반환하면 Tendermint는 해당 피어에 연결하지 않습니다:
 
-- `p2p/filter/addr/<ip addr>`, where `<ip addr>` is an IP address.
-- `p2p/filter/id/<id>`, where `<is>` is the hex-encoded node ID (the hash of
-  the node's p2p pubkey).
+- `p2p/filter/addr/<ip addr>`, 여기서 `<ip addr>`은 IP 주소입니다.
+- `p2p/filter/id/<id>`, 여기서 `<is>`는 16진수로 인코딩된 노드 ID (노드 P2P 공개키의 해시)입니다.
 
-Note: these query formats are subject to change!
+참고: 이러한 쿼리 형식은 변경될 수 있습니다!
 
 ### Snapshot Connection
 
-The Snapshot Connection is optional, and is only used to serve state sync snapshots for other nodes
-and/or restore state sync snapshots to a local node being bootstrapped.
+Snapshot Connection 은 선택 사항이며, 다른 노드에 상태 동기화 스냅샷을 제공하거나 부트스트랩 중인 로컬 노드로 상태 동기화 스냅샷을 복원하는 데만 사용됩니다.
 
-For more information, see [the state sync section of this document](#state-sync).
+자세한 내용은 이 문서의 [the state sync section of this document](#state-sync)을 참조하세요.
 
 ## Transaction Results
 
