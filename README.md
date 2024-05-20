@@ -27,6 +27,7 @@
    - [x] [devp2p/rlpx](https://github.com/protocol-diver/paper-translate-kr/blob/main/kr/devp2p/rlpx.md) - Etheruem devp2p rlpx procotol
    - [ ] [tendermint/consensus/consensus](https://github.com/protocol-diver/paper-translate-kr/blob/main/kr/tendermint/consensus/consensus.md) - Tendermint Byzantine Consensus Algorithm
    - [x] [tendermint/abci/abci](https://github.com/protocol-diver/paper-translate-kr/blob/main/kr/tendermint/abci/abci.md) - Complete details on all ABCI methods and message types
+   - [ ] [tendermint/abci/apps](https://github.com/protocol-diver/paper-translate-kr/blob/main/kr/tendermint/abci/apps.md) - How to manage ABCI application state and other details about building ABCI applications
 
 ### Etc.
 #### Post
