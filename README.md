@@ -4,8 +4,8 @@
 
 # Index
 1. [목록](https://github.com/protocol-diver/paper-translate-kr/blob/main/README.md#%EB%AA%A9%EB%A1%9D)
-   - [Network](https://github.com/protocol-diver/paper-translate-kr#network)
-   - [Protocol](https://github.com/protocol-diver/paper-translate-kr#protocol)
+   - [RFC](https://github.com/protocol-diver/paper-translate-kr#rfc)
+   - [Distributed Systems](https://github.com/protocol-diver/paper-translate-kr#distributed-systems)
    - [Etc.](https://github.com/protocol-diver/paper-translate-kr#etc)
 2. [문서 규격](https://github.com/protocol-diver/paper-translate-kr#%EB%AC%B8%EC%84%9C-%EA%B7%9C%EA%B2%A9)
 3. [기여](https://github.com/protocol-diver/paper-translate-kr#%EA%B8%B0%EC%97%AC)
