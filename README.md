@@ -11,20 +11,19 @@
 3. [기여](https://github.com/protocol-diver/paper-translate-kr#%EA%B8%B0%EC%97%AC)
 
 # 목록
-
-### Network
+### RFC
+   - [x] [RFC793](https://github.com/protocol-diver/rfc-translate-kr/blob/main/kr/rfc793.txt) - Transmission Control Protocol
    - [x] [RFC894](https://github.com/protocol-diver/rfc-translate-kr/blob/main/kr/rfc894.txt) - A Standard for the Transmission of IP Datagrams over Ethernet Networks (이더넷 네트워크를 통한 IP 데이터그램 전송 표준)
    - [x] [RFC1918](https://github.com/protocol-diver/rfc-translate-kr/blob/main/kr/rfc1918.txt) - Address Allocation for Private Internets (사설 네트워크를 위한 주소 할당)
+   - [ ] [RFC3550](https://github.com/protocol-diver/rfc-translate-kr/blob/main/kr/rfc3550.txt) - RTP: A Transport Protocol for Real-Time Applications
    - [x] [RFC5128](https://github.com/protocol-diver/rfc-translate-kr/blob/main/kr/rfc5128.txt) - State of Peer-to-Peer (P2P) Communication across Network Address Translators (NATs)
    - [ ] [RFC5785](https://github.com/protocol-diver/rfc-translate-kr/blob/main/kr/rfc5785.txt) - Defining Well-Known Uniform Resource Identifiers (통일된 Well-Known 리소스 식별자 정의)
-
-### Protocol
-   - [x] [RFC793](https://github.com/protocol-diver/rfc-translate-kr/blob/main/kr/rfc793.txt) - Transmission Control Protocol
-   - [ ] [RFC3550](https://github.com/protocol-diver/rfc-translate-kr/blob/main/kr/rfc3550.txt) - RTP: A Transport Protocol for Real-Time Applications
    - [x] [RFC6886](https://github.com/protocol-diver/rfc-translate-kr/blob/main/kr/rfc6886.txt) - NAT Port Mapping Protocol (NAT-PMP)
    - [ ] [RFC9293]() - Transmission Control Protocol
+### Distributed Systems
    - [x] [devp2p/eth](https://github.com/protocol-diver/paper-translate-kr/blob/main/kr/devp2p/caps/eth.md) - Etheruem devp2p eth procotol
    - [x] [devp2p/rlpx](https://github.com/protocol-diver/paper-translate-kr/blob/main/kr/devp2p/rlpx.md) - Etheruem devp2p rlpx procotol
+   - [x] [EIP-650: Istanbul Byzantine Fault Tolerance](https://dbadoy.tistory.com/20) - yutelin
    - [ ] [tendermint/consensus/consensus](https://github.com/protocol-diver/paper-translate-kr/blob/main/kr/tendermint/consensus/consensus.md) - Tendermint Byzantine Consensus Algorithm
    - [x] [tendermint/abci/abci](https://github.com/protocol-diver/paper-translate-kr/blob/main/kr/tendermint/abci/abci.md) - Complete details on all ABCI methods and message types
    - [ ] [tendermint/abci/apps](https://github.com/protocol-diver/paper-translate-kr/blob/main/kr/tendermint/abci/apps.md) - How to manage ABCI application state and other details about building ABCI applications
@@ -36,9 +35,6 @@
 #### Paper
    - [x] [An O(1) algorithm for implementing the LFU cache eviction scheme](https://dbadoy.tistory.com/18) - Prof. Ketan Shah, Anirban Mitra, Dhruv Matani
    - [x] [Anti-Caching: A New Approach to Database Management System Architecture](https://dbadoy.tistory.com/39) - Justin DeBrabant, Andrew Pavlo, Stephen Tu
-
-#### EIP
-   - [x] [EIP-650: Istanbul Byzantine Fault Tolerance](https://dbadoy.tistory.com/20) - yutelin
 
 # 문서 규격
 한/영 변환 Github Page 운영에 대비하여 원본과 번역본 둘 다 저장합니다.
