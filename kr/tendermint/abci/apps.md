@@ -91,111 +91,71 @@ Snapshot Connection 은 선택 사항이며, 다른 노드에 상태 동기화 �
 
 ## Transaction Results
 
-The `Info` and `Log` fields are non-deterministic values for debugging/convenience purposes
-that are otherwise ignored.
+`Info` 및 `Log` 필드는 디버깅/편의성을 위한 비결정적 값으로, 그 외의 경우에는 무시됩니다.
 
-The `Data` field must be strictly deterministic, but can be arbitrary data.
+`Data` 필드는 엄격하게 결정론적이어야 하지만 임의의 데이터일 수도 있습니다.
 
 ### Gas
 
-Ethereum introduced the notion of `gas` as an abstract representation of the
-cost of resources used by nodes when processing transactions. Every operation in the
-Ethereum Virtual Machine uses some amount of gas, and gas can be accepted at a market-variable price.
-Users propose a maximum amount of gas for their transaction; if the tx uses less, they get
-the difference credited back. Tendermint adopts a similar abstraction,
-though uses it only optionally and weakly, allowing applications to define
-their own sense of the cost of execution.
+Ethereum 은 트랜잭션을 처리할 때 노드가 사용하는 자원의 비용을 추상적으로 표현하기 위해 `gas` 개념을 도입했습니다. Ethereum 가상 머신의 모든 작업은 일정량의 가스를 사용하며, 가스는 시장에 따라 가변적인 가격으로 수락될 수 있습니다. 사용자는 트랜잭션에 최대 가스 사용량을 제안하고, 트랜잭션이 더 적게 사용하면 차액을 돌려받습니다. Tendermint 도 비슷한 추상화를 채택하지만, 선택적으로 약하게 사용하므로 애플리케이션이 실행 비용에 대한 자체적인 감각을 정의할 수 있습니다.
 
-In Tendermint, the [ConsensusParams.Block.MaxGas](../proto/types/params.proto) limits the amount of `gas` that can be used in a block.
-The default value is `-1`, meaning no limit, or that the concept of gas is
-meaningless.
+Tendermint 에서 [ConsensusParams.Block.MaxGas](../proto/types/params.proto)는 블록에서 사용할 수 있는 `gas`의 양을 제한합니다. 기본값은 -1로, 제한이 없거나 가스 개념이 무의미함을 의미합니다.
 
-Responses contain a `GasWanted` and `GasUsed` field. The former is the maximum
-amount of gas the sender of a tx is willing to use, and the latter is how much it actually
-used. Applications should enforce that `GasUsed <= GasWanted` - ie. tx execution
-should halt before it can use more resources than it requested.
+응답에는 `GasWanted` 및 `GasUsed` 필드가 포함됩니다. 전자는 tx 발신자가 사용하고자 하는 최대 가스 양이고, 후자는 실제로 사용한 양입니다. 애플리케이션은 요청된 리소스보다 더 많은 리소스를 사용하기 전에 tx 실행이 중단되도록 `GasUsed <= GasWanted`를 강제해야 합니다.
 
-When `MaxGas > -1`, Tendermint enforces the following rules:
+`MaxGas가 > -1` 이라면, Tendermint 는 다음 규칙을 적용합니다:
 
-- `GasWanted <= MaxGas` for all txs in the mempool
-- `(sum of GasWanted in a block) <= MaxGas` when proposing a block
+- mempool 의 모든 tx에 대한 `GasWanted <= MaxGas`
+- 블록 제안 시 `(sum of GasWanted in a block) <= MaxGas`
 
-If `MaxGas == -1`, no rules about gas are enforced.
+`MaxGas == -1`이면 가스에 대한 규칙이 적용되지 않습니다.
 
-Note that Tendermint does not currently enforce anything about Gas in the consensus, only the mempool.
-This means it does not guarantee that committed blocks satisfy these rules!
-It is the application's responsibility to return non-zero response codes when gas limits are exceeded.
+Tendermint 는 현재 합의에서 가스에 대해서는 아무것도 시행하지 않으며, mempool 에 대해서만 시행하고 있습니다. 이는 커밋된 블록이 이러한 규칙을 충족한다는 보장을 하지 않는다는 의미입니다! 가스 한도를 초과할 때 0이 아닌 응답 코드를 반환하는 것은 애플리케이션의 책임입니다.
 
-The `GasUsed` field is ignored completely by Tendermint. That said, applications should enforce:
+`GasUsed` 필드는 텐더민트에서 완전히 무시됩니다. 즉, 애플리케이션이 적용해야 합니다:
 
-- `GasUsed <= GasWanted` for any given transaction
-- `(sum of GasUsed in a block) <= MaxGas` for every block
+- 주어진 트랜잭션에 대한 `GasUsed <= GasWanted`
+- 모든 블록에 대한 `(sum of GasUsed in a block) <= MaxGas`
 
-In the future, we intend to add a `Priority` field to the responses that can be
-used to explicitly prioritize txs in the mempool for inclusion in a block
-proposal. See [#1861](https://github.com/tendermint/tendermint/issues/1861).
+향후에는 블록 제안에 포함하기 위해 mempool 의 tx에 명시적으로 우선순위를 지정하는 데 사용할 수 있는 `Priority` 필드를 응답에 추가할 계획입니다. [#1861](https://github.com/tendermint/tendermint/issues/1861)을 참조하세요.
 
 ### CheckTx
 
-If `Code != 0`, it will be rejected from the mempool and hence
-not broadcasted to other peers and not included in a proposal block.
+`Code != 0`이면 mempool 에서 거부되어 다른 피어에게 브로드캐스트되지 않고 제안 블록에 포함되지 않습니다.
 
-`Data` contains the result of the CheckTx transaction execution, if any. It is
-semantically meaningless to Tendermint.
+`Data`에는 CheckTx 트랜잭션 실행 결과가 포함되어 있습니다(있는 경우). 이는 tendermint 에 의미론적으로 의미가 없습니다.
 
-`Events` include any events for the execution, though since the transaction has not
-been committed yet, they are effectively ignored by Tendermint.
+`Events`에는 실행에 대한 모든 이벤트가 포함되지만, 트랜잭션이 아직 커밋되지 않았기 때문에 tendermint 에서 효과적으로 무시됩니다.
 
 ### DeliverTx
 
-DeliverTx is the workhorse of the blockchain. Tendermint sends the
-DeliverTx requests asynchronously but in order, and relies on the
-underlying socket protocol (ie. TCP) to ensure they are received by the
-app in order. They have already been ordered in the global consensus by
-the Tendermint protocol.
+DeliverTx 는 블록체인의 핵심입니다. tendermint 는 DeliverTx 요청을 비동기식으로 순서대로 전송하며, 기본 소켓 프로토콜(ie. TCP)에 의존하여 앱에서 순서대로 수신되도록 합니다. 이는 이미 tendermint 프로토콜의 글로벌 컨센서스에 의해 순서가 정해져 있습니다.
 
-If DeliverTx returns `Code != 0`, the transaction will be considered invalid,
-though it is still included in the block.
+DeliverTx가 `Code != 0`을 반환하면 트랜잭션은 여전히 블록에 포함되지만 유효하지 않은 것으로 간주됩니다.
 
-DeliverTx also returns a [Code, Data, and Log](../../proto/abci/types.proto#L189-L191).
+DeliverTx는 [Code, Data, 와 Log](../../proto/abci/types.proto#L189-L191)도 반환합니다.
 
-`Data` contains the result of the CheckTx transaction execution, if any. It is
-semantically meaningless to Tendermint.
+`Data`에는 CheckTx 트랜잭션 실행 결과가 포함되어 있습니다(있는 경우). 이는 tendermint 에 의미론적으로 의미가 없습니다.
 
-Both the `Code` and `Data` are included in a structure that is hashed into the
-`LastResultsHash` of the next block header.
+`Code`와 `Data`는 모두 다음 블록 헤더의 `LastResultsHash`에 해시되는 구조에 포함됩니다.
 
-`Events` include any events for the execution, which Tendermint will use to index
-the transaction by. This allows transactions to be queried according to what
-events took place during their execution.
+`Events`에는 실행에 대한 모든 이벤트가 포함되며, tendermint 는 트랜잭션의 색인을 생성하는 데 이를 사용합니다. 이를 통해 트랜잭션이 실행되는 동안 발생한 이벤트에 따라 트랜잭션을 쿼리할 수 있습니다.
 
 ## Updating the Validator Set
 
-The application may set the validator set during InitChain, and may update it during
-EndBlock.
+애플리케이션은 InitChain 중에 검증자 세트를 설정하고 EndBlock 중에 이를 업데이트할 수 있습니다.
 
-Note that the maximum total power of the validator set is bounded by
-`MaxTotalVotingPower = MaxInt64 / 8`. Applications are responsible for ensuring
-they do not make changes to the validator set that cause it to exceed this
-limit.
+검증자 세트의 최대 총 파워는 `MaxTotalVotingPower = MaxInt64 / 8` 로 제한된다는 점에 유의하세요. 애플리케이션은 이 제한을 초과하는 검증자 집합을 변경하지 않도록 해야 할 책임이 있습니다.
 
-Additionally, applications must ensure that a single set of updates does not contain any duplicates -
-a given public key can only appear once within a given update. If an update includes
-duplicates, the block execution will fail irrecoverably.
+또한 애플리케이션은 단일 업데이트 세트에 중복이 포함되지 않도록 해야 합니다 - 특정 공개 키는 특정 업데이트 내에서 한 번만 나타날 수 있습니다. 업데이트에 중복이 포함되면 블록 실행은 복구할 수 없게 실패합니다.
 
 ### InitChain
 
-The `InitChain` method can return a list of validators.
-If the list is empty, Tendermint will use the validators loaded in the genesis
-file.
-If the list returned by `InitChain` is not empty, Tendermint will use its contents as the validator set.
-This way the application can set the initial validator set for the
-blockchain.
+`InitChain` 메서드는 검증자 목록을 반환할 수 있습니다. 목록이 비어 있으면 tendermint 는 제네시스 파일에 로드된 검증자를 사용합니다. InitChain 에서 반환한 목록이 비어 있지 않으면 tendermint 는 그 내용을 검증자 집합으로 사용합니다. 이렇게 하면 애플리케이션이 블록체인의 초기 검증자 세트를 설정할 수 있습니다.
 
 ### EndBlock
 
-Updates to the Tendermint validator set can be made by returning
-`ValidatorUpdate` objects in the `ResponseEndBlock`:
+tendermint 검증자 세트에 대한 업데이트는 `ResponseEndBlock`에서 `ValidatorUpdate` 객체를 반환하여 수행할 수 있습니다:
 
 ```protobuf
 message ValidatorUpdate {
@@ -209,23 +169,19 @@ message PublicKey {
   }
 ```
 
-The `pub_key` currently supports only one type:
-
+`pub_key` 는 현재 한 가지 유형만 지원합니다:
 - `type = "ed25519"`
 
-The `power` is the new voting power for the validator, with the
-following rules:
+`power`는 검증자의 새로운 투표권으로, 다음과 같은 규칙이 적용됩니다:
 
-- power must be non-negative
-- if power is 0, the validator must already exist, and will be removed from the
-  validator set
-- if power is non-0:
-    - if the validator does not already exist, it will be added to the validator
-    set with the given power
-    - if the validator does already exist, its power will be adjusted to the given power
-- the total power of the new validator set must not exceed MaxTotalVotingPower
+- 파워는 음수가 아니어야 합니다.
+- 파워가 0 이면 검증자가 이미 존재해야 하며, 검증자 집합에서 제거됩니다.
+- 파워가 0이 아닌 경우
+  - 검증자가 아직 존재하지 않으면 주어진 파워로 검증자 세트에 추가됩니다.
+  - 검증자가 이미 존재한다면, 그 검증자의 파워는 주어진 파워로 조정됩니다.
+- 새 검증자 세트의 총 파워는 MaxTotalVotingPower 를 초과하지 않아야 합니다.
 
-Note the updates returned in block `H` will only take effect at block `H+2`.
+블록 `H`에서 반환된 업데이트는 블록 `H+2`에서만 적용됩니다.
 
 ## Consensus Parameters
 
