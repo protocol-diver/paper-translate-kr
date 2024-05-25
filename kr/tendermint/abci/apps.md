@@ -112,7 +112,7 @@ Tendermint 에서 [ConsensusParams.Block.MaxGas](../proto/types/params.proto)는
 
 Tendermint 는 현재 합의에서 가스에 대해서는 아무것도 시행하지 않으며, mempool 에 대해서만 시행하고 있습니다. 이는 커밋된 블록이 이러한 규칙을 충족한다는 보장을 하지 않는다는 의미입니다! 가스 한도를 초과할 때 0이 아닌 응답 코드를 반환하는 것은 애플리케이션의 책임입니다.
 
-`GasUsed` 필드는 텐더민트에서 완전히 무시됩니다. 즉, 애플리케이션이 적용해야 합니다:
+`GasUsed` 필드는 Tendermint 에서 완전히 무시됩니다. 즉, 애플리케이션이 적용해야 합니다:
 
 - 주어진 트랜잭션에 대한 `GasUsed <= GasWanted`
 - 모든 블록에 대한 `(sum of GasUsed in a block) <= MaxGas`
@@ -123,23 +123,23 @@ Tendermint 는 현재 합의에서 가스에 대해서는 아무것도 시행하
 
 `Code != 0`이면 mempool 에서 거부되어 다른 피어에게 브로드캐스트되지 않고 제안 블록에 포함되지 않습니다.
 
-`Data`에는 CheckTx 트랜잭션 실행 결과가 포함되어 있습니다(있는 경우). 이는 tendermint 에 의미론적으로 의미가 없습니다.
+`Data`에는 CheckTx 트랜잭션 실행 결과가 포함되어 있습니다(있는 경우). 이는 Tendermint 에 의미론적으로 의미가 없습니다.
 
-`Events`에는 실행에 대한 모든 이벤트가 포함되지만, 트랜잭션이 아직 커밋되지 않았기 때문에 tendermint 에서 효과적으로 무시됩니다.
+`Events`에는 실행에 대한 모든 이벤트가 포함되지만, 트랜잭션이 아직 커밋되지 않았기 때문에 Tendermint 에서 효과적으로 무시됩니다.
 
 ### DeliverTx
 
-DeliverTx 는 블록체인의 핵심입니다. tendermint 는 DeliverTx 요청을 비동기식으로 순서대로 전송하며, 기본 소켓 프로토콜(ie. TCP)에 의존하여 앱에서 순서대로 수신되도록 합니다. 이는 이미 tendermint 프로토콜의 글로벌 컨센서스에 의해 순서가 정해져 있습니다.
+DeliverTx 는 블록체인의 핵심입니다. Tendermint 는 DeliverTx 요청을 비동기식으로 순서대로 전송하며, 기본 소켓 프로토콜(ie. TCP)에 의존하여 앱에서 순서대로 수신되도록 합니다. 이는 이미 Tendermint 프로토콜의 글로벌 컨센서스에 의해 순서가 정해져 있습니다.
 
 DeliverTx가 `Code != 0`을 반환하면 트랜잭션은 여전히 블록에 포함되지만 유효하지 않은 것으로 간주됩니다.
 
 DeliverTx는 [Code, Data, 와 Log](../../proto/abci/types.proto#L189-L191)도 반환합니다.
 
-`Data`에는 CheckTx 트랜잭션 실행 결과가 포함되어 있습니다(있는 경우). 이는 tendermint 에 의미론적으로 의미가 없습니다.
+`Data`에는 CheckTx 트랜잭션 실행 결과가 포함되어 있습니다(있는 경우). 이는 Tendermint 에 의미론적으로 의미가 없습니다.
 
 `Code`와 `Data`는 모두 다음 블록 헤더의 `LastResultsHash`에 해시되는 구조에 포함됩니다.
 
-`Events`에는 실행에 대한 모든 이벤트가 포함되며, tendermint 는 트랜잭션의 색인을 생성하는 데 이를 사용합니다. 이를 통해 트랜잭션이 실행되는 동안 발생한 이벤트에 따라 트랜잭션을 쿼리할 수 있습니다.
+`Events`에는 실행에 대한 모든 이벤트가 포함되며, Tendermint 는 트랜잭션의 색인을 생성하는 데 이를 사용합니다. 이를 통해 트랜잭션이 실행되는 동안 발생한 이벤트에 따라 트랜잭션을 쿼리할 수 있습니다.
 
 ## Updating the Validator Set
 
@@ -151,11 +151,11 @@ DeliverTx는 [Code, Data, 와 Log](../../proto/abci/types.proto#L189-L191)도 �
 
 ### InitChain
 
-`InitChain` 메서드는 검증자 목록을 반환할 수 있습니다. 목록이 비어 있으면 tendermint 는 제네시스 파일에 로드된 검증자를 사용합니다. InitChain 에서 반환한 목록이 비어 있지 않으면 tendermint 는 그 내용을 검증자 집합으로 사용합니다. 이렇게 하면 애플리케이션이 블록체인의 초기 검증자 세트를 설정할 수 있습니다.
+`InitChain` 메서드는 검증자 목록을 반환할 수 있습니다. 목록이 비어 있으면 Tendermint 는 제네시스 파일에 로드된 검증자를 사용합니다. InitChain 에서 반환한 목록이 비어 있지 않으면 Tendermint 는 그 내용을 검증자 집합으로 사용합니다. 이렇게 하면 애플리케이션이 블록체인의 초기 검증자 세트를 설정할 수 있습니다.
 
 ### EndBlock
 
-tendermint 검증자 세트에 대한 업데이트는 `ResponseEndBlock`에서 `ValidatorUpdate` 객체를 반환하여 수행할 수 있습니다:
+Tendermint 검증자 세트에 대한 업데이트는 `ResponseEndBlock`에서 `ValidatorUpdate` 객체를 반환하여 수행할 수 있습니다:
 
 ```protobuf
 message ValidatorUpdate {
