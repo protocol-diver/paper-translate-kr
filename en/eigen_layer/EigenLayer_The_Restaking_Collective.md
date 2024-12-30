@@ -11,7 +11,8 @@ We propose EigenLayer, a restaking collective for Ethereum. EigenLayer is a set 
 
 <b>Ethereum Layer-2 Era</b>. The set of applications that can be built on top of Ethereum permissionlessly expanded significantly when Ethereum switched to a rollup-centric roadmap [4]. Rollups outsource execution to a single node or a small group of nodes, but can absorb Ethereum trust by proving com- putation to Ethereum via an EVM contract, either using cryptoeconomic guarantees (via fraud proofs, in which case such rollups are called “optimistic rollups”) or cryptographic guarantees (via ‘succinct validity proofs,‘ in which case such rollups are often called ZK-rollups) [5]. This has led to a massively increased rate of permissionless innovation in rollup technology, leading to a proliferation of a variety of proving technologies.
 
-*** IMAGE *** (page_2_1)
+![Figure1](https://github.com/protocol-diver/paper-translate-kr/blob/eigen/en/eigen_layer/images/whitepaper/page_2_1.png "Temp")
+
 Figure1: Comparing the ecosystem of actively validated services today and with EigenLayer.
 
 <b>Limitations<b>. However, any module that cannot be deployed, or proven, on top of the EVM, cannot ab- sorb the pooled trust of Ethereum. Such modules involve processing on inputs that are derived from outside Ethereum and as such their processing cannot be validated in-protocol inside Ethereum. Ex- amples of such modules include sidechains based on new consensus protocols, data availability layers, new virtual machines, keeper networks, oracle networks, bridges, threshold cryptography schemes, and trusted execution environments. Typically, such modules require actively validated services that have their own distributed validation semantics to do verification. Usually, these actively validated services (“AVS”) are either secured by their own native token, or are permissioned in nature.
