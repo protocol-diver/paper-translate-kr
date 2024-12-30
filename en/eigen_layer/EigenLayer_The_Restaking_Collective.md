@@ -231,33 +231,44 @@ modules that desire stake and validation services.
 5. EigenLayerseekstoenablemoreagile,decentralized,andpermissionlessinnovationonblockchains.
 
 ## References
+
 [1] Satoshi Nakamoto. Bitcoin: A peer-to-peer electronic cash system. Decentralized business review, page 21260, 2008.
+
 [2] Vitalik Buterin et al. Ethereum white paper.
-[3] Ethereum: A secure decentralized generalized transaction ledger. https://ethereum.github.
-io/yellowpaper/paper.pdf.
-[4] Rollup-centric ethereum roadmap. https://ethereum-magicians.org/t/
-a-rollup-centric-ethereum-roadmap/4698.
-[5] An incomplete guide to rollups. https://vitalik.ca/general/2021/01/05/rollup.html.
-[6] Lido.fi. https://lido.fi/.
-[7] Rocketpool. https://rocketpool.net/.
-[8] Superfluid staking. https://docs.osmosis.zone/osmosis-core/modules/superfluid/.
-[9] The cryptoeconomics of slashing. https://a16zcrypto.com/ the-cryptoeconomics-of-slashing/.
-[10] Merged mining. https://developers.rsk.co/rsk/architecture/mining/.
+
+[3] Ethereum: A secure decentralized generalized transaction ledger. https://ethereum.github.io/yellowpaper/paper.pdf
+
+[4] Rollup-centric ethereum roadmap. https://ethereum-magicians.org/t/a-rollup-centric-ethereum-roadmap/4698
+
+[5] An incomplete guide to rollups. https://vitalik.ca/general/2021/01/05/rollup.html
+
+[6] Lido.fi. https://lido.fi/
+
+[7] Rocketpool. https://rocketpool.net/
+
+[8] Superfluid staking. https://docs.osmosis.zone/osmosis-core/modules/superfluid/
+
+[9] The cryptoeconomics of slashing. https://a16zcrypto.com/the-cryptoeconomics-of-slashing/
+
+[10] Merged mining. https://developers.rsk.co/rsk/architecture/mining/
+
 [11] Blockspace: An introduction with chris dixon. https://www.generalist.com/briefing/ blockspace.
-[12] Rainbow bridge. https://near.org/bridge/.
-[13] Uni should become an oracle token. https://gov.uniswap.org/t/
-uni-should-become-an-oracle-token/11988.
-[14] State of research: increasing censorship resistance of transactions under proposer/builder sepa-
-ration (pbs). https://notes.ethereum.org/@vbuterin/pbs_censorship_resistance.
-[15] Committee-driven mev smoothing. https://ethresear.ch/t/
-committee-driven-mev-smoothing/10408.
-[16] Shutter - in-depth explanation of how we prevent front running. https://blog.shutter.
-network/shutter-in-depth-explanation-of-how-we-prevent-frontrunning/.
-[17] Removing trusted relays in mev-boost using threshold encryption. https://ethresear.ch/t/
-removing-trusted-relays-in-mev-boost-using-threshold-encryption/13449.
-[18] Paths toward single-slot finality. https://notes.ethereum.org/@vbuterin/single_slot_
-finality.
-[19] Soulbound. https://vitalik.ca/general/2022/01/26/soulbound.html.
+
+[12] Rainbow bridge. https://near.org/bridge/
+
+[13] Uni should become an oracle token. https://gov.uniswap.org/t/uni-should-become-an-oracle-token/11988
+
+[14] State of research: increasing censorship resistance of transactions under proposer/builder separation (pbs). https://notes.ethereum.org/@vbuterin/pbs_censorship_resistance
+
+[15] Committee-driven mev smoothing. https://ethresear.ch/t/committee-driven-mev-smoothing/10408
+
+[16] Shutter - in-depth explanation of how we prevent front running. https://blog.shutter.network/shutter-in-depth-explanation-of-how-we-prevent-frontrunning/
+
+[17] Removing trusted relays in mev-boost using threshold encryption. https://ethresear.ch/t/removing-trusted-relays-in-mev-boost-using-threshold-encryption/13449
+
+[18] Paths toward single-slot finality. https://notes.ethereum.org/@vbuterin/single_slot_finality
+
+[19] Soulbound. https://vitalik.ca/general/2022/01/26/soulbound.html
 
 # Appendix...
 
