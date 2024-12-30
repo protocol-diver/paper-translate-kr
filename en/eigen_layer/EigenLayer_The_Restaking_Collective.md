@@ -11,7 +11,7 @@ We propose EigenLayer, a restaking collective for Ethereum. EigenLayer is a set 
 
 <b>Ethereum Layer-2 Era</b>. The set of applications that can be built on top of Ethereum permissionlessly expanded significantly when Ethereum switched to a rollup-centric roadmap [4]. Rollups outsource execution to a single node or a small group of nodes, but can absorb Ethereum trust by proving com- putation to Ethereum via an EVM contract, either using cryptoeconomic guarantees (via fraud proofs, in which case such rollups are called “optimistic rollups”) or cryptographic guarantees (via ‘succinct validity proofs,‘ in which case such rollups are often called ZK-rollups) [5]. This has led to a massively increased rate of permissionless innovation in rollup technology, leading to a proliferation of a variety of proving technologies.
 
-![Figure1](https://github.com/protocol-diver/paper-translate-kr/blob/eigen/en/eigen_layer/images/whitepaper/page_2_1.png)
+![Figure1](https://github.com/protocol-diver/paper-translate-kr/blob/main/en/eigen_layer/images/whitepaper/page_2_1.png)
 
 Figure1: Comparing the ecosystem of actively validated services today and with EigenLayer.
 
@@ -26,7 +26,7 @@ There are four basic downsides to the present organization of the AVS ecosystem.
 ## 2. EigenLayer: The Restaking Collective
 EigenLayer introduces two novel ideas, <b>pooled security via restaking</b> and <b>free-market governance</b>, which serve to extend the security of Ethereum to any system and to eliminate the inefficiencies of existing rigid governance structures:
 
-![Figure2](https://github.com/protocol-diver/paper-translate-kr/blob/eigen/en/eigen_layer/images/whitepaper/page_3_1.png)
+![Figure2](https://github.com/protocol-diver/paper-translate-kr/blob/main/en/eigen_layer/images/whitepaper/page_3_1.png)
 
 Figure 2: Launching an AVS on top of EigenLayer requires deploying an off-chain container that operators must download, and an on-chain contract that specifies the terms of slashing and payment.
 
@@ -35,11 +35,11 @@ Figure 2: Launching an AVS on top of EigenLayer requires deploying an off-chain 
 
 By combining these ideas, EigenLayer serves as an <b>open marketplace where AVSs can rent pooled security provided by Ethereum validators</b>.
 
-![Figure3](https://github.com/protocol-diver/paper-translate-kr/blob/eigen/en/eigen_layer/images/whitepaper/page_4_1_a.png)
+![Figure3](https://github.com/protocol-diver/paper-translate-kr/blob/main/en/eigen_layer/images/whitepaper/page_4_1_a.png)
 
 (a) AVS economics today. To corrupt the AVS, the attacker need only attack one of the modules which are secured by a stake of $1B; that is significantly less than the $10B of stake securing the L1.
 
-![Figure3](https://github.com/protocol-diver/paper-translate-kr/blob/eigen/en/eigen_layer/images/whitepaper/page_4_1_a.png)
+![Figure3](https://github.com/protocol-diver/paper-translate-kr/blob/main/en/eigen_layer/images/whitepaper/page_4_1_a.png)
 
 (b) AVS economics of pooled security. Corrupting the DApp here would require the attacker to attack the pooled stake of $13B.
 
@@ -56,7 +56,7 @@ EigenLayer solves the various problems in the AVS ecosystem highlighted above:
 ### 2.1. EigenLayer Enables Multiple Staking Modalities
 We compare the various staking related paradigms such as liquid staking, superfluid staking, and restaking here. First, we begin with existing schemes shown in Fig. 5a.
 
-![Figure4](https://github.com/protocol-diver/paper-translate-kr/blob/eigen/en/eigen_layer/images/whitepaper/page_5_1.png)
+![Figure4](https://github.com/protocol-diver/paper-translate-kr/blob/main/en/eigen_layer/images/whitepaper/page_5_1.png)
 
 Figure 4: With EigenLayer, permissionless innovation permeates deeper into the blockchain stack.
 
@@ -73,11 +73,11 @@ As shown in Fig. 5b, EigenLayer provides multiple pathways for yield stacking wh
 
 Each of these pathways comes with different types of risks. In keeping with the principle of opt-in governance, EigenLayer outsources the management of such risks to module developers. Developers choose for themselves which tokens to accept as stake for their AVS. They may also choose whether there is preferential weighting for rewards they distribute to different types of staked tokens. For example, a module interested primarily in decentralization may only accept restake in the form of natively restaked ETH.
 
-![Figure5](https://github.com/protocol-diver/paper-translate-kr/blob/eigen/en/eigen_layer/images/whitepaper/page_6_1_a.png)
+![Figure5](https://github.com/protocol-diver/paper-translate-kr/blob/main/en/eigen_layer/images/whitepaper/page_6_1_a.png)
 
 (a) Liquid staking = L1 → DeFi. Superfluid staking = DeFi → L1
 
-![Figure5](https://github.com/protocol-diver/paper-translate-kr/blob/eigen/en/eigen_layer/images/whitepaper/page_6_1_b.png)
+![Figure5](https://github.com/protocol-diver/paper-translate-kr/blob/main/en/eigen_layer/images/whitepaper/page_6_1_b.png)
 
 (b) (1)Native restaking or staking of LST token: L1 → EL. (2) Staking LP tokens with ETH: DeFi → EL. (3) Staking LP tokens with LST: L1 → DeFi → EL.
 
@@ -110,7 +110,7 @@ The restaking concept of EigenLayer is similar to the notion of merge mining whi
 
 However, the similarities between merge mining and restaking end there. With respect to security, restaking and merge mining are very different; while merge mining creates potential security vulner- abilites, restaking <b>reinforces security.</b> To understand why this is the case, we need to view PoW and PoS blockchains through the lens of cryptoeconomics. For both PoW and PoS chains, we consider the scenario in which a small subset of main chain validators is also serving as validators for a separate chain — in the case of a PoW chain, via merge mining; and in the case of a PoS chain, via restaking. Suppose that this subset acts maliciously to attack the smaller chain, e.g. by signing an incorrect state transition in order to transfer and bridge out some of the chain’s assets. Let us consider the outcomes for each type of chain:
 
-![Figure6](https://github.com/protocol-diver/paper-translate-kr/blob/eigen/en/eigen_layer/images/whitepaper/page_8_1.png)
+![Figure6](https://github.com/protocol-diver/paper-translate-kr/blob/main/en/eigen_layer/images/whitepaper/page_8_1.png)
 
 Figure 6: Merge mining vs. restaking.
 
@@ -162,7 +162,7 @@ We note that by designing a suite of hyperscale and lightweight AVSs which produ
 
 The set of new AVSs enabled by EigenLayer is quite broad and encompasses new blockchains, mid- dleware, and modular blockchain layers such as data availability layers. We list here some of the possibilities, many of which are also exciting directions of ongoing and future research:
 
-![Figure7](https://github.com/protocol-diver/paper-translate-kr/blob/eigen/en/eigen_layer/images/whitepaper/page_11_1.png)
+![Figure7](https://github.com/protocol-diver/paper-translate-kr/blob/main/en/eigen_layer/images/whitepaper/page_11_1.png)
 
 Figure 7: Blockspace is the most valuable commodity in blockchains [11]. In today’s ecosystem, blocklimit on this blockspace is determined by weakest validator’s infrastructure. This limit arises from Ethereum’s focus on decentralization. However, EigenLayer can leverage the extra capabilities of validators with additional resources to provide guarantees of cryptoeconomic security to applications that desire them.
 
@@ -186,7 +186,7 @@ We emphasize that the notion of retuning the performance/security parameters of 
 
 ### 4.3. EigenLayer Breaks the Trade-Off between Democracy and Agility
 
-![Figure8](https://github.com/protocol-diver/paper-translate-kr/blob/eigen/en/eigen_layer/images/whitepaper/page_13_1.png)
+![Figure8](https://github.com/protocol-diver/paper-translate-kr/blob/main/en/eigen_layer/images/whitepaper/page_13_1.png)
 
 Figure 8: Ethereum, in its present form, features a democratic governance but slow pace of innovation. With the addition of EigenLayer, Ethereum can enjoy the best of both worlds: democratic governance with agility in innovation.
 
