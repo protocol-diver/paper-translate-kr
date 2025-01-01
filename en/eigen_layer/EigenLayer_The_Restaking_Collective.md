@@ -39,7 +39,7 @@ By combining these ideas, EigenLayer serves as an <b>open marketplace where AVSs
 
 (a) AVS economics today. To corrupt the AVS, the attacker need only attack one of the modules which are secured by a stake of $1B; that is significantly less than the $10B of stake securing the L1.
 
-![Figure3](https://github.com/protocol-diver/paper-translate-kr/blob/main/images/eigen_layer/whitepaper/page_4_1_a.png)
+![Figure3](https://github.com/protocol-diver/paper-translate-kr/blob/main/images/eigen_layer/whitepaper/page_4_1_b.png)
 
 (b) AVS economics of pooled security. Corrupting the DApp here would require the attacker to attack the pooled stake of $13B.
 

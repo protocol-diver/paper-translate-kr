@@ -41,7 +41,7 @@ Figure 2: EigenLayer 위에 AVS 를 출시하려면 운영자가 다운로드해
 
 (a) 현재 AVS 경제학. AVS 를 손상시키기 위해 공격자는 $10B 의 stake 로 L1을 보호하는 것보다 훨씬 적은 $1B 의 stake 로 보호되는 모듈 중 하나만 공격하면 됩니다.
 
-![Figure3](https://github.com/protocol-diver/paper-translate-kr/blob/main/images/eigen_layer/whitepaper/page_4_1_a.png)
+![Figure3](https://github.com/protocol-diver/paper-translate-kr/blob/main/images/eigen_layer/whitepaper/page_4_1_b.png)
 
 (b) Pooled security 의 AVS 경제학. 여기에서 DApp 을 손상시키려면 공격자가 $13B 의 pooled stake 를 공격해야 합니다.
 
