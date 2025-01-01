@@ -47,11 +47,11 @@ Figure 2: EigenLayer 위에 AVS 를 출시하려면 운영자가 다운로드해
 
 Figure 3: EigenLayer 의 pooled security.
 
-EigenLayer는 위에서 언급된 AVS 생태계의 다양한 문제를 해결합니다:
+EigenLayer 는 위에서 언급된 AVS 생태계의 다양한 문제를 해결합니다:
 
 1. <b>새로운 AVS 의 부트스트래핑 문제:</b> 새로운 AVS 는 이더리움의 대규모 검증자 집합에서 보안을 부트스트랩할 수 있습니다.
 2. <b>자본 비용:</b> ETH staker 는 여러 서비스에서 자본을 재사용하므로 자본 비용이 분산됩니다. 특히 EigenLayer 에 참여하는 네이티브 ETH staker 의 한계 자본 비용은 최소화됩니다 (정확히 말하면, 정직한 노드가 슬래시될 위험이 없다면 이론적으로 제로).
-3. <b>신뢰 집합:</b> 더 큰 자본 pool 을 restaking 하기 때문에 신뢰 모델이 크게 개선됩니다. 예를 들어, EigenLayer  세계에서 그림 3b 의 시나리오를 고려해 봅시다. 모든 L1 stake 가 세 개의 AVS 모듈에 restaking 된다고 가정하면, DApp 을 손상시키는 비용은 L1 자체에 staking 된 총 금액입니다. 세 개의 AVS 에서 발생하는 <b>추가적인 수익 기회</b> 덕분에 EigenLayer 가 존재하는 L1 에 staking 된 총 금액은 EigenLayer 가 없는 세계에서 L1 과 각 AVS 에 각각 staking 된 금액의 합과 같습니다. 따라서 위의 예에서 EigenLayer 가 존재하는 L1 에 staking 된 총 금액은 $13B 입니다. 이렇게 EigenLayer 는 손상 비용을 최소 stake 에서 stake 의 합으로 대폭 증가시킵니다.
+3. <b>신뢰 집합:</b> 더 큰 자본 pool 을 restaking 하기 때문에 신뢰 모델이 크게 개선됩니다. 예를 들어, EigenLayer 세계에서 그림 3b 의 시나리오를 고려해 봅시다. 모든 L1 stake 가 세 개의 AVS 모듈에 restaking 된다고 가정하면, DApp 을 손상시키는 비용은 L1 자체에 staking 된 총 금액입니다. 세 개의 AVS 에서 발생하는 <b>추가적인 수익 기회</b> 덕분에 EigenLayer 가 존재하는 L1 에 staking 된 총 금액은 EigenLayer 가 없는 세계에서 L1 과 각 AVS 에 각각 staking 된 금액의 합과 같습니다. 따라서 위의 예에서 EigenLayer 가 존재하는 L1 에 staking 된 총 금액은 $13B 입니다. 이렇게 EigenLayer 는 손상 비용을 최소 stake 에서 stake 의 합으로 대폭 증가시킵니다.
 4. <b>가치 축적:</b> EigenLayer 는 ETH staker 에게 참여할 수 있는 여러 추가 수익원을 제공하며, 매우 안전한 AVS 생태계의 존재로 인해 생태계의 네트워크 효과를 더욱 강화합니다.
 
 ### 2.1. EigenLayer Enables Multiple Staking Modalities
